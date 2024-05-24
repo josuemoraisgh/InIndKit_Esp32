@@ -1,18 +1,19 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-class Wifi_t
+class Wifi_c
 {
 private:
     const char *ssid = "APJosue";
     const char *password = "josue32154538";
 
 public:
-    bool start(int max_tries = 20, int pause = 500);
-    bool isConnected();    
+    bool start(uint16_t max_tries = 20, uint16_t pause = 500);
+    IPAddress getIP();
+    bool isConnected();
 };
 
-bool Wifi_t::start(int max_tries = 20, int pause = 500)
+bool Wifi_c::start(uint16_t max_tries, uint16_t pause)
 {
     int i = 0;
     WiFi.mode(WIFI_STA);
@@ -35,7 +36,12 @@ bool Wifi_t::start(int max_tries = 20, int pause = 500)
     return isConnected();
 }
 
-bool Wifi_t::isConnected()
+IPAddress Wifi_c::getIP()
+{
+    return(WiFi.localIP());
+}
+
+bool Wifi_c::isConnected()
 {
     return (WiFi.status() == WL_CONNECTED);
 }

@@ -1,14 +1,15 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
-class OTA_t
+class OTA_c
 {
 public:
-  void start(void);  
+  void start(const char *hostname);  
   void update(void);
 };
 
-void OTA_t::start(void) {
+void OTA_c::start(const char *hostname) {
+  ArduinoOTA.setHostname(hostname);
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {
@@ -42,6 +43,6 @@ void OTA_t::start(void) {
   ArduinoOTA.begin();
 }
  
-void OTA_t::update() {
+void OTA_c::update() {
   ArduinoOTA.handle();
 }

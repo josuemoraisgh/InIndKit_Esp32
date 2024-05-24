@@ -4,10 +4,10 @@
 #include <Arduino.h>
 
 #include <WiFi.h>
-#include "device\display_t.h"
-#include "device\ota_t.h"
-#include "device\wifi_t.h"
-#include "device\telnet_t.h"
+#include "device\display_c.h"
+#include "device\ota_c.h"
+#include "device\wifi_c.h"
+#include "device\telnet_c.h"
 
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
@@ -26,27 +26,26 @@
 #define def_pin_OUT1 35 // GPIO3
 #define def_pin_OUT2 35 // GPIO3
 
-class InIndKit
+#define HOSTNAME "inindkit"
+class InIndKit_c
 {
-private:
-    const char *ssid = "APJosue";
-    const char *password = "josue32154538";
-
-    Wifi_t wifi_v;
-    OTA_t ota_v;
-    Display_t display_v;
-    Telnet_t telnet_v;
-
 public:
-    InIndKit(void);
+    Wifi_c wifi_o;
+    OTA_c ota_o;
+    Display_c display_o;
+    Telnet_c telnet_o;
+    void start(void);
     void update(void);
     void errorMsg(String error, bool restart = true);
 };
 
-InIndKit::InIndKit()
+void InIndKit_c::start(void)
 {
     Serial.begin(115200);
     Serial.println("Booting");
+
+    pinMode(def_pin_POT_LEFT, INPUT);
+    pinMode(def_pin_POT_RIGHT, INPUT);
 
     pinMode(def_pin_RTN1, INPUT);
     pinMode(def_pin_RTN2, INPUT);
@@ -56,31 +55,50 @@ InIndKit::InIndKit()
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
 
-    if (wifi_v.start()) // Primeiro o Wifi
-        Serial.println("Wifi running");
+    if (wifi_o.start()) // Primeiro o Wifi
+    {
+        Serial.print("\nWifi running - IP:");
+        Serial.print(wifi_o.getIP());
+        Serial.println(".");
+    }
     else
+    {
         errorMsg("Wifi  error.\nWill reboot...");
+    }
 
-    ota_v.start(); // Depois o OTA
+    ota_o.start(HOSTNAME); // Depois o OTA
 
-    if (display_v.start())    
+    if (display_o.start())
+    {
         Serial.println("Display running");
+        display_o.setText(1, wifi_o.getIP().toString().c_str());
+        display_o.setText(2, "InIndKit01 ");
+        display_o.setText(3, "Good Look!");
+    }
     else
-        errorMsg("Display error.",false);
+    {
+        errorMsg("Display error.", false);
+    }
 
-    if (telnet_v.start())
-        Serial.println("Telnet running");
+    if (telnet_o.start())
+    {
+        Serial.print("Telnet running - port:");
+        Serial.print(telnet_o.port);
+        Serial.println(".");
+    }
     else
+    {
         errorMsg("Telnet  error.\nWill reboot...");
+    }
 }
 
-void InIndKit::update(void)
+void InIndKit_c::update(void)
 {
-    ota_v.update();
-    display_v.update();
+    ota_o.update();
+    display_o.update();
 }
 
-void InIndKit::errorMsg(String error, bool restart = true)
+void InIndKit_c::errorMsg(String error, bool restart)
 {
     Serial.println(error);
     if (restart)

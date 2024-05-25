@@ -8,6 +8,7 @@
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\telnet_c.h"
+#include "util/btn.h"
 
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
@@ -16,10 +17,10 @@
 #define def_pin_POT_LEFT 36  // GPIO36
 #define def_pin_POT_RIGHT 39 // GPIO39
 /************* BUTTONS GPIO define *********/
-#define def_pin_RTN1 34  // GPIO34
-#define def_pin_RTN2 35  // GPIO35
-#define def_pin_PUSH1 19 // GPIO19
-#define def_pin_PUSH2 18 // GPIO18
+#define def_pin_RTN1 17  // GPIO17
+#define def_pin_RTN2 5  // GPIO5
+#define def_pin_PUSH1 18 // GPIO18
+#define def_pin_PUSH2 19 // GPIO19
 /*************** IOs GPIO define **********/
 #define def_pin_IN1 14  // GPIO14
 #define def_pin_IN2 12  // GPIO12
@@ -30,6 +31,10 @@
 class InIndKit_c
 {
 public:
+    btn_t rtn_1 = {def_pin_RTN1,0,false,false};
+    btn_t rtn_2 = {def_pin_RTN2,0,false,false};
+    btn_t push_1 = {def_pin_PUSH1,0,false,false}; 
+    btn_t push_2 = {def_pin_PUSH2,0,false,false}; 
     Wifi_c wifi_o;
     OTA_c ota_o;
     Display_c display_o;

@@ -13,7 +13,7 @@ public:
     bool isConnected();
 };
 
-bool Wifi_c::start(uint16_t max_tries, uint16_t pause)
+inline bool Wifi_c::start(uint16_t max_tries, uint16_t pause)
 {
     int i = 0;
     WiFi.mode(WIFI_STA);
@@ -41,7 +41,7 @@ IPAddress Wifi_c::getIP()
     return(WiFi.localIP());
 }
 
-bool Wifi_c::isConnected()
+inline bool Wifi_c::isConnected()
 {
     return (WiFi.status() == WL_CONNECTED);
 }

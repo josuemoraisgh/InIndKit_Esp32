@@ -4,10 +4,10 @@
 #include <Arduino.h>
 
 #include <WiFi.h>
-#include "device\display_c.h"
-#include "device\ota_c.h"
-#include "device\wifi_c.h"
-#include "device\telnet_c.h"
+#include "services\display_c.h"
+#include "services\ota_c.h"
+#include "services\wifi_c.h"
+#include "services\telnet_c.h"
 
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
@@ -39,22 +39,10 @@ public:
     void errorMsg(String error, bool restart = true);
 };
 
-void InIndKit_c::start(void)
+inline void InIndKit_c::start(void)
 {
     Serial.begin(115200);
     Serial.println("Booting");
-
-    pinMode(def_pin_POT_LEFT, INPUT);
-    pinMode(def_pin_POT_RIGHT, INPUT);
-
-    pinMode(def_pin_RTN1, INPUT);
-    pinMode(def_pin_RTN2, INPUT);
-    pinMode(def_pin_PUSH1, INPUT);
-    pinMode(def_pin_PUSH2, INPUT);
-
-    pinMode(def_pin_IN1, INPUT);
-    pinMode(def_pin_IN2, INPUT);
-
     if (wifi_o.start()) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
@@ -66,7 +54,18 @@ void InIndKit_c::start(void)
         errorMsg("Wifi  error.\nWill reboot...");
     }
 
-    ota_o.start(HOSTNAME); // Depois o OTA
+    ota_o.start(HOSTNAME); // Depois o OTA    
+
+    pinMode(def_pin_POT_LEFT, INPUT);
+    pinMode(def_pin_POT_RIGHT, INPUT);
+
+    pinMode(def_pin_RTN1, INPUT);
+    pinMode(def_pin_RTN2, INPUT);
+    pinMode(def_pin_PUSH1, INPUT);
+    pinMode(def_pin_PUSH2, INPUT);
+
+    pinMode(def_pin_IN1, INPUT);
+    pinMode(def_pin_IN2, INPUT);
 
     if (display_o.start())
     {

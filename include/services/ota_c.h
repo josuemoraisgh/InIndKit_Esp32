@@ -8,7 +8,7 @@ public:
   void update(void);
 };
 
-void OTA_c::start(const char *hostname) {
+inline void OTA_c::start(const char *hostname) {
   ArduinoOTA.setHostname(hostname);
   ArduinoOTA.onStart([]() {
     String type;
@@ -20,13 +20,14 @@ void OTA_c::start(const char *hostname) {
     // NOTE: if updating FS this would be the place to unmount FS using FS.end()
     Serial.println("Start updating " + type);
   });
-  ArduinoOTA.onEnd([]() {
+  ArduinoOTA
+  .onEnd([]() {
     Serial.println("\nEnd");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+  })
+  .onProgress([](unsigned int progress, unsigned int total) {
     Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-  ArduinoOTA.onError([](ota_error_t error) {
+  })
+  .onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
     if (error == OTA_AUTH_ERROR) {
       Serial.println("Auth Failed");
@@ -43,6 +44,6 @@ void OTA_c::start(const char *hostname) {
   ArduinoOTA.begin();
 }
  
-void OTA_c::update() {
+inline void OTA_c::update() {
   ArduinoOTA.handle();
 }

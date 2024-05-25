@@ -27,7 +27,7 @@
 #define def_pin_OUT1 35 // GPIO3
 #define def_pin_OUT2 35 // GPIO3
 
-#define HOSTNAME "inindkit"
+#define HOSTNAME "inindkit0"
 class InIndKit_c
 {
 public:
@@ -114,4 +114,5 @@ void InIndKit_c::errorMsg(String error, bool restart)
     }
 }
 
+InIndKit_c inIndKit;
 #endif

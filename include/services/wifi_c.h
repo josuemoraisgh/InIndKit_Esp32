@@ -4,8 +4,8 @@
 class Wifi_c
 {
 private:
-    const char *ssid = "APJosue";
-    const char *password = "josue32154538";
+    const char *ssid = "NetMorais"; //"APJosue";
+    const char *password = "32154538";
 
 public:
     bool start(uint16_t max_tries = 20, uint16_t pause = 500);

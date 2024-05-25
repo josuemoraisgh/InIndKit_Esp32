@@ -7,10 +7,7 @@
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
 
-// On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
-Adafruit_SSD1306 display_oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-class Display_c
+class Display_c : public Adafruit_SSD1306
 {
 private:
   char ca_line1[20] = "Inicializando...";
@@ -21,6 +18,8 @@ private:
   int16_t i16_line1_width, i16_line1_minWidth;
 
 public:
+  // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
+  Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
   bool start(void);
   void update(void);
   void setText(uint8_t line, const char txt[], uint8_t txtSize = 2);
@@ -29,24 +28,24 @@ public:
 bool Display_c::start(void)
 {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-  if (!display_oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
+  if (!begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
     return false;
 
-  display_oled.clearDisplay();
-  display_oled.setTextWrap(false);
-  display_oled.setTextColor(SSD1306_WHITE); // Draw white text
+  clearDisplay();
+  setTextWrap(false);
+  setTextColor(SSD1306_WHITE); // Draw white text
 
-  display_oled.setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
-  display_oled.setCursor(0, 0);
-  display_oled.println(ca_line1);
+  setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
+  setCursor(0, 0);
+  println(ca_line1);
 
-  display_oled.setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
-  display_oled.setCursor(0, 20);
-  display_oled.println(ca_line2);
+  setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
+  setCursor(0, 20);
+  println(ca_line2);
 
-  display_oled.setTextSize(ui8_txtSize_l3); // Normal 1:1 pixel scale
-  display_oled.setCursor(0, 40);
-  display_oled.println(ca_line3);
+  setTextSize(ui8_txtSize_l3); // Normal 1:1 pixel scale
+  setCursor(0, 40);
+  println(ca_line3);
 
   i16_line1_width = 36;                        // 12*3 - display_oled.width();
   i16_line1_minWidth = -12 * strlen(ca_line1); // -12 = 6 pixels/character * text size 2
@@ -56,30 +55,30 @@ bool Display_c::start(void)
 void Display_c::update(void)
 {
   //+--- Scroll IP ---+
-  display_oled.clearDisplay();
-  display_oled.setTextWrap(false);
-  display_oled.setTextColor(SSD1306_WHITE); // Draw white text
-  display_oled.cp437(true);                 // Use full 256 char 'Code Page 437' font
+  clearDisplay();
+  setTextWrap(false);
+  setTextColor(SSD1306_WHITE); // Draw white text
+  cp437(true);                 // Use full 256 char 'Code Page 437' font
 
-  display_oled.setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
-  display_oled.setCursor(i16_line1_width, 0);
-  display_oled.print(ca_line1);
+  setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
+  setCursor(i16_line1_width, 0);
+  print(ca_line1);
   if (--i16_line1_width < i16_line1_minWidth)
   {
     i16_line1_width = 36; // 12*3 display_oled.width();
   }
   //+--- Print OLED Line2 ---+
-  display_oled.setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
-  display_oled.setCursor(0, 20);
-  display_oled.println(ca_line2);
+  setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
+  setCursor(0, 20);
+  println(ca_line2);
 
   //+--- Print OLED Line3 ---+
-  display_oled.setTextSize(ui8_txtSize_l3); // Normal 1:1 pixel scale
-  display_oled.setCursor(0, 40);
-  display_oled.println(ca_line3);
+  setTextSize(ui8_txtSize_l3); // Normal 1:1 pixel scale
+  setCursor(0, 40);
+  println(ca_line3);
 
   //+--- Atualiza o Display ---+
-  display_oled.display();
+  display();
 }
 
 void Display_c::setText(uint8_t line, const char txt[], uint8_t txtSize)

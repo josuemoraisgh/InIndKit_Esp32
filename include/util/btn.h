@@ -25,10 +25,7 @@ bool debounceBtn(btn_t btn_i)
         if (leitura != btn_i.status_btn)
         {                               // Verifica se a leitura do botão mudou, ou seja, se é diferente do status que o botão tinha da última vez. Se sim, faça:
             btn_i.status_btn = leitura; // statusBotao recebe o que foi lido na variável leitura (pressionado = 1 e não pressionado = 0)
-            if (btn_i.status_btn == HIGH)
-            {
-                rtn = true;
-            }
+            rtn = true;                 // Se valor do status foi alterado
         }
     }
     btn_i.last_status_btn = leitura; // Atualiza a variável ultimoStatusBotao para o que foi lido na variável leitura

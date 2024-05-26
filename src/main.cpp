@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "InIndKit.h"
 
-unsigned long markTime = 0;
+unsigned long setTime = 0;
 float i = 0;
 
 void monitoraBTN(void)
@@ -35,9 +35,9 @@ void setup()
 
 void loop()
 {
-  if (millis() - markTime > 50)
+  if (millis() - setTime > 50)
   {
-    markTime = millis();
+    setTime = millis();
     i += 0.1;
     // Print log
     //Telnet.print("casa");
@@ -55,13 +55,6 @@ void loop()
     Telnet.print(i);
     Telnet.print(":");
     Telnet.print(cos(i));
-    Telnet.println("§Volts|g");
-
-    // Plot a sum
-    Telnet.print(">sum:");
-    Telnet.print(i);
-    Telnet.print(":");
-    Telnet.print(0.8 * sin(i) + 0.2 * cos(2*i));
     Telnet.println("§Volts|g");
   }
   InIndKit.update();

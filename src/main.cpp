@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "InIndKit.h"
 
+unsigned long markTime = 0;
+float i = 0;
+
 void monitoraBTN(void)
 {
   if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
@@ -25,44 +28,35 @@ void monitoraBTN(void)
       Telnet.println("BotaoPUSH2 OFF");
 }
 
-void taskFunc1(void *)
-{
-  float i = 0;
-  for (;;)
-  {
-    i += 0.1;
-
-    // Print log
-    Telnet.print("casa");
-    Telnet.println(i);
-
-    // Plot a sinus
-    Telnet.print(">sin:");
-    Telnet.println(sin(i));
-
-    // Plot a cosinus
-    Telnet.print(">Sum:");
-    Telnet.println(0.8 * sin(i) + 0.2 * cos(i));
-
-    delay(50);
-  }
-}
-
 void setup()
 {
   InIndKit.start();
-  xTaskCreate(
-      taskFunc1,     // Function name
-      "Task Func 1", // Task name
-      1000,          // Stack size
-      NULL,          // Task parameters
-      1,             // Task priority
-      NULL           // Task handle
-  );
 }
 
 void loop()
 {
+  if (millis() - markTime > 50)
+  {
+    markTime = millis();
+    i += 0.1;
+    // Print log
+    //Telnet.print("casa");
+    //Telnet.println(i);
+
+    // Plot a sinus
+    Telnet.print(">sin:");
+    Telnet.print(i);
+    Telnet.print(":");
+    Telnet.print(sin(i));
+    Telnet.println("§Volts|g");
+
+    // Plot a cosinus
+    Telnet.print(">cos:");
+    Telnet.print(i);
+    Telnet.print(":");
+    Telnet.print(cos(i));
+    Telnet.println("§Volts|g");
+  }
   InIndKit.update();
   monitoraBTN();
 }

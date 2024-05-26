@@ -56,6 +56,13 @@ void loop()
     Telnet.print(":");
     Telnet.print(cos(i));
     Telnet.println("§Volts|g");
+
+    // Plot a sum
+    Telnet.print(">sum:");
+    Telnet.print(i);
+    Telnet.print(":");
+    Telnet.print(0.8 * sin(i) + 0.2 * cos(2*i));
+    Telnet.println("§Volts|g");
   }
   InIndKit.update();
   monitoraBTN();

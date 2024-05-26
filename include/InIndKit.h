@@ -28,17 +28,18 @@
 #define def_pin_OUT2 35 // GPIO3
 
 #define HOSTNAME "inindkit0"
-class InIndKit_c
+
+//Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
+class InIndKit_c : public Wifi_c, OTA_c, Telnet_c
 {
 public:
     btn_t rtn_1 = {def_pin_RTN1,0,false,false};
     btn_t rtn_2 = {def_pin_RTN2,0,false,false};
     btn_t push_1 = {def_pin_PUSH1,0,false,false}; 
     btn_t push_2 = {def_pin_PUSH2,0,false,false}; 
-    Wifi_c wifi_o;
-    OTA_c ota_o;
-    Display_c display_o;
-    Telnet_c telnet_o;
+
+    Display_c Display;
+    
     void start(void);
     void update(void);
     void errorMsg(String error, bool restart = true);
@@ -48,10 +49,10 @@ inline void InIndKit_c::start(void)
 {
     Serial.begin(115200);
     Serial.println("Booting");
-    if (wifi_o.start()) // Primeiro o Wifi
+    if (wifiStart()) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
-        Serial.print(wifi_o.getIP());
+        Serial.print(WiFi.localIP());
         Serial.println(".");
     }
     else
@@ -59,7 +60,7 @@ inline void InIndKit_c::start(void)
         errorMsg("Wifi  error.\nWill reboot...");
     }
 
-    ota_o.start(HOSTNAME); // Depois o OTA    
+    otaStart(HOSTNAME); // Depois o OTA    
 
     pinMode(def_pin_POT_LEFT, INPUT);
     pinMode(def_pin_POT_RIGHT, INPUT);
@@ -72,22 +73,22 @@ inline void InIndKit_c::start(void)
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
 
-    if (display_o.start())
+    if (Display.start())
     {
         Serial.println("Display running");
-        display_o.setText(1, wifi_o.getIP().toString().c_str());
-        display_o.setText(2, "InIndKit01 ");
-        display_o.setText(3, "Good Look!");
+        Display.setText(1, WiFi.localIP().toString().c_str());
+        Display.setText(2, "InIndKit01 ");
+        Display.setText(3, "Good Look!");
     }
     else
     {
         errorMsg("Display error.", false);
     }
 
-    if (telnet_o.start())
+    if (telnetStart())
     {
         Serial.print("Telnet running - port:");
-        Serial.print(telnet_o.port);
+        Serial.print(telnetPort);
         Serial.println(".");
     }
     else
@@ -98,8 +99,9 @@ inline void InIndKit_c::start(void)
 
 void InIndKit_c::update(void)
 {
-    ota_o.update();
-    display_o.update();
+    ArduinoOTA.handle();
+    Telnet.loop();
+    Display.update();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)
@@ -114,5 +116,5 @@ void InIndKit_c::errorMsg(String error, bool restart)
     }
 }
 
-InIndKit_c inIndKit;
+InIndKit_c InIndKit;
 #endif

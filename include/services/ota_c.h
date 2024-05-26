@@ -6,11 +6,10 @@
 class OTA_c
 {
 public:
-  void start(const char *hostname);  
-  void update(void);
+  void otaStart(const char *hostname);  
 };
 
-inline void OTA_c::start(const char *hostname) {
+inline void OTA_c::otaStart(const char *hostname) {
   ArduinoOTA.setHostname(hostname);
   ArduinoOTA.onStart([]() {
     String type;
@@ -44,8 +43,4 @@ inline void OTA_c::start(const char *hostname) {
     }
   });
   ArduinoOTA.begin();
-}
- 
-inline void OTA_c::update() {
-  ArduinoOTA.handle();
 }

@@ -8,12 +8,11 @@ private:
     const char *password = "32154538";
 
 public:
-    bool start(uint16_t max_tries = 20, uint16_t pause = 500);
-    IPAddress getIP();
-    bool isConnected();
+    bool wifiStart(uint16_t max_tries = 20, uint16_t pause = 500);
+    bool wifiIsConnected();
 };
 
-inline bool Wifi_c::start(uint16_t max_tries, uint16_t pause)
+inline bool Wifi_c::wifiStart(uint16_t max_tries, uint16_t pause)
 {
     int i = 0;
     WiFi.mode(WIFI_STA);
@@ -30,18 +29,13 @@ inline bool Wifi_c::start(uint16_t max_tries, uint16_t pause)
         delay(pause);
         Serial.print(".");
         i++;
-    } while (!isConnected() && i < max_tries);
+    } while (!wifiIsConnected() && i < max_tries);
     WiFi.setAutoReconnect(true);
     WiFi.persistent(true);
-    return isConnected();
+    return wifiIsConnected();
 }
 
-IPAddress Wifi_c::getIP()
-{
-    return(WiFi.localIP());
-}
-
-inline bool Wifi_c::isConnected()
+inline bool Wifi_c::wifiIsConnected()
 {
     return (WiFi.status() == WL_CONNECTED);
 }

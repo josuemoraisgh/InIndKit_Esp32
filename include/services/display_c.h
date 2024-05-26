@@ -17,6 +17,8 @@ private:
   uint8_t ui8_txtSize_l1 = 2, ui8_txtSize_l2 = 2, ui8_txtSize_l3 = 2;
   int16_t i16_line1_width, i16_line1_minWidth;
 
+  bool scrollLeft = false;
+
 public:
   // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
   Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
@@ -63,10 +65,10 @@ void Display_c::update(void)
   setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
   setCursor(i16_line1_width, 0);
   print(ca_line1);
-  if (--i16_line1_width < i16_line1_minWidth)
-  {
-    i16_line1_width = 36; // 12*3 display_oled.width();
-  }
+  if(scrollLeft) ++i16_line1_width;
+  else --i16_line1_width;
+  if (i16_line1_width < i16_line1_minWidth) scrollLeft = true;
+  if (i16_line1_width > 24)  scrollLeft = false;
   //+--- Print OLED Line2 ---+
   setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
   setCursor(0, 20);

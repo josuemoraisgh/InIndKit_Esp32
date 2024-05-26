@@ -6,7 +6,7 @@ ESPTelnet Telnet;
 class Telnet_c
 {
 public:
-  uint16_t telnetPort = 23;
+  uint16_t telnetPort = 4000;
   bool telnetStart(void);
 };
 

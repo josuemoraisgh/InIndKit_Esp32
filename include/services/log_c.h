@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
-#define LOG_QUEUE_LEN 50;
+#define LOG_QUEUE_LEN 50
 
 ESPTelnet Telnet;
 static QueueHandle_t logQueue;

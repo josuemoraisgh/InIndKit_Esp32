@@ -1,15 +1,16 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
+#define LOG_QUEUE_LEN 50;
+
 ESPTelnet Telnet;
 static QueueHandle_t logQueue;
-static int log_queue_len = 50;
 static SemaphoreHandle_t LogMutex;
 
 class Log_c
 {
 protected:
-  String logString;
+  char logString[LOG_QUEUE_LEN];
 
 public:
   uint16_t logPort = 4000;
@@ -32,7 +33,6 @@ public:
 bool Log_c::logStart()
 {
   LogMutex = xSemaphoreCreateBinary();
-  logString.reserve(log_queue_len);
 
   Telnet.onConnect([](String ip)
                    {

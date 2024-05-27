@@ -7,7 +7,7 @@
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
-#include "services\telnet_c.h"
+#include "services\log_c.h"
 #include "util/btn.h"
 
 /***************** OLED Display ************/
@@ -30,7 +30,7 @@
 #define HOSTNAME "inindkit0"
 
 //Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public Wifi_c, OTA_c, Telnet_c
+class InIndKit_c : public Wifi_c, OTA_c, Log_c
 {
 public:
     btn_t rtn_1 = {def_pin_RTN1,0,false,false};
@@ -85,10 +85,10 @@ inline void InIndKit_c::start(void)
         errorMsg("Display error.", false);
     }
 
-    if (telnetStart())
+    if (logStart())
     {
         Serial.print("Telnet running - port:");
-        Serial.print(telnetPort);
+        Serial.print(logPort);
         Serial.println(".");
     }
     else
@@ -100,7 +100,7 @@ inline void InIndKit_c::start(void)
 void InIndKit_c::update(void)
 {
     ArduinoOTA.handle();
-    Telnet.loop();
+    logLoop();
     Display.update();
 }
 

@@ -35,10 +35,14 @@ void setup()
 
 void loop()
 {
+  InIndKit.update();
+  monitoraBTN();
+  
   if (millis() - setTime > 50)
   {
     setTime = millis();
     i += 0.1;
+    
     // Print log
     //Telnet.print("casa");
     //Telnet.println(i);
@@ -57,6 +61,4 @@ void loop()
     Telnet.print(cos(i));
     Telnet.println("§Volts|g");
   }
-  InIndKit.update();
-  monitoraBTN();
 }

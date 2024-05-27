@@ -7,7 +7,7 @@
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
-#include "services\log_c.h"
+#include "services\telnet_c.h"
 #include "util/btn.h"
 
 /***************** OLED Display ************/
@@ -30,7 +30,7 @@
 #define HOSTNAME "inindkit0"
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public Wifi_c, OTA_c, Log_c
+class InIndKit_c : public Wifi_c, OTA_c, Telnet_c
 {
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
@@ -40,10 +40,20 @@ public:
 
     Display_c Display;
 
-    InIndKit_c(void) : Log_c(){}
     void start(void);
     void update(void);
     void errorMsg(String error, bool restart = true);
+
+    template <typename T>
+    void println(const T &data);
+    template <typename T>
+    void println(const T &data, int base);
+    void println();
+
+    template <typename T>
+    void print(const T &data);
+    template <typename T>
+    void print(const T &data, int base);
 };
 
 inline void InIndKit_c::start(void)
@@ -86,10 +96,10 @@ inline void InIndKit_c::start(void)
         errorMsg("Display error.", false);
     }
 
-    if (logStart())
+    if (telnetStart())
     {
         Serial.print("Telnet running - port:");
-        Serial.print(logPort);
+        Serial.print(telnetPort);
         Serial.println(".");
     }
     else
@@ -101,7 +111,7 @@ inline void InIndKit_c::start(void)
 void InIndKit_c::update(void)
 {
     ArduinoOTA.handle();
-    logLoop();
+    telnetLoop();
     Display.update();
 }
 
@@ -115,6 +125,35 @@ void InIndKit_c::errorMsg(String error, bool restart)
         ESP.restart();
         delay(2000);
     }
+}
+
+template <typename T>
+void InIndKit_c::println(const T &data)
+{
+    telnetSendQueue((String(data) + "\n").c_str());
+}
+
+template <typename T>
+void InIndKit_c::println(const T &data, int base)
+{
+    telnetSendQueue((String(data, base) + "\n").c_str());
+}
+
+void InIndKit_c::println()
+{
+    telnetSendQueue(String("\n").c_str());
+}
+
+template <typename T>
+void InIndKit_c::print(const T &data)
+{
+    telnetSendQueue(String(data).c_str());
+}
+
+template <typename T>
+void InIndKit_c::print(const T &data, int base)
+{
+    telnetSendQueue(String(data, base).c_str());
 }
 
 InIndKit_c InIndKit;

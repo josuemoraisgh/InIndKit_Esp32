@@ -7,23 +7,19 @@ ESPTelnet Telnet;
 static QueueHandle_t logQueue;
 static SemaphoreHandle_t LogMutex;
 
-class Log_c
+class Telnet_c
 {
 protected:
-  char logString[LOG_QUEUE_LEN];
+  char telnetString[LOG_QUEUE_LEN];
 
 public:
-  uint16_t logPort = 4000;
-  bool logStart(void);
-  void logLoop();
-  void sendQueue(const char *stringAux);
-
-  void logPrintln(const String &data);
-  void logPrint(const String &data);
-
+  uint16_t telnetPort = 4000;
+  bool telnetStart(void);
+  void telnetLoop();
+  void telnetSendQueue(const char *stringAux);
 };
 
-bool Log_c::logStart()
+bool Telnet_c::telnetStart()
 {
   LogMutex = xSemaphoreCreateBinary();
   logQueue = xQueueCreate(LOG_QUEUE_LEN, sizeof(char));
@@ -64,21 +60,21 @@ bool Log_c::logStart()
       } else {
         Telnet.println(str);
       } });
-  return (Telnet.begin(logPort));
+  return (Telnet.begin(telnetPort));
 }
 
-void Log_c::logLoop()
+void Telnet_c::telnetLoop()
 {
-  xQueueReceive(logQueue, (void *)&logString, 0);
+  xQueueReceive(logQueue, (void *)&telnetString, 0);
   if (Telnet.isConnected())
-    Telnet.print(logString);
+    Telnet.print(telnetString);
   else
-    Serial.print(logString);
+    Serial.print(telnetString);
   Telnet.loop();
 }
 
 
-void Log_c::sendQueue(const char *stringAux)
+void Telnet_c::telnetSendQueue(const char *stringAux)
 {
   if (xSemaphoreTake(LogMutex, (TickType_t) 10) == pdTRUE)
   {
@@ -86,14 +82,3 @@ void Log_c::sendQueue(const char *stringAux)
     xSemaphoreGive(LogMutex);
   }
 }
-
-void Log_c::logPrintln(const String &data)
-{
-  logPrint((String(data)+"\n"));
-}
-
-void Log_c::logPrint(const String &data)
-{
-  sendQueue(String(data).c_str());
-}
-

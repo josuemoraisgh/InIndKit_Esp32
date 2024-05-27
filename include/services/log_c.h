@@ -4,35 +4,35 @@
 #define LOG_QUEUE_LEN 50
 
 ESPTelnet Telnet;
-static QueueHandle_t logQueue;
-static SemaphoreHandle_t LogMutex;
+//static QueueHandle_t logQueue;
+//static SemaphoreHandle_t LogMutex;
 
 class Log_c
 {
-protected:
-  char logString[LOG_QUEUE_LEN];
+//protected:
+//  char logString[LOG_QUEUE_LEN];
 
 public:
   uint16_t logPort = 4000;
   bool logStart(void);
   void logLoop();
-  void sendQueue(const char *stringAux);
+  //void sendQueue(const char *stringAux);
 
-  template <typename T>
-  void logPrintln(const T &data);
-  template <typename T>
-  void logPrintln(const T &data, int base);
-  void logPrintln();
+  //template <typename T>
+  //void logPrintln(const T &data);
+  //template <typename T>
+  //void logPrintln(const T &data, int base);
+  //void logPrintln();
 
-  template <typename T>
-  void logPrint(const T &data);
-  template <typename T>
-  void logPrint(const T &data, int base);
+  //template <typename T>
+  //void logPrint(const T &data);
+  //template <typename T>
+  //void logPrint(const T &data, int base);
 };
 
 bool Log_c::logStart()
 {
-  LogMutex = xSemaphoreCreateBinary();
+  //LogMutex = xSemaphoreCreateBinary();
 
   Telnet.onConnect([](String ip)
                    {
@@ -75,14 +75,15 @@ bool Log_c::logStart()
 
 void Log_c::logLoop()
 {
-  xQueueReceive(logQueue, (void *)&logString, 0);
-  if (Telnet.isConnected())
-    Telnet.print(logString);
-  else
-    Serial.print(logString);
+  //xQueueReceive(logQueue, (void *)&logString, 0);
+  //if (Telnet.isConnected())
+  ///  Telnet.print(logString);
+  //else
+  //  Serial.print(logString);
   Telnet.loop();
 }
 
+/*
 void Log_c::sendQueue(const char *stringAux)
 {
   if (xSemaphoreTake(LogMutex, (TickType_t)10) == pdTRUE)
@@ -120,3 +121,4 @@ inline void Log_c::logPrint(const T &data, int base)
 {
   sendQueue(String(data,base).c_str());
 }
+*/

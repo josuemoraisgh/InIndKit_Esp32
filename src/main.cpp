@@ -7,25 +7,13 @@ float i = 0;
 void monitoraBTN(void)
 {
   if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-    if (InIndKit.rtn_1.status_btn)  // Se o valor do status for verdadeiro
-      Telnet.println("BotaoRTN1 ON");
-    else
-      Telnet.println("BotaoRTN1 OFF");
+    Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
   if (debounceBtn(&InIndKit.rtn_2))
-    if (InIndKit.rtn_2.status_btn)
-      Telnet.println("BotaoRTN2 ON");
-    else
-      Telnet.println("BotaoRTN2 OFF");
+    Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
   if (debounceBtn(&InIndKit.push_1))
-    if (InIndKit.push_1.status_btn)
-      Telnet.println("BotaoPUSH1 ON");
-    else
-      Telnet.println("BotaoPUSH1 OFF");
+    Telnet.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
   if (debounceBtn(&InIndKit.push_2))
-    if (InIndKit.push_2.status_btn)
-      Telnet.println("BotaoPUSH2 ON");
-    else
-      Telnet.println("BotaoPUSH2 OFF");
+    Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
 }
 
 void setup()
@@ -37,15 +25,11 @@ void loop()
 {
   InIndKit.update();
   monitoraBTN();
-  
+
   if (millis() - setTime > 50)
   {
     setTime = millis();
     i += 0.1;
-    
-    // Print log
-    //Telnet.print("casa");
-    //Telnet.println(i);
 
     // Plot a sinus
     Telnet.print(">sin:");

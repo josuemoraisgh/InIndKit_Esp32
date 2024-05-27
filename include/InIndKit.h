@@ -18,7 +18,7 @@
 #define def_pin_POT_RIGHT 39 // GPIO39
 /************* BUTTONS GPIO define *********/
 #define def_pin_RTN1 17  // GPIO17
-#define def_pin_RTN2 5  // GPIO5
+#define def_pin_RTN2 5   // GPIO5
 #define def_pin_PUSH1 18 // GPIO18
 #define def_pin_PUSH2 19 // GPIO19
 /*************** IOs GPIO define **********/
@@ -29,17 +29,18 @@
 
 #define HOSTNAME "inindkit0"
 
-//Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
+// Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, OTA_c, Log_c
 {
 public:
-    btn_t rtn_1 = {def_pin_RTN1,0,false,false};
-    btn_t rtn_2 = {def_pin_RTN2,0,false,false};
-    btn_t push_1 = {def_pin_PUSH1,0,false,false}; 
-    btn_t push_2 = {def_pin_PUSH2,0,false,false}; 
+    btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
+    btn_t rtn_2 = {def_pin_RTN2, 0, false, false};
+    btn_t push_1 = {def_pin_PUSH1, 0, false, false};
+    btn_t push_2 = {def_pin_PUSH2, 0, false, false};
 
     Display_c Display;
-    
+
+    InIndKit_c(void) : Log_c(){}
     void start(void);
     void update(void);
     void errorMsg(String error, bool restart = true);
@@ -60,7 +61,7 @@ inline void InIndKit_c::start(void)
         errorMsg("Wifi  error.\nWill reboot...");
     }
 
-    otaStart(HOSTNAME); // Depois o OTA    
+    otaStart(HOSTNAME); // Depois o OTA
 
     pinMode(def_pin_POT_LEFT, INPUT);
     pinMode(def_pin_POT_RIGHT, INPUT);

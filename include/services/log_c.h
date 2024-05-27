@@ -75,7 +75,7 @@ bool Log_c::logStart()
 
 void Log_c::logLoop()
 {
-  xQueueReceive(logQueue, (void *)&logString, portMAX_DELAY);
+  xQueueReceive(logQueue, (void *)&logString, 0);
   if (Telnet.isConnected())
     Telnet.print(logString);
   else

@@ -3,7 +3,7 @@
 
 ESPTelnet Telnet;
 static QueueHandle_t logQueue;
-static int log_queue_len = 10;
+static int log_queue_len = 50;
 static SemaphoreHandle_t LogMutex;
 
 class Log_c
@@ -32,6 +32,8 @@ public:
 bool Log_c::logStart()
 {
   LogMutex = xSemaphoreCreateBinary();
+  logString.reserve(log_queue_len);
+
   Telnet.onConnect([](String ip)
                    {
       Serial.print("- Telnet: ");

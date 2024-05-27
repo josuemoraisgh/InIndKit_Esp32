@@ -15,7 +15,7 @@ public:
   uint16_t logPort = 4000;
   bool logStart(void);
   void logLoop();
-  void sendQueue(const String stringAux);
+  void sendQueue(const char *stringAux);
 
   template <typename T>
   void logPrintln(const T &data);
@@ -83,7 +83,7 @@ void Log_c::logLoop()
   Telnet.loop();
 }
 
-void Log_c::sendQueue(const String stringAux)
+void Log_c::sendQueue(const char *stringAux)
 {
   if (xSemaphoreTake(LogMutex, (TickType_t)10) == pdTRUE)
   {
@@ -95,28 +95,28 @@ void Log_c::sendQueue(const String stringAux)
 template <typename T>
 inline void Log_c::logPrintln(const T &data)
 {
-  sendQueue(String(data)+"\n");
+  sendQueue((String(data)+"\n").c_str());
 }
 
 template <typename T>
 inline void Log_c::logPrintln(const T &data, int base)
 {
-  sendQueue(String(data,base)+"\n");
+  sendQueue((String(data,base)+"\n").c_str());
 }
 
 inline void Log_c::logPrintln()
 {
-  sendQueue(String("\n"));
+  sendQueue(String("\n").c_str());
 }
 
 template <typename T>
 inline void Log_c::logPrint(const T &data)
 {
-  sendQueue(String(data));
+  sendQueue(String(data).c_str());
 }
 
 template <typename T>
 inline void Log_c::logPrint(const T &data, int base)
 {
-  sendQueue(String(data,base));
+  sendQueue(String(data,base).c_str());
 }

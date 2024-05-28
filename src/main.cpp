@@ -37,8 +37,21 @@ void monitoraPOT(void)
     setTimePOT = millis();
     timeStampsPOT += 0.1;
 
-    InIndKit.setDisplayText(2, String(analogRead(def_pin_POT_LEFT)).c_str());
-    InIndKit.setDisplayText(3, String(analogRead(def_pin_POT_RIGHT)).c_str());
+    const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
+    InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
+    Telnet.print(">POT_LEFT:");
+    Telnet.print(timeStampsPOT);
+    Telnet.print(":");
+    Telnet.print(vlPOT_LEFT);
+    Telnet.println("§Volts|g");
+
+    const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
+    InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
+    Telnet.print(">POT_RIGHT:");
+    Telnet.print(timeStampsPOT);
+    Telnet.print(":");
+    Telnet.print(vlPOT_RIGHT);
+    Telnet.println("§Volts|g");
   }
 }
 

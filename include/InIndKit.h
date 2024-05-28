@@ -8,7 +8,7 @@
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
-#include "services\asyncTelnet_c.h"
+#include "services\telnet_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
 
@@ -31,7 +31,7 @@
 
 #define HOSTNAME "inindkit0"
 
-AsyncTelnet_c Telnet(4000);
+Telnet_c Telnet(4000);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c

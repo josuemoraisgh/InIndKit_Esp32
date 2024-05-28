@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <ArduinoOTA.h>
 
 // Verificar o Windows Defender Firewall ele bloqueia o OTA
 

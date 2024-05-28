@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "InIndKit.h"
 
-AsyncDelay_c delayPlot(50);  //time mili second
+AsyncDelay_c delayPlot(50); // time mili second
 float timeStampsPlot = 0.0;
 
 void printPlot(void)
@@ -10,24 +10,14 @@ void printPlot(void)
   {
     delayPlot.repeat();
     timeStampsPlot += 0.1;
-
     // Plot a sinus
-    Telnet.print(">sin:");
-    Telnet.print(timeStampsPlot);
-    Telnet.print(":");
-    Telnet.print(sin(timeStampsPlot));
-    Telnet.println("§Volts|g");
-
+    Telnet.println(String() + ">sin:" + timeStampsPlot + ":" + sin(timeStampsPlot) + "§Volts|g");
     // Plot a cosinus
-    Telnet.print(">cos:");
-    Telnet.print(timeStampsPlot);
-    Telnet.print(":");
-    Telnet.print(cos(timeStampsPlot));
-    Telnet.println("§Volts|g");
+    Telnet.println(String() + ">cos:" + timeStampsPlot + ":" + cos(timeStampsPlot) + "§Volts|g");
   }
 }
 
-AsyncDelay_c delayPOT(500); //time mili second
+AsyncDelay_c delayPOT(500); // time mili second
 float timeStampsPOT = 0.0;
 
 void monitoraPOT(void)
@@ -39,19 +29,11 @@ void monitoraPOT(void)
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
     InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
-    Telnet.print(">POT_LEFT:");
-    Telnet.print(timeStampsPOT);
-    Telnet.print(":");
-    Telnet.print(vlPOT_LEFT);
-    Telnet.println("§Volts|g");
+    Telnet.println(String() + ">POT_LEFT:" + timeStampsPOT + ":" + vlPOT_LEFT + "§Volts|g");
 
     const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
     InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
-    Telnet.print(">POT_RIGHT:");
-    Telnet.print(timeStampsPOT);
-    Telnet.print(":");
-    Telnet.print(vlPOT_RIGHT);
-    Telnet.println("§Volts|g");
+    Telnet.println(String() + ">POT_RIGHT:" + timeStampsPOT + ":" + vlPOT_RIGHT + "§Volts|g");
   }
 }
 
@@ -74,7 +56,7 @@ void setup()
 
 void loop()
 {
-  InIndKit.update();
+  InIndKit.loop();
   monitoraBTN();
   monitoraPOT();
   printPlot();

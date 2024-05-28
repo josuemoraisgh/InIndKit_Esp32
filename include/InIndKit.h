@@ -2,12 +2,13 @@
 #define __ININDKIT_H
 
 #include <Arduino.h>
-
+#include <ESPmDNS.h>
 #include <WiFi.h>
+
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
-#include "services\telnet_c.h"
+#include "services\asyncTelnet_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
 
@@ -30,9 +31,14 @@
 
 #define HOSTNAME "inindkit0"
 
+AsyncTelnet_c Telnet(4000);
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public Wifi_c, public OTA_c, public Telnet_c, public Display_c
+class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
+protected:
+    const char *ssid[2] = {"APJosue", "NetMorais"};
+    const char *password[2] = {"josue32154538", "32154538"};
+
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
     btn_t rtn_2 = {def_pin_RTN2, 0, false, false};
@@ -40,26 +46,17 @@ public:
     btn_t push_2 = {def_pin_PUSH2, 0, false, false};
 
     void start(void);
-    void update(void);
+    void loop(void);
     void errorMsg(String error, bool restart = true);
-
-    template <typename T>
-    void println(const T &data);
-    template <typename T>
-    void println(const T &data, int base);
-    void println();
-
-    template <typename T>
-    void print(const T &data);
-    template <typename T>
-    void print(const T &data, int base);
 };
+#endif
 
 inline void InIndKit_c::start(void)
 {
     Serial.begin(115200);
     Serial.println("Booting");
-    if (wifiStart()) // Primeiro o Wifi
+    uint8_t aux = digitalRead(def_pin_PUSH2);
+    if (wifiStart(ssid[aux], password[aux])) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
         Serial.print(WiFi.localIP());
@@ -69,8 +66,13 @@ inline void InIndKit_c::start(void)
     {
         errorMsg("Wifi  error.\nWill reboot...");
     }
+    if (!MDNS.begin(HOSTNAME))
+    {
+        errorMsg("MDNS Error.\nWill reboot...");
+    }
+    MDNS.addService("http", "tcp", 80);
 
-    otaStart(HOSTNAME); // Depois o OTA
+    otaStart(); // Depois o OTA
 
     pinMode(def_pin_POT_LEFT, INPUT);
     pinMode(def_pin_POT_RIGHT, INPUT);
@@ -95,10 +97,10 @@ inline void InIndKit_c::start(void)
         errorMsg("Display error.", false);
     }
 
-    if (telnetStart())
+    if (Telnet.begin())
     {
         Serial.print("Telnet running - port:");
-        Serial.print(telnetPort);
+        Serial.print(Telnet.serverPort());
         Serial.println(".");
     }
     else
@@ -107,10 +109,9 @@ inline void InIndKit_c::start(void)
     }
 }
 
-void InIndKit_c::update(void)
+void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    telnetLoop();
     displayUpdate();
 }
 
@@ -125,35 +126,4 @@ void InIndKit_c::errorMsg(String error, bool restart)
         delay(2000);
     }
 }
-
-template <typename T>
-void InIndKit_c::println(const T &data)
-{
-    telnetSendQueue((String(data) + "\n").c_str());
-}
-
-template <typename T>
-void InIndKit_c::println(const T &data, int base)
-{
-    telnetSendQueue((String(data, base) + "\n").c_str());
-}
-
-void InIndKit_c::println()
-{
-    telnetSendQueue(String("\n").c_str());
-}
-
-template <typename T>
-void InIndKit_c::print(const T &data)
-{
-    telnetSendQueue(String(data).c_str());
-}
-
-template <typename T>
-void InIndKit_c::print(const T &data, int base)
-{
-    telnetSendQueue(String(data, base).c_str());
-}
-
 InIndKit_c InIndKit;
-#endif

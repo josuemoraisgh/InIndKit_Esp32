@@ -6,11 +6,10 @@
 class OTA_c
 {
 public:
-  void otaStart(const char *hostname);  
+  void otaStart();  
 };
 
-inline void OTA_c::otaStart(const char *hostname) {
-  ArduinoOTA.setHostname(hostname);
+inline void OTA_c::otaStart() {
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {

@@ -3,16 +3,13 @@
 
 class Wifi_c
 {
-private:
-    const char *ssid = "NetMorais"; //"APJosue";
-    const char *password = "32154538";
 
 public:
-    bool wifiStart(uint16_t max_tries = 20, uint16_t pause = 500);
+    bool wifiStart(const char *ssid, const char *password, uint16_t max_tries = 20, uint16_t pause = 500);
     bool wifiIsConnected();
 };
 
-inline bool Wifi_c::wifiStart(uint16_t max_tries, uint16_t pause)
+inline bool Wifi_c::wifiStart(const char *ssid, const char *password, uint16_t max_tries, uint16_t pause)
 {
     int i = 0;
     WiFi.mode(WIFI_STA);

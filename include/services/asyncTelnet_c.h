@@ -157,5 +157,6 @@ bool AsyncTelnet_c::start(uint16_t server_port)
         Serial.print("- Telnet: ");
         Serial.print(ip);
         Serial.println(" reconnected"); });
+        
   return (this->begin(server_port));
 }

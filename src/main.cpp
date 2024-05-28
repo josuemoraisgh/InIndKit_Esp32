@@ -3,7 +3,6 @@
 
 AsyncDelay_c delayPlot(50); // time mili second
 float timeStampsPlot = 0.0;
-
 void printPlot(void)
 {
   if (delayPlot.isExpired())
@@ -20,14 +19,13 @@ void printPlot(void)
     Telnet.print(">cos:");
     Telnet.print(timeStampsPlot);
     Telnet.print(":");
-    Telnet.print(cos(timeStampsPlot)); 
+    Telnet.print(cos(timeStampsPlot));
     Telnet.println("§Volts|g");
   }
 }
 
 AsyncDelay_c delayPOT(500); // time mili second
 float timeStampsPOT = 0.0;
-
 void monitoraPOT(void)
 {
   if (delayPOT.isExpired())
@@ -36,7 +34,7 @@ void monitoraPOT(void)
     timeStampsPOT += 0.1;
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
-    InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
+    // InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
     Telnet.print(">pot_LEFT:");
     Telnet.print(timeStampsPOT);
     Telnet.print(":");
@@ -44,7 +42,7 @@ void monitoraPOT(void)
     Telnet.println("§Volts|g");
 
     const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
-    InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
+    // InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
     Telnet.print(">pot_RIGHT:");
     Telnet.print(timeStampsPOT);
     Telnet.print(":");
@@ -65,9 +63,28 @@ void monitoraBTN(void)
     Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
 }
 
+void telnetRead(String str)
+{
+  if (str == "ping") // checks for a certain command
+  {
+    Telnet.println("pong");
+    Serial.println("- Telnet: pong");
+  }
+  else if (str == "bye") // disconnect the client
+  {
+    Telnet.println("disconnecting you...");
+    Telnet.disconnectClient();
+  }
+  else
+  {
+    Telnet.println(str);
+  }
+}
+
 void setup()
 {
   InIndKit.start();
+  Telnet.onInputReceived(telnetRead);
 }
 
 void loop()

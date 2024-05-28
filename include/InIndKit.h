@@ -30,16 +30,15 @@
 #define def_pin_OUT2 35 // GPIO3
 
 #define HOSTNAME "inindkit0"
-#define TELNETPORT 4000
 
-AsyncTelnet_c Telnet(TELNETPORT);
+AsyncTelnet_c Telnet(4000);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
 protected:
-    const char *ssid = "APJosue";
-    const char *password = "josue32154538";
+    const char *ssid[2] = {"APJosue", "NetMorais"};
+    const char *password[2] = {"josue32154538", "32154538"};
 
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
@@ -57,25 +56,28 @@ inline void InIndKit_c::start(void)
 {
     Serial.begin(115200);
     Serial.println("Booting");
+    uint8_t aux = digitalRead(def_pin_PUSH2);
+    delay(500);
     if (displayStart())
     {
         Serial.println("Display running");
-        setDisplayText(1, "Wifi Starting");
-        setDisplayText(2, "InIndKit01 ");
+        setDisplayText(1, "WiFi connecting");
+        setDisplayText(2, aux ? "House Mode" : "UFU Mode");
         setDisplayText(3, "Good Look!");
     }
     else
     {
         errorMsg("Display error.", false);
     }
-    if (wifiStart(ssid, password)) // Primeiro o Wifi
+    delay(500);
+    if (wifiStart(ssid[aux ? 1 : 0], password[aux ? 1 : 0])) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
         Serial.print(WiFi.localIP());
         Serial.println(".");
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
-        setDisplayText(3, "Good Look!");        
+        setDisplayText(3, aux ? "House Mode" : "UFU Mode");
     }
     else
     {
@@ -110,6 +112,15 @@ inline void InIndKit_c::start(void)
     {
         errorMsg("Telnet  error.\nWill reboot...");
     }
+
+    Telnet.onConnect([](String ip)
+                     {
+        Serial.print("- Telnet: ");
+        Serial.print(ip);
+        Serial.println(" connected");
+
+        Telnet.println("\nWelcome " + ip);
+        Telnet.println("(Use ^] + q  to disconnect.)"); });
 }
 
 void InIndKit_c::loop(void)

@@ -11,9 +11,17 @@ void printPlot(void)
     delayPlot.repeat();
     timeStampsPlot += 0.1;
     // Plot a sinus
-    Telnet.println((String() + ">sin:" + timeStampsPlot + ":" + sin(timeStampsPlot) + "§Volts|g").c_str());
+    Telnet.print(">sin:");
+    Telnet.print(timeStampsPlot);
+    Telnet.print(":");
+    Telnet.print(sin(timeStampsPlot));
+    Telnet.println("§Volts|g");
     // Plot a cosinus
-    Telnet.println((String() + ">cos:" + timeStampsPlot + ":" + cos(timeStampsPlot) + "§Volts|g").c_str());
+    Telnet.println(">cos:");
+    Telnet.print(timeStampsPlot);
+    Telnet.print(":");
+    Telnet.print(cos(timeStampsPlot)); 
+    Telnet.print("§Volts|g");
   }
 }
 
@@ -29,11 +37,19 @@ void monitoraPOT(void)
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
     InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
-    Telnet.println(String() + ">POT_LEFT:" + timeStampsPOT + ":" + vlPOT_LEFT + "§Volts|g");
+    Telnet.print(">POT_LEFT:");
+    Telnet.print(timeStampsPOT);
+    Telnet.print(":");
+    Telnet.print(vlPOT_LEFT);
+    Telnet.println("§Volts|g");
 
     const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
     InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
-    Telnet.println(String() + ">POT_RIGHT:" + timeStampsPOT + ":" + vlPOT_RIGHT + "§Volts|g");
+    Telnet.print(">POT_RIGHT:");
+    Telnet.print(timeStampsPOT);
+    Telnet.print(":");
+    Telnet.print(vlPOT_RIGHT);
+    Telnet.println("§Volts|g");
   }
 }
 

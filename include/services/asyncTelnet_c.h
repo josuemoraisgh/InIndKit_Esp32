@@ -135,12 +135,12 @@ class AsyncTelnet_c : public ESPTelnet
 {
 
 public:
-  bool begin(uint16_t server_port = 4000);
+  bool start(uint16_t server_port = 4000);
   AsyncTelnet_c(uint16_t server_port) : ESPTelnet() { begin(server_port); }
   uint16_t serverPort() { return (this->server_port); }
 };
 
-bool AsyncTelnet_c::begin(uint16_t server_port)
+bool AsyncTelnet_c::start(uint16_t server_port)
 {
   onDisconnect([](String ip)
                {

@@ -66,10 +66,10 @@ bool Telnet_c::telnetStart()
 void Telnet_c::telnetLoop()
 {
   xQueueReceive(logQueue, (void *)&telnetString, 0);
-  if (Telnet.isConnected())
+  //if (Telnet.isConnected())
     Telnet.print(telnetString);
-  else
-    Serial.print(telnetString);
+  //else
+    //Serial.print(telnetString);
   Telnet.loop();
 }
 

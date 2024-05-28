@@ -14,8 +14,8 @@
 #define def_pin_SDA 21 // GPIO21
 #define def_pin_SCL 22 // GPIO22
 /********** POTENTIOMETERS GPIO define *****/
-#define def_pin_POT_LEFT 36  // GPIO36
-#define def_pin_POT_RIGHT 39 // GPIO39
+#define def_pin_POT_LEFT 39  // GPIO36
+#define def_pin_POT_RIGHT 36 // GPIO39
 /************* BUTTONS GPIO define *********/
 #define def_pin_RTN1 17  // GPIO17
 #define def_pin_RTN2 5   // GPIO5
@@ -30,15 +30,13 @@
 #define HOSTNAME "inindkit0"
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public Wifi_c, OTA_c, Telnet_c
+class InIndKit_c : public Wifi_c, public OTA_c, public Telnet_c, public Display_c
 {
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
     btn_t rtn_2 = {def_pin_RTN2, 0, false, false};
     btn_t push_1 = {def_pin_PUSH1, 0, false, false};
     btn_t push_2 = {def_pin_PUSH2, 0, false, false};
-
-    Display_c Display;
 
     void start(void);
     void update(void);
@@ -84,12 +82,12 @@ inline void InIndKit_c::start(void)
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
 
-    if (Display.start())
+    if (displayStart())
     {
         Serial.println("Display running");
-        Display.setText(1, WiFi.localIP().toString().c_str());
-        Display.setText(2, "InIndKit01 ");
-        Display.setText(3, "Good Look!");
+        setDisplayText(1, WiFi.localIP().toString().c_str());
+        setDisplayText(2, "InIndKit01 ");
+        setDisplayText(3, "Good Look!");
     }
     else
     {
@@ -112,7 +110,7 @@ void InIndKit_c::update(void)
 {
     ArduinoOTA.handle();
     telnetLoop();
-    Display.update();
+    displayUpdate();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)

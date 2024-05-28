@@ -22,12 +22,12 @@ private:
 public:
   // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
   Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
-  bool start(void);
-  void update(void);
-  void setText(uint8_t line, const char txt[], uint8_t txtSize = 2);
+  bool displayStart(void);
+  void displayUpdate(void);
+  void setDisplayText(uint8_t line, const char txt[], uint8_t txtSize = 2);
 };
 
-bool Display_c::start(void)
+bool Display_c::displayStart(void)
 {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if (!begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
@@ -54,7 +54,7 @@ bool Display_c::start(void)
   return true;
 }
 
-void Display_c::update(void)
+void Display_c::displayUpdate(void)
 {
   //+--- Scroll IP ---+
   clearDisplay();
@@ -83,7 +83,7 @@ void Display_c::update(void)
   display();
 }
 
-void Display_c::setText(uint8_t line, const char txt[], uint8_t txtSize)
+void Display_c::setDisplayText(uint8_t line, const char txt[], uint8_t txtSize)
 {
   switch (line)
   {

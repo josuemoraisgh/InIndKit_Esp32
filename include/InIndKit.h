@@ -8,6 +8,7 @@
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\telnet_c.h"
+#include "util/asyncDelay.h"
 #include "util/btn.h"
 
 /***************** OLED Display ************/

@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include "InIndKit.h"
 
-unsigned long setTimePlot = 0;
-float timeStampsPlot = 0;
+AsyncDelay_c delayPlot(50);  //time mili second
+float timeStampsPlot = 0.0;
 
 void printPlot(void)
 {
-  if (millis() - setTimePlot > 50)
+  if (delayPlot.isExpired())
   {
-    setTimePlot = millis();
+    delayPlot.repeat();
     timeStampsPlot += 0.1;
 
     // Plot a sinus
@@ -27,14 +27,14 @@ void printPlot(void)
   }
 }
 
-unsigned long setTimePOT = 0;
-float timeStampsPOT = 0;
+AsyncDelay_c delayPOT(500); //time mili second
+float timeStampsPOT = 0.0;
 
 void monitoraPOT(void)
 {
-  if (millis() - setTimePOT > 500)
+  if (delayPOT.isExpired())
   {
-    setTimePOT = millis();
+    delayPOT.repeat();
     timeStampsPOT += 0.1;
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);

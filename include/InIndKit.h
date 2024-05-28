@@ -107,6 +107,29 @@ inline void InIndKit_c::start(void)
     {
         errorMsg("Telnet  error.\nWill reboot...");
     }
+
+    Telnet.onConnect([](String ip)
+                     {
+        Serial.print("- Telnet: ");
+        Serial.print(ip);
+        Serial.println(" connected");
+
+        Telnet.println("\nWelcome " + ip);
+        Telnet.println("(Use ^] + q  to disconnect.)"); });
+
+    Telnet.onInputReceived([](String str)
+                           {
+        // checks for a certain command
+        if (str == "ping") {
+          Telnet.println("> pong");
+          Serial.println("- Telnet: pong");
+        // disconnect the client
+        } else if (str == "bye") {
+          Telnet.println("> disconnecting you...");
+          Telnet.disconnectClient();
+        } else {
+          Telnet.println(str);
+        } });
 }
 
 void InIndKit_c::loop(void)

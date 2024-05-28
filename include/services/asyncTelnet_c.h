@@ -1,3 +1,4 @@
+/*
 #pragma once
 #ifndef AsyncTelnet_h
 #define AsyncTelnet_h
@@ -20,12 +21,12 @@ class AsyncTelnet_c {
   public:
     AsyncTelnet_c(uint16_t port = 23);
 
-    bool begin(bool checkConnection = true, bool mDNS = false);
+    bool begin(bool checkConnection = true);
     void stop();
 
     size_t print(const String &data);
-    size_t println(const String &data);    
-    size_t write(const char* data, size_t size, uint8_t apiflags=ASYNC_WRITE_FLAG_COPY);          
+    size_t println(const String &data);
+    size_t write(const char* data, size_t size, uint8_t apiflags=ASYNC_WRITE_FLAG_COPY);
 
     bool isClientConnected(AsyncClient *client);
     void disconnectClient();
@@ -43,16 +44,16 @@ class AsyncTelnet_c {
 
       ConnHandler on_connect = NULL;
       DisconnHandler on_disconnect = NULL;
-      ResponseHandler on_data  = NULL;  
+      ResponseHandler on_data  = NULL;
 };
 
 #endif
 
-AsyncTelnet_c::AsyncTelnet_c(uint16_t port) : server(port) { 
+AsyncTelnet_c::AsyncTelnet_c(uint16_t port) : server(port) {
   server_port = port;
 }
 
-bool AsyncTelnet_c::begin(bool checkConnection /* = true */, bool mDNS) {
+bool AsyncTelnet_c::begin(bool checkConnection) {
   if (checkConnection) {
     // connected to WiFi or is ESP in AP mode?
     if (WiFi.status() != WL_CONNECTED) return false;
@@ -62,18 +63,18 @@ bool AsyncTelnet_c::begin(bool checkConnection /* = true */, bool mDNS) {
     client = c;
     // client->setRxTimeout(10);
     ip = client->remoteIP();
-    if(on_connect != NULL) client->onConnect(on_connect, client); 
-    c->onDisconnect([=](void *, AsyncClient* c){ 
-      if(on_disconnect != NULL) on_disconnect(c); 
+    if(on_connect != NULL) client->onConnect(on_connect, client);
+    c->onDisconnect([=](void *, AsyncClient* c){
+      if(on_disconnect != NULL) on_disconnect(c);
       c->close(true);
       c->free();
       delete c;
     }, this);
     if(on_data != NULL){
-      c->onData([=](void *, AsyncClient* , void *data, size_t len){ 
+      c->onData([=](void *, AsyncClient* , void *data, size_t len){
         // Serial.println("data incoming");
-        on_data((const char *)data, len); 
-      }, this);      
+        on_data((const char *)data, len);
+      }, this);
     }
     client->setNoDelay(true);
   }, this);
@@ -82,8 +83,8 @@ bool AsyncTelnet_c::begin(bool checkConnection /* = true */, bool mDNS) {
   return true;
 }
 
-void AsyncTelnet_c::stop() { 
-  server.end(); 
+void AsyncTelnet_c::stop() {
+  server.end();
 }
 
 bool AsyncTelnet_c::isClientConnected(AsyncClient *Client){
@@ -117,98 +118,44 @@ size_t AsyncTelnet_c::write(const char *data, size_t size, uint8_t apiflags) {
     return will_send;
 }
 
-void AsyncTelnet_c::onConnect(ConnHandler callbackFunc) { 
-  on_connect = callbackFunc; 
+void AsyncTelnet_c::onConnect(ConnHandler callbackFunc) {
+  on_connect = callbackFunc;
 }
-void AsyncTelnet_c::onDisconnect(DisconnHandler callbackFunc) { 
-  on_disconnect = callbackFunc; 
+void AsyncTelnet_c::onDisconnect(DisconnHandler callbackFunc) {
+  on_disconnect = callbackFunc;
 }
-void AsyncTelnet_c::onTelnetResponse(ResponseHandler callbackFunc) { 
-  on_data = callbackFunc; 
-}
-
-/*#include <Arduino.h>
-#include "ESPTelnet.h"
-
-#define LOG_QUEUE_LEN 50
-
-ESPTelnet Telnet;
-static QueueHandle_t logQueue;
-static SemaphoreHandle_t LogMutex;
-
-class Telnet_c
-{
-protected:
-  char telnetString[LOG_QUEUE_LEN];
-
-public:
-  uint16_t telnetPort = 4000;
-  bool telnetStart(void);
-  void telnetLoop();
-  void telnetSendQueue(const char *stringAux);
-};
-
-bool Telnet_c::telnetStart()
-{
-  LogMutex = xSemaphoreCreateBinary();
-  logQueue = xQueueCreate(LOG_QUEUE_LEN, sizeof(char));
-
-  Telnet.onConnect([](String ip)
-                   {
-      Serial.print("- Telnet: ");
-      Serial.print(ip);
-      Serial.println(" connected");
-
-      Telnet.println("\nWelcome " + ip);
-      Telnet.println("(Use ^] + q  to disconnect.)"); });
-  Telnet.onDisconnect([](String ip)
-                      {
-      Serial.print("- Telnet: ");
-      Serial.print(ip);
-      Serial.println(" disconnected"); });
-  Telnet.onConnectionAttempt([](String ip)
-                             {
-      Serial.print("- Telnet: ");
-      Serial.print(ip);
-      Serial.println(" tried to connected"); });
-  Telnet.onReconnect([](String ip)
-                     {
-      Serial.print("- Telnet: ");
-      Serial.print(ip);
-      Serial.println(" reconnected"); });
-  Telnet.onInputReceived([](String str)
-                         {
-      // checks for a certain command
-      if (str == "ping") {
-        Telnet.println("> pong"); 
-        Serial.println("- Telnet: pong");
-      // disconnect the client
-      } else if (str == "bye") {
-        Telnet.println("> disconnecting you...");
-        Telnet.disconnectClient();
-      } else {
-        Telnet.println(str);
-      } });
-  return (Telnet.begin(telnetPort));
-}
-
-void Telnet_c::telnetLoop()
-{
-  xQueueReceive(logQueue, (void *)&telnetString, 0);
-  //if (Telnet.isConnected())
-    Telnet.print(telnetString);
-  //else
-    //Serial.print(telnetString);
-  Telnet.loop();
-}
-
-
-void Telnet_c::telnetSendQueue(const char *stringAux)
-{
-  if (xSemaphoreTake(LogMutex, (TickType_t) 10) == pdTRUE)
-  {
-    xQueueSend(logQueue, (void *)&stringAux, portMAX_DELAY);
-    xSemaphoreGive(LogMutex);
-  }
+void AsyncTelnet_c::onTelnetResponse(ResponseHandler callbackFunc) {
+  on_data = callbackFunc;
 }
 */
+#include <Arduino.h>
+#include "ESPTelnet.h"
+
+class AsyncTelnet_c : public ESPTelnet
+{
+
+public:
+  bool begin(uint16_t server_port = 4000);
+  AsyncTelnet_c(uint16_t server_port) : ESPTelnet() { begin(server_port); }
+  uint16_t serverPort() { return (this->server_port); }
+};
+
+bool AsyncTelnet_c::begin(uint16_t server_port)
+{
+  onDisconnect([](String ip)
+               {
+        Serial.print("- Telnet: ");
+        Serial.print(ip);
+        Serial.println(" disconnected"); });
+  onConnectionAttempt([](String ip)
+                      {
+        Serial.print("- Telnet: ");
+        Serial.print(ip);
+        Serial.println(" tried to connected"); });
+  onReconnect([](String ip)
+              {
+        Serial.print("- Telnet: ");
+        Serial.print(ip);
+        Serial.println(" reconnected"); });
+  return (this->begin(serverPort()));
+}

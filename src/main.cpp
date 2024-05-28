@@ -11,9 +11,9 @@ void printPlot(void)
     delayPlot.repeat();
     timeStampsPlot += 0.1;
     // Plot a sinus
-    Telnet.println(String() + ">sin:" + timeStampsPlot + ":" + sin(timeStampsPlot) + "§Volts|g");
+    Telnet.println((String() + ">sin:" + timeStampsPlot + ":" + sin(timeStampsPlot) + "§Volts|g").c_str());
     // Plot a cosinus
-    Telnet.println(String() + ">cos:" + timeStampsPlot + ":" + cos(timeStampsPlot) + "§Volts|g");
+    Telnet.println((String() + ">cos:" + timeStampsPlot + ":" + cos(timeStampsPlot) + "§Volts|g").c_str());
   }
 }
 

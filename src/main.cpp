@@ -17,11 +17,11 @@ void printPlot(void)
     Telnet.print(sin(timeStampsPlot));
     Telnet.println("§Volts|g");
     // Plot a cosinus
-    Telnet.println(">cos:");
+    Telnet.print(">cos:");
     Telnet.print(timeStampsPlot);
     Telnet.print(":");
     Telnet.print(cos(timeStampsPlot)); 
-    Telnet.print("§Volts|g");
+    Telnet.println("§Volts|g");
   }
 }
 
@@ -37,7 +37,7 @@ void monitoraPOT(void)
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
     InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
-    Telnet.print(">POT_LEFT:");
+    Telnet.print(">pot_LEFT:");
     Telnet.print(timeStampsPOT);
     Telnet.print(":");
     Telnet.print(vlPOT_LEFT);
@@ -45,7 +45,7 @@ void monitoraPOT(void)
 
     const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
     InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
-    Telnet.print(">POT_RIGHT:");
+    Telnet.print(">pot_RIGHT:");
     Telnet.print(timeStampsPOT);
     Telnet.print(":");
     Telnet.print(vlPOT_RIGHT);
@@ -58,11 +58,11 @@ void monitoraBTN(void)
   if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
     Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
   if (debounceBtn(&InIndKit.rtn_2))
-    Telnet.println(String(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF"));
+    Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
   if (debounceBtn(&InIndKit.push_1))
-    Telnet.println(String(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF"));
+    Telnet.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
   if (debounceBtn(&InIndKit.push_2))
-    Telnet.println(String(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF"));
+    Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
 }
 
 void setup()

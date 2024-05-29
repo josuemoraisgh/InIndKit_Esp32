@@ -173,7 +173,7 @@ void Telnet_c::plot(const char *varName, T y, const char *unit)
 template <typename T>
 void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
 {
-  print(">");
+  print(">");//Inicio de envio de dados para um gráfico.
   print(varName);
   print(":");
   print(x);
@@ -181,8 +181,8 @@ void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
   print(y);
   if (unit != NULL)
   {
-    print("§");
+    print("§");//Unidade na sequência
     print(unit);
   }
-  println("|g");  
+  println("|g");//Modo Grafico
 }

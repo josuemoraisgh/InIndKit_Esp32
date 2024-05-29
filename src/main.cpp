@@ -3,64 +3,24 @@
 
 AsyncDelay_c delayPlot(50); // time mili second
 float timeStampsPlot = 0.0;
-void printPlot(void)
-{
-  if (delayPlot.isExpired())
-  {
-    delayPlot.repeat();
-    timeStampsPlot += 0.1;
-    // Plot a sinus
-    Telnet.print(">sin:");
-    Telnet.print(timeStampsPlot);
-    Telnet.print(":");
-    Telnet.print(sin(timeStampsPlot));
-    Telnet.println("§Volts|g");
-    // Plot a cosinus
-    Telnet.print(">cos:");
-    Telnet.print(timeStampsPlot);
-    Telnet.print(":");
-    Telnet.print(cos(timeStampsPlot));
-    Telnet.println("§Volts|g");
-  }
-}
-
+void printPlot(void);
 AsyncDelay_c delayPOT(500); // time mili second
-float timeStampsPOT = 0.0;
-void monitoraPOT(void)
+void monitoraPOT(void);
+void monitoraBTN(void);
+void telnetRead(String str);
+
+void setup()
 {
-  if (delayPOT.isExpired())
-  {
-    delayPOT.repeat();
-    timeStampsPOT += 0.1;
-
-    const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
-    // InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
-    Telnet.print(">pot_LEFT:");
-    Telnet.print(timeStampsPOT);
-    Telnet.print(":");
-    Telnet.print(vlPOT_LEFT);
-    Telnet.println("§Volts|g");
-
-    const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
-    // InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
-    Telnet.print(">pot_RIGHT:");
-    Telnet.print(timeStampsPOT);
-    Telnet.print(":");
-    Telnet.print(vlPOT_RIGHT);
-    Telnet.println("§Volts|g");
-  }
+  InIndKit.start();
+  Telnet.onInputReceived(telnetRead);
 }
 
-void monitoraBTN(void)
+void loop()
 {
-  if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-    Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
-  if (debounceBtn(&InIndKit.rtn_2))
-    Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
-  if (debounceBtn(&InIndKit.push_1))
-    Telnet.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
-  if (debounceBtn(&InIndKit.push_2))
-    Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
+  InIndKit.loop();
+  monitoraBTN();
+  monitoraPOT();
+  printPlot();
 }
 
 void telnetRead(String str)
@@ -81,16 +41,41 @@ void telnetRead(String str)
   }
 }
 
-void setup()
+void monitoraBTN(void)
 {
-  InIndKit.start();
-  Telnet.onInputReceived(telnetRead);
+  if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
+    Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
+  if (debounceBtn(&InIndKit.rtn_2))
+    Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
+  if (debounceBtn(&InIndKit.push_1))
+    Telnet.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
+  if (debounceBtn(&InIndKit.push_2))
+    Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
 }
 
-void loop()
+void monitoraPOT(void)
 {
-  InIndKit.loop();
-  monitoraBTN();
-  monitoraPOT();
-  printPlot();
+  if (delayPOT.isExpired())
+  {
+    delayPOT.repeat();
+
+    const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
+    InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
+    Telnet.plot("pot_LEFT",vlPOT_LEFT,"V");
+  
+    const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
+    InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
+    Telnet.plot("pot_RIGHT",vlPOT_RIGHT,"V");    
+  }
+}
+
+void printPlot(void)
+{
+  if (delayPlot.isExpired())
+  {
+    delayPlot.repeat();
+    timeStampsPlot += 0.1;
+    Telnet.plot("sin",timeStampsPlot,sin(timeStampsPlot));// Plot a sinus
+    Telnet.plot("cos",timeStampsPlot,cos(timeStampsPlot));// Plot a cosinus
+  }
 }

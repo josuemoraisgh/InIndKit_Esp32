@@ -16,8 +16,8 @@
 #define def_pin_SDA 21 // GPIO21
 #define def_pin_SCL 22 // GPIO22
 /********** POTENTIOMETERS GPIO define *****/
-#define def_pin_POT_LEFT 39  // GPIO36
-#define def_pin_POT_RIGHT 36 // GPIO39
+#define def_pin_POT_LEFT 36  // GPIO36
+#define def_pin_POT_RIGHT 39 // GPIO39
 /************* BUTTONS GPIO define *********/
 #define def_pin_RTN1 17  // GPIO17
 #define def_pin_RTN2 5   // GPIO5

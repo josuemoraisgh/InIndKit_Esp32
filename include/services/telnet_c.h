@@ -137,6 +137,10 @@ class Telnet_c : public ESPTelnet
 public:
   bool start(uint16_t server_port = 4000);
   Telnet_c(uint16_t server_port) : ESPTelnet() { begin(server_port); }
+  template <typename T>
+  void plot(const char *varName, T x, T y, const char *unit = NULL);
+  template <typename T>
+  void plot(const char *varName, T y, const char *unit = NULL);
   uint16_t serverPort() { return (this->server_port); }
 };
 
@@ -157,6 +161,28 @@ bool Telnet_c::start(uint16_t server_port)
         Serial.print("- Telnet: ");
         Serial.print(ip);
         Serial.println(" reconnected"); });
-        
+
   return (this->begin(server_port));
+}
+
+template <typename T>
+void Telnet_c::plot(const char *varName, T y, const char *unit)
+{
+  plot(varName, (T)millis(), y, unit);
+}
+template <typename T>
+void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
+{
+  print(">");
+  print(varName);
+  print(":");
+  print(x);
+  print(":");
+  print(y);
+  if (unit != NULL)
+  {
+    print("§");
+    print(unit);
+  }
+  println("|g");  
 }

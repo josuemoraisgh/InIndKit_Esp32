@@ -1,7 +1,5 @@
 #include <Arduino.h>
 
-// Verificar o Windows Defender Firewall ele bloqueia o OTA
-
 class AsyncDelay_c
 {
 protected:

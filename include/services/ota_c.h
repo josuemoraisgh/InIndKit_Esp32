@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
-//Verificar o Windows Defender Firewall ele bloqueia o OTA
+//Verificar o Windows Defender Firewall, pois ele bloqueia o OTA
 
 class OTA_c
 {

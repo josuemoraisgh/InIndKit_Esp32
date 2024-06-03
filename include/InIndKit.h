@@ -37,8 +37,8 @@ Telnet_c Telnet(4000);
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
 protected:
-    const char *ssid[2] = {"NetMorais", "APJosue"};
-    const char *password[2] = {"32154538", "josue32154538"};
+    const char *ssid[3] = {"Wokwi-GUEST", "NetMorais", "APJosue"};
+    const char *password[3] = {"","32154538", "josue32154538"};
 
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};

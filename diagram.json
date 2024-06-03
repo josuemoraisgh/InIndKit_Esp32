@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "author": "Josué Morais",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 9.6,
+      "left": -100.76,
+      "attrs": {}
+    },
+    { "type": "board-ssd1306", "id": "oled1", "top": 99.14, "left": 57.83, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -39.7, "left": -221, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": -39.7, "left": -317, "attrs": {} },
+    { "type": "wokwi-slide-switch", "id": "sw1", "top": 215.6, "left": 60.7, "attrs": {} },
+    { "type": "wokwi-slide-switch", "id": "sw2", "top": 215.6, "left": 108.7, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "oled1:SCL", "esp:22", "green", [ "v0" ] ],
+    [ "oled1:SDA", "esp:21", "blue", [ "v-19.2", "h-124.73" ] ],
+    [ "oled1:GND", "esp:GND.2", "black", [ "v-67.2", "h-96" ] ],
+    [ "oled1:VCC", "esp:3V3", "red", [ "v-28.8", "h0.15", "v-76.8", "h-201.75" ] ],
+    [ "pot1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pot1:SIG", "esp:EN", "green", [ "v0" ] ],
+    [ "esp:GND.2", "pot1:GND", "black", [ "v-86.4", "h-230.4", "v96", "h38.4" ] ],
+    [ "pot2:GND", "esp:GND.2", "black", [ "v19.2", "h-38.4", "v-96", "h326.4" ] ],
+    [ "pot2:SIG", "esp:VP", "green", [ "v0" ] ],
+    [ "pot2:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "oled1:GND", "sw1:1", "black", [ "v0", "h-48", "v144" ] ],
+    [ "sw2:1", "oled1:GND", "black", [ "v0", "h-19.2", "v-48", "h-48", "v-96" ] ],
+    [ "sw1:3", "sw2:3", "green", [ "v19.2", "h48.2" ] ],
+    [ "sw2:3", "esp:3V3", "red", [ "v0", "h38.6", "v-249.6", "h-268.8" ] ],
+    [ "esp:5", "sw1:2", "green", [ "h19.2", "v115.2", "h57.6" ] ],
+    [ "esp:17", "sw2:2", "green", [ "h28.8", "v96", "h96" ] ]
+  ],
+  "dependencies": {}
+}

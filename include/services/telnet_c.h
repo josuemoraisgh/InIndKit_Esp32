@@ -141,6 +141,15 @@ public:
   void plot(const char *varName, T x, T y, const char *unit = NULL);
   template <typename T>
   void plot(const char *varName, T y, const char *unit = NULL);
+  template <typename T>
+  void print(const T &data);
+  template <typename T>
+  void print(const T &data, int base); 
+  void println();  
+  template <typename T>
+  void println(const T &data);
+  template <typename T>
+  void println(const T &data, int base);   
   uint16_t serverPort() { return (this->server_port); }
 };
 
@@ -173,7 +182,7 @@ void Telnet_c::plot(const char *varName, T y, const char *unit)
 template <typename T>
 void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
 {
-  print(">");//Inicio de envio de dados para um gráfico.
+  print(">"); // Inicio de envio de dados para um gráfico.
   print(varName);
   print(":");
   print(x);
@@ -181,8 +190,42 @@ void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
   print(y);
   if (unit != NULL)
   {
-    print("§");//Unidade na sequência
+    print("§"); // Unidade na sequência
     print(unit);
   }
-  println("|g");//Modo Grafico
+  println("|g"); // Modo Grafico
+}
+
+template <typename T>
+void Telnet_c::print(const T &data)
+{
+  if(this->connected) this->print(data);
+  else Serial.print(data);
+}
+
+template <typename T>
+void Telnet_c::print(const T &data, int base)
+{
+  if(this->connected) this->print(data,base);
+  else Serial.print(data,base);
+}
+
+template <typename T>
+void Telnet_c::println(const T &data)
+{
+  if(this->connected) this->println(data);
+  else Serial.println(data);
+}
+
+template <typename T>
+void Telnet_c::println(const T &data, int base)
+{
+  if(this->connected) this->println(data,base);
+  else Serial.println(data,base);
+}
+
+void Telnet_c::println()
+{
+  if(this->connected) this->println();
+  else Serial.println();
 }

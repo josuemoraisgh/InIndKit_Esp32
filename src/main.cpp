@@ -11,7 +11,7 @@ void telnetRead(String str);
 
 void setup()
 {
-  InIndKit.start();
+  InIndKit.start("Wokwi-GUEST","");// ssid, password
   Telnet.onInputReceived(telnetRead);
 }
 

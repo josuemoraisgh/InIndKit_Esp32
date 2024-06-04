@@ -29,11 +29,11 @@
 #define def_pin_OUT1 33 // GPIO33
 #define def_pin_OUT2 32 // GPIO32
 /********************* PWM ****************/
-#define def_pin_OUT1 27 // GPIO27
+#define def_pin_PWM 27 // GPIO27
 /********************* DAC ****************/
-#define def_pin_OUT2 25 // GPIO25
+#define def_pin_DAC 25 // GPIO25
 /********************* RELÊ ***************/
-#define def_pin_OUT2 13 // GPIO13
+#define def_pin_RELE 13 // GPIO13
 /***************** Read 4@20 mA ***********/
 #define def_pin_R4a20_1 16  // GPIO16
 #define def_pin_R4a20_2 4  // GPIO4
@@ -51,49 +51,45 @@ Telnet_c Telnet(23);
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
-protected:
-    const char *ssid[3] = {"Wokwi-GUEST", "NetMorais", "APJosue"};
-    const char *password[3] = {"","32154538", "josue32154538"};
-
 public:
     btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
     btn_t rtn_2 = {def_pin_RTN2, 0, false, false};
     btn_t push_1 = {def_pin_PUSH1, 0, false, false};
     btn_t push_2 = {def_pin_PUSH2, 0, false, false};
 
-    void start(void);
+    void start(const char *ssid, const char *password);
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
 #endif
 
-inline void InIndKit_c::start(void)
+inline void InIndKit_c::start(const char *ssid, const char *password)
 {
     Serial.begin(115200);
     Serial.println("Booting");
-    uint8_t aux = digitalRead(def_pin_PUSH2);
-    delay(500);
     if (displayStart())
     {
         Serial.println("Display running");
         setDisplayText(1, "WiFi connecting");
-        setDisplayText(2, aux ? "House Mode" : "UFU Mode");
+        setDisplayText(2, "UFU Mode");
         setDisplayText(3, "Good Look!");
+        delay(1000);        
     }
     else
     {
         errorMsg("Display error.", false);
     }
-    delay(500);
-    if (wifiStart(ssid[aux ? 1 : 0], password[aux ? 1 : 0])) // Primeiro o Wifi
+    if (wifiStart(ssid, password)) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
         Serial.print(WiFi.localIP());
         Serial.println(".");
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
-        setDisplayText(3, aux ? "House Mode" : "UFU Mode");
+        setDisplayText(3, "UFU Mode");
+        delay(1000);        
     }
+
     else
     {
         errorMsg("Wifi  error.\nWill reboot...");

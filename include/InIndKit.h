@@ -35,14 +35,13 @@
 /********************* RELÊ ***************/
 #define def_pin_RELE 13 // GPIO13
 /***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 16  // GPIO16
+#define def_pin_R4a20_1 16 // GPIO16
 #define def_pin_R4a20_2 4  // GPIO4
 /***************** Write 4@20 mA **********/
 #define def_pin_W4a20_1 23 // GPIO23
 /**************** Hart Interface **********/
 #define def_pin_Hart_TX 1 // GPIO3
 #define def_pin_Hart_RX 3 // GPIO3
-
 
 #define HOSTNAME "inindkit0"
 
@@ -73,7 +72,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         setDisplayText(1, "WiFi connecting");
         setDisplayText(2, "UFU Mode");
         setDisplayText(3, "Good Look!");
-        delay(1000);        
+        delay(1000);
     }
     else
     {
@@ -86,7 +85,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
         setDisplayText(3, "UFU Mode");
-        delay(1000);        
+        delay(1000);
     }
 
     else
@@ -122,20 +121,16 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         errorMsg("Telnet  error.\nWill reboot...");
     }
 
-    Telnet.onConnect([](String ip)
-                     {
-        Serial.print("- Telnet: ");
-        Serial.print(ip);
-        Serial.println(" connected");
-
+    Telnet.onConnect([](String ip) {
         Telnet.println("\nWelcome " + ip);
-        Telnet.println("(Use ^] + q  to disconnect.)"); });
+        Telnet.println("(Use ^] + q  to disconnect.)"); 
+    });
 }
 
 void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    Telnet.loop();
+    Telnet.update();
     displayUpdate();
 }
 

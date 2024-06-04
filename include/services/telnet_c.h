@@ -6,7 +6,7 @@ class Telnet_c : public ESPTelnet
 
 public:
   bool start(uint16_t server_port);
-  bool start() { return(start(this->server_port)); }
+  bool start() { return (start(this->server_port)); }
   Telnet_c(uint16_t server_port) : ESPTelnet() { this->server_port = server_port; }
   template <typename T>
   void plot(const char *varName, T x, T y, const char *unit = NULL);
@@ -21,14 +21,15 @@ public:
   void println(const T &data);
   template <typename T>
   void println(const T &data, int base);
-  //void loop(void);
+  void update(void);
   uint16_t serverPort() { return (this->server_port); }
 };
 
 bool Telnet_c::start(uint16_t server_port)
 {
-  if (this->connected) this->stop();
-  this->server_port = server_port;  
+  if (this->connected)
+    this->stop();
+  this->server_port = server_port;
   onDisconnect([](String ip)
                {
         Serial.print("- Telnet: ");
@@ -48,14 +49,14 @@ bool Telnet_c::start(uint16_t server_port)
   return (this->begin(server_port));
 }
 
-//void Telnet_c::loop(void)
-//{
-//  this->loop();
-  // if (!connected && Serial.available() && on_input!= NULL)
-  //{
-  //   on_input(Serial.readStringUntil('\n'));
-  // }
-//}
+void Telnet_c::update(void)
+{
+  this->loop();
+  if (!connected && Serial.available() && on_input != NULL)
+  {
+    on_input(Serial.readStringUntil('\n'));
+  }
+}
 
 template <typename T>
 void Telnet_c::plot(const char *varName, T y, const char *unit)

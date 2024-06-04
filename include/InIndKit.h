@@ -24,10 +24,25 @@
 #define def_pin_PUSH1 18 // GPIO18
 #define def_pin_PUSH2 19 // GPIO19
 /*************** IOs GPIO define **********/
-#define def_pin_IN1 14  // GPIO14
-#define def_pin_IN2 12  // GPIO12
-#define def_pin_OUT1 35 // GPIO3
-#define def_pin_OUT2 35 // GPIO3
+#define def_pin_IN1 35  // GPIO35
+#define def_pin_IN2 34  // GPIO34
+#define def_pin_OUT1 33 // GPIO33
+#define def_pin_OUT2 32 // GPIO32
+/********************* PWM ****************/
+#define def_pin_OUT1 27 // GPIO27
+/********************* DAC ****************/
+#define def_pin_OUT2 25 // GPIO25
+/********************* RELÊ ***************/
+#define def_pin_OUT2 13 // GPIO13
+/***************** Read 4@20 mA ***********/
+#define def_pin_R4a20_1 16  // GPIO16
+#define def_pin_R4a20_2 4  // GPIO4
+/***************** Write 4@20 mA **********/
+#define def_pin_W4a20_1 23 // GPIO23
+/**************** Hart Interface **********/
+#define def_pin_Hart_TX 1 // GPIO3
+#define def_pin_Hart_RX 3 // GPIO3
+
 
 #define HOSTNAME "inindkit0"
 

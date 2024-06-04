@@ -72,7 +72,8 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         setDisplayText(1, "WiFi connecting");
         setDisplayText(2, "UFU Mode");
         setDisplayText(3, "Good Look!");
-        delay(1000);
+        displayUpdate();
+        delay(2500);
     }
     else
     {
@@ -85,7 +86,8 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
         setDisplayText(3, "UFU Mode");
-        delay(1000);
+        displayUpdate();        
+        delay(2500);
     }
 
     else

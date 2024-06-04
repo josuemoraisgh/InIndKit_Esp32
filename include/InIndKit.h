@@ -46,7 +46,7 @@
 
 #define HOSTNAME "inindkit0"
 
-Telnet_c Telnet(23);
+Telnet_c Telnet(4000);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
@@ -82,8 +82,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
     if (wifiStart(ssid, password)) // Primeiro o Wifi
     {
         Serial.print("\nWifi running - IP:");
-        Serial.print(WiFi.localIP());
-        Serial.println(".");
+        Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
         setDisplayText(3, "UFU Mode");
@@ -116,8 +115,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
     if (Telnet.start())
     {
         Serial.print("Telnet running - port:");
-        Serial.print(Telnet.serverPort());
-        Serial.println(".");
+        Serial.println(Telnet.serverPort());
     }
     else
     {

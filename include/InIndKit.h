@@ -46,7 +46,7 @@
 
 #define HOSTNAME "inindkit0"
 
-Telnet_c Telnet(4000);
+Telnet_c Telnet(23);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c

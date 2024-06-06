@@ -52,7 +52,7 @@ bool Telnet_c::start(uint16_t server_port)
 void Telnet_c::update(void)
 {
   this->loop();
-  if (!connected && Serial.available() && on_input != NULL)
+  if (WOKWI_RUN && Serial.available() && on_input != NULL)
   {
     on_input(Serial.readStringUntil('\n'));
   }
@@ -83,43 +83,43 @@ void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
 template <typename T>
 void Telnet_c::print(const T &data)
 {
-  if (this->connected)
-    this->print(data);
-  else
+  if (WOKWI_RUN)
     Serial.print(data);
+  else
+    this->print(data);
 }
 
 template <typename T>
 void Telnet_c::print(const T &data, int base)
 {
-  if (this->connected)
-    this->print(data, base);
-  else
+  if (WOKWI_RUN)
     Serial.print(data, base);
+  else
+    this->print(data, base);
 }
 
 template <typename T>
 void Telnet_c::println(const T &data)
 {
-  if (this->connected)
-    this->println(data);
-  else
+  if (WOKWI_RUN)
     Serial.println(data);
+  else
+    this->println(data);
 }
 
 template <typename T>
 void Telnet_c::println(const T &data, int base)
 {
-  if (this->connected)
-    this->println(data, base);
-  else
+  if (WOKWI_RUN)
     Serial.println(data, base);
+  else
+    this->Sprintln(data, base);
 }
 
 void Telnet_c::println()
 {
-  if (this->connected)
-    this->println();
-  else
+  if (WOKWI_RUN)
     Serial.println();
+  else
+    this->println();
 }

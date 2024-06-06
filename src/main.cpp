@@ -1,5 +1,7 @@
 #include <Arduino.h>
+#define WOKWI_RUN true
 #include "InIndKit.h"
+
 
 AsyncDelay_c delayPlot(50); // time mili second
 float timeStampsPlot = 0.0;

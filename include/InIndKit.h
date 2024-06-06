@@ -45,7 +45,7 @@
 
 #define HOSTNAME "inindkit0"
 
-Telnet_c Telnet(23);
+Telnet_c Telnet(4000);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
@@ -91,9 +91,6 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
     pinMode(def_pin_R4a20_2, INPUT);
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
-    /**************** Hart Interface **********/
-    pinMode(def_pin_Hart_TX, OUTPUT);
-    pinMode(def_pin_Hart_RX, INPUT);
 
     if (displayStart())
     {

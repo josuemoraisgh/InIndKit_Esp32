@@ -13,7 +13,7 @@ void telnetRead(String str);
 
 void setup()
 {
-  InIndKit.start("Wokwi-GUEST","");// ssid, password
+  InIndKit.start("Wokwi-GUEST","");// ssid, password ("NetMorais","32154538");
   Telnet.onInputReceived(telnetRead);
 }
 

@@ -35,8 +35,8 @@
 /********************* RELÊ ***************/
 #define def_pin_RELE 13 // GPIO13
 /***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 16 // GPIO16
-#define def_pin_R4a20_2 4  // GPIO4
+#define def_pin_R4a20_1 0 // GPIO0
+#define def_pin_R4a20_2 4 // GPIO4
 /***************** Write 4@20 mA **********/
 #define def_pin_W4a20_1 23 // GPIO23
 /**************** Hart Interface **********/
@@ -66,12 +66,41 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
 {
     Serial.begin(115200);
     Serial.println("Booting");
+
+    /********** POTENTIOMETERS GPIO define *****/
+    pinMode(def_pin_POT_LEFT, INPUT);
+    pinMode(def_pin_POT_RIGHT, INPUT);
+    /************* BUTTONS GPIO define *********/
+    pinMode(def_pin_RTN1, INPUT);
+    pinMode(def_pin_RTN2, INPUT);
+    pinMode(def_pin_PUSH1, INPUT);
+    pinMode(def_pin_PUSH2, INPUT);
+    /*************** IOs GPIO define **********/
+    pinMode(def_pin_IN1, INPUT);
+    pinMode(def_pin_IN2, INPUT);
+    pinMode(def_pin_OUT1, OUTPUT);
+    pinMode(def_pin_OUT2, INPUT);
+    /********************* PWM ****************/
+    pinMode(def_pin_PWM, OUTPUT);
+    /********************* DAC ****************/
+    pinMode(def_pin_DAC, OUTPUT);
+    /********************* RELÊ ***************/
+    pinMode(def_pin_RELE, OUTPUT);
+    /***************** Read 4@20 mA ***********/
+    pinMode(def_pin_R4a20_1, INPUT);
+    pinMode(def_pin_R4a20_2, INPUT);
+    /***************** Write 4@20 mA **********/
+    pinMode(def_pin_W4a20_1, OUTPUT);
+    /**************** Hart Interface **********/
+    pinMode(def_pin_Hart_TX, OUTPUT);
+    pinMode(def_pin_Hart_RX, INPUT);
+
     if (displayStart())
     {
         Serial.println("Display running");
-        setDisplayText(1, "WiFi connecting");
-        setDisplayText(2, "UFU Mode");
-        setDisplayText(3, "Good Look!");
+        setDisplayText(1, "WiFi");
+        setDisplayText(2, "connecting");
+        setDisplayText(3, "Wait!!");
         displayUpdate();
         delay(2500);
     }
@@ -86,7 +115,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, "InIndKit01 ");
         setDisplayText(3, "UFU Mode");
-        displayUpdate();        
+        displayUpdate();
         delay(2500);
     }
 
@@ -102,17 +131,6 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
 
     otaStart(HOSTNAME); // Depois o OTA
 
-    pinMode(def_pin_POT_LEFT, INPUT);
-    pinMode(def_pin_POT_RIGHT, INPUT);
-
-    pinMode(def_pin_RTN1, INPUT);
-    pinMode(def_pin_RTN2, INPUT);
-    pinMode(def_pin_PUSH1, INPUT);
-    pinMode(def_pin_PUSH2, INPUT);
-
-    pinMode(def_pin_IN1, INPUT);
-    pinMode(def_pin_IN2, INPUT);
-
     if (Telnet.start())
     {
         Serial.print("Telnet running - port:");
@@ -123,10 +141,10 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         errorMsg("Telnet  error.\nWill reboot...");
     }
 
-    Telnet.onConnect([](String ip) {
+    Telnet.onConnect([](String ip)
+                     {
         Telnet.println("\nWelcome " + ip);
-        Telnet.println("(Use ^] + q  to disconnect.)"); 
-    });
+        Telnet.println("(Use ^] + q  to disconnect.)"); });
 }
 
 void InIndKit_c::loop(void)

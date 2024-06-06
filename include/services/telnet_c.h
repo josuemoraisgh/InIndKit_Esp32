@@ -113,7 +113,7 @@ void Telnet_c::println(const T &data, int base)
   if (WOKWI_RUN)
     Serial.println(data, base);
   else
-    this->Sprintln(data, base);
+    this->println(data, base);
 }
 
 void Telnet_c::println()

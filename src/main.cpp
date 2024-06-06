@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#define WOKWI_RUN 1
+#define WOKWI_RUN false
 #include "InIndKit.h"
 
 
@@ -48,15 +48,13 @@ void telnetRead(String str)
 void monitoraBTN(void)
 {
   if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-  {
-    Serial.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
-  }
+    Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
   if (debounceBtn(&InIndKit.rtn_2))
-    Serial.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
+    Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
   if (debounceBtn(&InIndKit.push_1))
-    Serial.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
+    Telnet.println(InIndKit.push_1.status_btn ? "BotaoPUSH1 ON" : "BotaoPUSH1 OFF");
   if (debounceBtn(&InIndKit.push_2))
-    Serial.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
+    Telnet.println(InIndKit.push_2.status_btn ? "BotaoPUSH2 ON" : "BotaoPUSH2 OFF");
 }
 
 void monitoraPOT(void)

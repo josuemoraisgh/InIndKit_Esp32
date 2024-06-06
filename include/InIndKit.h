@@ -17,15 +17,15 @@
 #define def_pin_SCL 22 // GPIO22
 /********** POTENTIOMETERS GPIO define *****/
 #define def_pin_POT_LEFT 36  // GPIO36
-#define def_pin_POT_RIGHT 39 // GPIO39
+#define def_pin_POT_RIGHT 34 // GPIO34
 /************* BUTTONS GPIO define *********/
 #define def_pin_RTN1 17  // GPIO17
 #define def_pin_RTN2 5   // GPIO5
 #define def_pin_PUSH1 18 // GPIO18
 #define def_pin_PUSH2 19 // GPIO19
 /*************** IOs GPIO define **********/
-#define def_pin_IN1 35  // GPIO35
-#define def_pin_IN2 34  // GPIO34
+#define def_pin_IN1 13  // GPIO13
+#define def_pin_IN2 14  // GPIO14
 #define def_pin_OUT1 33 // GPIO33
 #define def_pin_OUT2 32 // GPIO32
 /********************* PWM ****************/
@@ -79,7 +79,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
     pinMode(def_pin_OUT1, OUTPUT);
-    pinMode(def_pin_OUT2, INPUT);
+    pinMode(def_pin_OUT2, OUTPUT);
     /********************* PWM ****************/
     pinMode(def_pin_PWM, OUTPUT);
     /********************* DAC ****************/

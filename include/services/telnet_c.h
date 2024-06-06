@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
+#ifndef WOKWI_RUN
+#define WOKWI_RUN 0
+#endif
 class Telnet_c : public ESPTelnet
 {
 
@@ -51,11 +54,15 @@ bool Telnet_c::start(uint16_t server_port)
 
 void Telnet_c::update(void)
 {
-  this->loop();
-  if (WOKWI_RUN && Serial.available() && on_input != NULL)
+  if (WOKWI_RUN)
   {
-    on_input(Serial.readStringUntil('\n'));
+    if (Serial.available() && on_input != NULL)
+    {
+      on_input(Serial.readStringUntil('\n'));
+    }
   }
+  else
+    this->loop();
 }
 
 template <typename T>

@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#define WOKWI_RUN true
+#define WOKWI_RUN 1
 #include "InIndKit.h"
 
 

@@ -28,11 +28,11 @@ public:
   uint16_t serverPort() { return (this->server_port); }
 };
 
-bool Telnet_c::start(uint16_t server_port)
+bool Telnet_c::start(uint16_t port)
 {
-  if (this->connected)
-    this->stop();
-  this->server_port = server_port;
+  if (connected)
+    ((ESPTelnet *) this)->stop();
+  server_port = port;
   onDisconnect([](String ip)
                {
         Serial.print("- Telnet: ");
@@ -49,7 +49,7 @@ bool Telnet_c::start(uint16_t server_port)
         Serial.print(ip);
         Serial.println(" reconnected"); });
 
-  return (this->begin(server_port));
+  return (((ESPTelnet *) this)->begin(server_port));
 }
 
 void Telnet_c::update(void)
@@ -61,8 +61,7 @@ void Telnet_c::update(void)
       on_input(Serial.readStringUntil('\n'));
     }
   }
-  else
-    this->loop();
+  ((ESPTelnet *) this)->loop();
 }
 
 template <typename T>
@@ -93,7 +92,7 @@ void Telnet_c::print(const T &data)
   if (WOKWI_RUN)
     Serial.print(data);
   else
-    this->print(data);
+    ((ESPTelnet *) this)->print(data);
 }
 
 template <typename T>
@@ -102,7 +101,7 @@ void Telnet_c::print(const T &data, int base)
   if (WOKWI_RUN)
     Serial.print(data, base);
   else
-    this->print(data, base);
+    ((ESPTelnet *) this)->print(data, base);
 }
 
 template <typename T>
@@ -111,7 +110,7 @@ void Telnet_c::println(const T &data)
   if (WOKWI_RUN)
     Serial.println(data);
   else
-    this->println(data);
+    ((ESPTelnet *) this)->println(data);
 }
 
 template <typename T>
@@ -120,7 +119,7 @@ void Telnet_c::println(const T &data, int base)
   if (WOKWI_RUN)
     Serial.println(data, base);
   else
-    this->println(data, base);
+    ((ESPTelnet *) this)->println(data, base);
 }
 
 void Telnet_c::println()
@@ -128,5 +127,5 @@ void Telnet_c::println()
   if (WOKWI_RUN)
     Serial.println();
   else
-    this->println();
+    ((ESPTelnet *) this)->println();
 }

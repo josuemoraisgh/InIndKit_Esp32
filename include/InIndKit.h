@@ -56,13 +56,13 @@ public:
     btn_t push_1 = {def_pin_PUSH1, 0, false, false};
     btn_t push_2 = {def_pin_PUSH2, 0, false, false};
 
-    void start(const char *ssid, const char *password);
+    void setup(const char *ssid, const char *password);
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
 #endif
 
-inline void InIndKit_c::start(const char *ssid, const char *password)
+inline void InIndKit_c::setup(const char *ssid, const char *password)
 {
     Serial.begin(115200);
     Serial.println("Booting");
@@ -97,7 +97,7 @@ inline void InIndKit_c::start(const char *ssid, const char *password)
         Serial.println("Display running");
         setDisplayText(1, "WiFi");
         setDisplayText(2, "connecting");
-        setDisplayText(3, "Wait!!");
+        setDisplayText(3, "  Wait!!");
         displayUpdate();
         delay(2500);
     }

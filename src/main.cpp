@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#define WOKWI_RUN false
 #include "InIndKit.h"
 
 
@@ -15,7 +14,7 @@ void telnetRead(String str);
 
 void setup()
 {
-  InIndKit.start("Wokwi-GUEST","");// ssid, password ("NetMorais","32154538");
+  InIndKit.setup("Wokwi-GUEST","");// ssid, password ;("APJosue","josue32154538");
   Telnet.onInputReceived(telnetRead);
 }
 

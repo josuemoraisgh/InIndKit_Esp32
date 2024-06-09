@@ -11,37 +11,47 @@
 #include "services\telnet_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
-
+//////////////////////////Lado Esquerdo///////////////////////
+/********** POTENTIOMETERS GPIO define *****/
+#define def_pin_POT_LEFT 36  // GPIO36
+#define def_pin_POT_RIGHT 39 // GPIO39
+/******************** Inputs **************/
+#define def_pin_IN1 33 // GPIO33
+#define def_pin_IN2 32 // GPIO32
+#define def_pin_IN3 35 // GPIO35
+#define def_pin_IN4 34 // GPIO34
+/********************* DAC ****************/
+#define def_pin_DAC1 25 // GPIO25
+#define def_pin_DAC2 26 // GPIO26
+/******************** Outputs **************/
+#define def_pin_OUT1 27  // GPIO27
+#define def_pin_OUT2 14  // GPIO14
+#define def_pin_OUT3 12  // GPIO12
+#define def_pin_OUT4 13  // GPIO13
+/**************** Hart Interface **********/
+#define def_pin_Hart_RXD 9  // GPIO9
+#define def_pin_Hart_TXD 10 // GPIO10
+#define def_pin_Hart_RTS 11 // GPIO11
+#define def_pin_Hart_CTS 6  // GPIO6
+//////////////////////////Lado Direito///////////////////////
+/********************* RELÊ ***************/
+#define def_pin_RELE 23 // GPIO23
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
 #define def_pin_SCL 22 // GPIO22
-/********** POTENTIOMETERS GPIO define *****/
-#define def_pin_POT_LEFT 36  // GPIO36
-#define def_pin_POT_RIGHT 34 // GPIO34
+/********************* PWM ****************/
+#define def_pin_PWM 1 // GPIO1
+/***************** Write 4@20 mA **********/
+#define def_pin_W4a20_1 3 // GPIO3
 /************* BUTTONS GPIO define *********/
-#define def_pin_RTN1 17  // GPIO17
-#define def_pin_RTN2 5   // GPIO5
 #define def_pin_PUSH1 18 // GPIO18
 #define def_pin_PUSH2 19 // GPIO19
-/*************** IOs GPIO define **********/
-#define def_pin_IN1 13  // GPIO13
-#define def_pin_IN2 14  // GPIO14
-#define def_pin_OUT1 33 // GPIO33
-#define def_pin_OUT2 32 // GPIO32
-/********************* PWM ****************/
-#define def_pin_PWM 27 // GPIO27
-/********************* DAC ****************/
-#define def_pin_DAC 25 // GPIO25
-/********************* RELÊ ***************/
-#define def_pin_RELE 13 // GPIO13
+#define def_pin_RTN1 17  // GPIO17
+#define def_pin_RTN2 5   // GPIO5
 /***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 0 // GPIO0
-#define def_pin_R4a20_2 4 // GPIO4
-/***************** Write 4@20 mA **********/
-#define def_pin_W4a20_1 23 // GPIO23
-/**************** Hart Interface **********/
-#define def_pin_Hart_TX 1 // GPIO3
-#define def_pin_Hart_RX 3 // GPIO3
+#define def_pin_R4a20_1 4 // GPIO4
+#define def_pin_R4a20_2 0 // GPIO0
+
 
 #define HOSTNAME "inindkit0"
 
@@ -78,12 +88,17 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     /*************** IOs GPIO define **********/
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
+    pinMode(def_pin_IN3, INPUT);
+    pinMode(def_pin_IN4, INPUT);    
     pinMode(def_pin_OUT1, OUTPUT);
     pinMode(def_pin_OUT2, OUTPUT);
+    pinMode(def_pin_OUT3, OUTPUT);
+    pinMode(def_pin_OUT4, OUTPUT);    
     /********************* PWM ****************/
     pinMode(def_pin_PWM, OUTPUT);
     /********************* DAC ****************/
-    pinMode(def_pin_DAC, OUTPUT);
+    pinMode(def_pin_DAC1, OUTPUT);
+    pinMode(def_pin_DAC2, OUTPUT);    
     /********************* RELÊ ***************/
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Read 4@20 mA ***********/

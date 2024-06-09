@@ -56,7 +56,7 @@
     [ "r1:2", "esp:32", "green", [ "v0" ] ],
     [ "r2:2", "esp:33", "green", [ "v0" ] ],
     [ "pot1:SIG", "esp:VP", "green", [ "v19.2", "h66.8", "v9.6" ] ],
-    [ "pot2:SIG", "esp:34", "green", [ "v28.8", "h153.2", "v19.2" ] ]
+    [ "pot2:SIG", "esp:VN", "green", [ "v28.8", "h153.2", "v9.6" ] ]
   ],
   "dependencies": {}
 }

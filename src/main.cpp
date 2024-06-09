@@ -14,7 +14,7 @@ void telnetRead(String str);
 
 void setup()
 {
-  InIndKit.setup("Wokwi-GUEST","");// ssid, password ;("APJosue","josue32154538");
+  InIndKit.setup("APJosue","josue32154538");//("Wokwi-GUEST","");// ssid, password ;
   Telnet.onInputReceived(telnetRead);
 }
 

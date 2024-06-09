@@ -8,22 +8,10 @@ void setup()
 {
   InIndKit.setup("APJosue", "josue32154538"); //("Wokwi-GUEST","");// ssid, password ;
   Telnet.onInputReceived([](String str) 
-  {
-      if (str == "ping") // checks for a certain command
-      {
-        Telnet.println("pong");
-        Serial.println("- Telnet: pong");
-      }
-      else if (str == "bye") // disconnect the client
-      {
-        Telnet.println("disconnecting you...");
-        Telnet.disconnectClient();
-      }
-      else
-      {
-        Telnet.println(str);
-      } 
-  });
+    {
+      Telnet.println(str);
+    }
+  );
   
   attachInterrupt(
       InIndKit.rtn_1.pin,

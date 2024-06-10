@@ -49,7 +49,7 @@ void Hart_c::telnetToHart()
 {
     if (client)
     {
-        size_t tam = client.available();
+        const size_t tam = client.available();
         if (tam > 0)
         {
             uint8_t data[tam];
@@ -63,7 +63,7 @@ void Hart_c::hartToTelnet()
 {
     if (client)
     {
-        size_t tam = ((HardwareSerial *)this)->available();
+        const size_t tam = ((HardwareSerial *)this)->available();
         if (tam > 0)
         {
             uint8_t data[tam];

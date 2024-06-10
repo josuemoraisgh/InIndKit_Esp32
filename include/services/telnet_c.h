@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
-#ifndef WOKWI_RUN
-#define WOKWI_RUN 0
-#endif
 class Telnet_c : public ESPTelnet
 {
 
@@ -30,7 +27,7 @@ public:
 
 bool Telnet_c::start(uint16_t port)
 {
-  ((ESPTelnet *) this)->stop();
+  if(((ESPTelnet *) this)->isConnected()) ((ESPTelnet *) this)->stop();
   server_port = port;
   onDisconnect([](String ip)
                {
@@ -53,7 +50,7 @@ bool Telnet_c::start(uint16_t port)
 
 void Telnet_c::update(void)
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
   {
     if (Serial.available() && on_input != NULL)
     {
@@ -88,7 +85,7 @@ void Telnet_c::plot(const char *varName, T x, T y, const char *unit)
 template <typename T>
 void Telnet_c::print(const T &data)
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
     Serial.print(data);
   else
     ((ESPTelnet *) this)->print(data);
@@ -97,7 +94,7 @@ void Telnet_c::print(const T &data)
 template <typename T>
 void Telnet_c::print(const T &data, int base)
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
     Serial.print(data, base);
   else
     ((ESPTelnet *) this)->print(data, base);
@@ -106,7 +103,7 @@ void Telnet_c::print(const T &data, int base)
 template <typename T>
 void Telnet_c::println(const T &data)
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
     Serial.println(data);
   else
     ((ESPTelnet *) this)->println(data);
@@ -115,7 +112,7 @@ void Telnet_c::println(const T &data)
 template <typename T>
 void Telnet_c::println(const T &data, int base)
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
     Serial.println(data, base);
   else
     ((ESPTelnet *) this)->println(data, base);
@@ -123,7 +120,7 @@ void Telnet_c::println(const T &data, int base)
 
 void Telnet_c::println()
 {
-  if (WOKWI_RUN)
+  if (((ESPTelnet *) this)->isConnected())
     Serial.println();
   else
     ((ESPTelnet *) this)->println();

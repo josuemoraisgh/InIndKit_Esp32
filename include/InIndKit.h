@@ -9,6 +9,7 @@
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\telnet_c.h"
+#include "services\hart_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
 //////////////////////////Lado Esquerdo///////////////////////
@@ -29,10 +30,10 @@
 #define def_pin_OUT3 12  // GPIO12
 #define def_pin_OUT4 13  // GPIO13
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 9  // GPIO9
-#define def_pin_Hart_TXD 10 // GPIO10
-#define def_pin_Hart_RTS 11 // GPIO11
-#define def_pin_Hart_CTS 6  // GPIO6
+#define def_pin_Hart_RXD 9  // Pino RX da ESP32 conectado ao pino RX do DS8500
+#define def_pin_Hart_TXD 10 // Pino TX da ESP32 conectado ao pino TX do DS8500
+#define def_pin_Hart_RTS 11 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+#define def_pin_Hart_CTS 6  // Pino CD da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
@@ -56,6 +57,7 @@
 #define HOSTNAME "inindkit0"
 
 Telnet_c Telnet(4000);
+Hart_c ds8500Serial(4001);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
@@ -157,6 +159,8 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
                      {
         Telnet.println("\nWelcome " + ip);
         Telnet.println("(Use ^] + q  to disconnect.)"); });
+    
+    ds8500Serial.setup();
 }
 
 void InIndKit_c::loop(void)
@@ -164,6 +168,7 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     Telnet.update();
     displayUpdate();
+    ds8500Serial.loop();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)

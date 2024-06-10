@@ -30,8 +30,7 @@ public:
 
 bool Telnet_c::start(uint16_t port)
 {
-  if (connected)
-    ((ESPTelnet *) this)->stop();
+  ((ESPTelnet *) this)->stop();
   server_port = port;
   onDisconnect([](String ip)
                {

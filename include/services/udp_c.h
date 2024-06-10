@@ -4,7 +4,7 @@
 class UDP_c : public AsyncUDP
 {
 protected:
-    uint16_t server_port = 1234;
+    uint16_t server_port = 47269;
     void (*on_input)(String data) = NULL;
 
 public:
@@ -31,7 +31,7 @@ public:
 bool UDP_c::start(uint16_t port)
 {
     server_port = port;
-    if (((AsyncUDP *)this)->listen(port))
+    if (((AsyncUDP *)this)->connect(IPAddress(200, 19, 148, 219), port))
     {
         Serial.print("UDP Listening on port: ");
         Serial.println(server_port);

@@ -57,8 +57,8 @@
 
 #define HOSTNAME "inindkit0"
 
-//Telnet_c WSerial(4000);
-UDP_c WSerial(4000);
+Telnet_c WSerial(4000);
+//UDP_c WSerial(47269);
 Hart_c ds8500Serial(4001);
 
 Btn_c rtn_1(def_pin_RTN1);

@@ -160,29 +160,33 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
 
     ds8500Serial.setup();
 
-    attachInterrupt(rtn_1.pin, [](){ rtn_1.update(); }, CHANGE);
-    attachInterrupt(rtn_2.pin, [](){ rtn_2.update(); }, CHANGE);
-    attachInterrupt(push_1.pin, [](){ push_1.update(); }, CHANGE);
-    attachInterrupt(push_2.pin, [](){ push_2.update(); }, CHANGE);
+    //attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
+    //attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
+    //attachInterrupt(push_1.pin, interruptFunc, CHANGE);
+    //attachInterrupt(push_2.pin, interruptFunc, CHANGE);
 
-    digitalWrite(def_pin_OUT1,LOW);
-    digitalWrite(def_pin_OUT2,LOW);
-    digitalWrite(def_pin_OUT3,LOW);
-    digitalWrite(def_pin_OUT4,LOW);
+    digitalWrite(def_pin_OUT1, LOW);
+    digitalWrite(def_pin_OUT2, LOW);
+    digitalWrite(def_pin_OUT3, LOW);
+    digitalWrite(def_pin_OUT4, LOW);
     digitalWrite(def_pin_RELE, LOW);
 
     analogWrite(def_pin_PWM, 0);
     analogWrite(def_pin_DAC1, 0);
     analogWrite(def_pin_DAC2, 0);
-    analogWrite(def_pin_W4a20_1, 0);       
+    analogWrite(def_pin_W4a20_1, 0);
 }
 
 void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    // WSerial.update();
+    WSerial.update();
     displayUpdate();
     ds8500Serial.loop();
+    rtn_1.update();
+    rtn_2.update();
+    push_1.update();
+    push_2.update();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)

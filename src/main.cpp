@@ -2,24 +2,6 @@
 #include "InIndKit.h"
 
 AsyncDelay_c delayPOT(500); // time mili second
-void monitoraPOT(void);
-
-void setup()
-{
-  InIndKit.setup("InovaIndustria", "industria50"); //("Wokwi-GUEST","");// ssid, password ;
-  WSerial.onInputReceived([](String str){WSerial.println(str);});
-  rtn_1.onValueChanged([](bool status){WSerial.println(status? "RTN1 ON" :"RTN1 OFF");});
-  rtn_2.onValueChanged([](bool status){WSerial.println(status? "RTN1 ON" :"RTN1 OFF");});
-  push_1.onValueChanged([](bool status){WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF");});
-  push_2.onValueChanged([](bool status){WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF");});      
-}
-
-void loop()
-{
-  InIndKit.loop();
-  monitoraPOT();
-}
-
 void monitoraPOT(void)
 {
   if (delayPOT.isExpired())
@@ -34,4 +16,20 @@ void monitoraPOT(void)
     InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
     WSerial.plot("pot_RIGHT", vlPOT_RIGHT);
   }
+}
+
+void setup()
+{
+  InIndKit.setup("InovaIndustria", "industria50"); //("Wokwi-GUEST","");// ssid, password ;
+  WSerial.onInputReceived([](String str){WSerial.println(str);});
+  rtn_1.onValueChanged([](bool status){WSerial.println(status? "RTN1 ON" :"RTN1 OFF");});
+  rtn_2.onValueChanged([](bool status){WSerial.println(status? "RTN2 ON" :"RTN2 OFF");});
+  push_1.onValueChanged([](bool status){WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF");});
+  push_2.onValueChanged([](bool status){WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF");});      
+}
+
+void loop()
+{
+  InIndKit.loop();
+  monitoraPOT();
 }

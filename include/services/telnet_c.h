@@ -23,8 +23,13 @@ public:
   void println(const T &data, int base);
   void update(void);
   uint16_t serverPort() { return (this->server_port); }
+  //bool isConnected();
 };
 
+//bool Telnet_c::isConnected()
+//{
+//  return true;
+//}
 bool Telnet_c::start(uint16_t port)
 {
   if(((ESPTelnet *) this)->isConnected()) ((ESPTelnet *) this)->stop();
@@ -86,42 +91,42 @@ template <typename T>
 void Telnet_c::print(const T &data)
 {
   if (((ESPTelnet *) this)->isConnected())
-    Serial.print(data);
+    ((ESPTelnet *) this)->print(data);  
   else
-    ((ESPTelnet *) this)->print(data);
+    Serial.print(data);  
 }
 
 template <typename T>
 void Telnet_c::print(const T &data, int base)
 {
   if (((ESPTelnet *) this)->isConnected())
-    Serial.print(data, base);
+    ((ESPTelnet *) this)->print(data, base);  
   else
-    ((ESPTelnet *) this)->print(data, base);
+    Serial.print(data, base);  
 }
 
 template <typename T>
 void Telnet_c::println(const T &data)
 {
   if (((ESPTelnet *) this)->isConnected())
-    Serial.println(data);
+    ((ESPTelnet *) this)->println(data);  
   else
-    ((ESPTelnet *) this)->println(data);
+    Serial.println(data);  
 }
 
 template <typename T>
 void Telnet_c::println(const T &data, int base)
 {
   if (((ESPTelnet *) this)->isConnected())
-    Serial.println(data, base);
+    ((ESPTelnet *) this)->println(data, base);  
   else
-    ((ESPTelnet *) this)->println(data, base);
+    Serial.println(data, base);  
 }
 
 void Telnet_c::println()
 {
   if (((ESPTelnet *) this)->isConnected())
-    Serial.println();
+    ((ESPTelnet *) this)->println();  
   else
-    ((ESPTelnet *) this)->println();
+    Serial.println();
 }

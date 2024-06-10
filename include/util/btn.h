@@ -17,7 +17,7 @@ public:
     void onValueChanged(void (*f)(bool status));
     bool debounceBtn();
     void setPin(uint8_t pinBtn);
-    void update();
+    void IRAM_ATTR update();
     bool getStatusBtn();
 };
 
@@ -28,8 +28,7 @@ void Btn_c::setPin(uint8_t pinBtn)
 
 void Btn_c::update()
 {
-    if (debounceBtn())
-        onChanged(status_btn);
+    if (debounceBtn()) onChanged(status_btn);
 }
 
 bool Btn_c::debounceBtn()

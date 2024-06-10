@@ -1,12 +1,19 @@
 #include <Arduino.h>
-#include "ESPTelnetBase.h"
+#include <HardwareSerial.h>
+#include <ESPTelnetBase.h>
 
-/**************** Hart Interface - UART1 **********/
-#define def_pin_Hart_RXD 9  // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 10 // Pino TX da ESP32 conectado ao pino TX do DS8500
-#define def_pin_Hart_RTS 11 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-#define def_pin_Hart_CTS 6  // Pino CD da ESP32 conectado ao pino CD do DS8500
-
+// Enables or disables Hardware Flow Control using RTS and/or CTS pins (must use setAllPins() before)
+#define UART_HW_FLOWCTRL_DISABLE 0x0   //disable hardware flow control
+#define UART_HW_FLOWCTRL_RTS     0x1   //enable RX hardware flow control (rts)
+#define UART_HW_FLOWCTRL_CTS     0x2   //enable TX hardware flow control (cts)
+#define UART_HW_FLOWCTRL_CTS_RTS 0x3   //enable hardware flow control
+/////////////////////////////////////////////////////////////////////////
+// Used to set RS485 modes such as UART_MODE_RS485_HALF_DUPLEX for Auto RTS function on ESP32
+#define UART_MODE_UART                   0x00    //mode: regular UART mode
+#define UART_MODE_RS485_HALF_DUPLEX      0x01    //mode: half duplex RS485 UART mode control by RTS pin
+#define UART_MODE_IRDA                   0x02    //mode: IRDA UART mode
+#define UART_MODE_RS485_COLLISION_DETECT 0x03    //mode: RS485 collision detection UART mode (used for test purposes)
+#define UART_MODE_RS485_APP_CTRL         0x04    //mode: application control RS485 UART mode (used for test purposes)
 /////////////////////////////////////////////////////////////////
 class Hart_c : public HardwareSerial, public ESPTelnetBase
 {

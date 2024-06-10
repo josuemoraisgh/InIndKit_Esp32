@@ -8,6 +8,7 @@
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
+#include "services\UDP_c.h"
 #include "services\telnet_c.h"
 #include "services\hart_c.h"
 #include "util/asyncDelay.h"
@@ -56,8 +57,10 @@
 
 #define HOSTNAME "inindkit0"
 
-Telnet_c Telnet(4000);
+//Telnet_c WSerial(4000);
+UDP_c WSerial(4000);
 Hart_c ds8500Serial(4001);
+
 Btn_c rtn_1(def_pin_RTN1);
 Btn_c rtn_2(def_pin_RTN2);
 Btn_c push_1(def_pin_PUSH1);
@@ -91,6 +94,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     pinMode(def_pin_IN2, INPUT);
     pinMode(def_pin_IN3, INPUT);
     pinMode(def_pin_IN4, INPUT);
+    
     pinMode(def_pin_OUT1, OUTPUT);
     pinMode(def_pin_OUT2, OUTPUT);
     pinMode(def_pin_OUT3, OUTPUT);
@@ -144,20 +148,15 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
 
     otaStart(HOSTNAME); // Depois o OTA
 
-    if (Telnet.start())
+    if (WSerial.start())
     {
         Serial.print("Telnet running - port:");
-        Serial.println(Telnet.serverPort());
+        Serial.println(WSerial.serverPort());
     }
     else
     {
         errorMsg("Telnet  error.\nWill reboot...");
     }
-
-    Telnet.onConnect([](String ip)
-                     {
-        Telnet.println("\nWelcome " + ip);
-        Telnet.println("(Use ^] + q  to disconnect.)"); });
 
     ds8500Serial.setup();
     
@@ -170,7 +169,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
 void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    Telnet.update();
+    //WSerial.update();
     displayUpdate();
     ds8500Serial.loop();
 }

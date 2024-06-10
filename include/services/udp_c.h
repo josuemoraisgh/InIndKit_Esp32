@@ -1,0 +1,114 @@
+#include <Arduino.h>
+#include "AsyncUDP.h"
+
+class UDP_c : public AsyncUDP
+{
+protected:
+    uint16_t server_port = 1234;
+    void (*on_input)(uint8_t *data, size_t length) = NULL;
+
+public:
+    bool start(uint16_t port);
+    bool start() { return (start(server_port)); }
+    UDP_c(uint16_t port) : AsyncUDP() { this->server_port = server_port; }
+    template <typename T>
+    void plot(const char *varName, T x, T y, const char *unit = NULL);
+    template <typename T>
+    void plot(const char *varName, T y, const char *unit = NULL);
+    template <typename T>
+    void print(const T &data);
+    template <typename T>
+    void print(const T &data, int base);
+    void println();
+    template <typename T>
+    void println(const T &data);
+    template <typename T>
+    void println(const T &data, int base);
+    uint16_t serverPort() { return (server_port); }
+    void onInputReceived(void (*f)(uint8_t *data, size_t length));
+};
+
+bool UDP_c::start(uint16_t port)
+{
+    server_port = port;
+    if (((AsyncUDP *)this)->listen(port))
+    {
+        Serial.print("UDP Listening on port: ");
+        Serial.println(server_port);
+        ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
+                                     {this->on_input(packet.data(), packet.length());});
+        return true;
+    }
+    return false;
+}
+
+template <typename T>
+void UDP_c::plot(const char *varName, T y, const char *unit)
+{
+    plot(varName, (T)millis(), y, unit);
+}
+template <typename T>
+void UDP_c::plot(const char *varName, T x, T y, const char *unit)
+{
+    print(">"); // Inicio de envio de dados para um gráfico.
+    print(varName);
+    print(":");
+    print(x);
+    print(":");
+    print(y);
+    if (unit != NULL)
+    {
+        print("§"); // Unidade na sequência
+        print(unit);
+    }
+    println("|g"); // Modo Grafico
+}
+
+template <typename T>
+void UDP_c::print(const T &data)
+{
+    if (((AsyncUDP *)this)->connected())
+        Serial.print(data);
+    else
+        ((AsyncUDP *)this)->print(data);
+}
+
+template <typename T>
+void UDP_c::print(const T &data, int base)
+{
+    if (((AsyncUDP *)this)->connected())
+        Serial.print(data, base);
+    else
+        ((AsyncUDP *)this)->print(data, base);
+}
+
+template <typename T>
+void UDP_c::println(const T &data)
+{
+    if (((AsyncUDP *)this)->connected())
+        Serial.println(data);
+    else
+        ((AsyncUDP *)this)->println(data);
+}
+
+template <typename T>
+void UDP_c::println(const T &data, int base)
+{
+    if (((AsyncUDP *)this)->connected())
+        Serial.println(data, base);
+    else
+        ((AsyncUDP *)this)->println(data, base);
+}
+
+void UDP_c::println()
+{
+    if (((AsyncUDP *)this)->connected())
+        Serial.println();
+    else
+        ((AsyncUDP *)this)->println();
+}
+
+void UDP_c::onInputReceived(void (*f)(uint8_t *data, size_t length))
+{
+    on_input = f;
+}

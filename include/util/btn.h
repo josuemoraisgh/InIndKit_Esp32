@@ -12,14 +12,16 @@ protected:
 public:
     void (*onChanged)(bool status) = NULL;
     uint8_t pin;
-    Btn_c(uint8_t pinBtn);
+    Btn_c() {pin = 0;}
+    Btn_c(uint8_t pinBtn) {pin = pinBtn;}
     void onValueChanged(void (*f)(bool status));
     bool debounceBtn();
+    void setPin(uint8_t pinBtn);
     void update();
     bool getStatusBtn();
 };
 
-Btn_c::Btn_c(uint8_t pinBtn)
+void Btn_c::setPin(uint8_t pinBtn)
 {
     pin = pinBtn;
 }

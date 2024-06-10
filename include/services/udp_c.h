@@ -5,7 +5,7 @@ class UDP_c : public AsyncUDP
 {
 protected:
     uint16_t server_port = 1234;
-    void (*on_input)(uint8_t *data, size_t length) = NULL;
+    void (*on_input)(String data) = NULL;
 
 public:
     bool start(uint16_t port);
@@ -25,7 +25,7 @@ public:
     template <typename T>
     void println(const T &data, int base);
     uint16_t serverPort() { return (server_port); }
-    void onInputReceived(void (*f)(uint8_t *data, size_t length));
+    void onInputReceived(void (*f)(String data));
 };
 
 bool UDP_c::start(uint16_t port)
@@ -36,7 +36,7 @@ bool UDP_c::start(uint16_t port)
         Serial.print("UDP Listening on port: ");
         Serial.println(server_port);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
-                                     {this->on_input(packet.data(), packet.length());});
+                                     {this->on_input(packet.readStringUntil('\n'));});
         return true;
     }
     return false;
@@ -108,7 +108,7 @@ void UDP_c::println()
         ((AsyncUDP *)this)->println();
 }
 
-void UDP_c::onInputReceived(void (*f)(uint8_t *data, size_t length))
+void UDP_c::onInputReceived(void (*f)(String data))
 {
     on_input = f;
 }

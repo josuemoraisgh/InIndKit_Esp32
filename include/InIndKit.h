@@ -130,7 +130,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, "InIndKit01 ");
+        setDisplayText(2, HOSTNAME);
         setDisplayText(3, "UFU Mode");
         displayUpdate();
         delay(2500);

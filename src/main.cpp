@@ -6,7 +6,7 @@ void monitoraPOT(void);
 
 void setup()
 {
-  InIndKit.setup("APJosue", "josue32154538"); //("Wokwi-GUEST","");// ssid, password ;
+  InIndKit.setup("InovaIndustria", "industria50"); //("Wokwi-GUEST","");// ssid, password ;
   Telnet.onInputReceived([](String str) 
     {
       Telnet.println(str);

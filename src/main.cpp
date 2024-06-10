@@ -7,44 +7,11 @@ void monitoraPOT(void);
 void setup()
 {
   InIndKit.setup("InovaIndustria", "industria50"); //("Wokwi-GUEST","");// ssid, password ;
-  Telnet.onInputReceived([](String str) 
-    {
-      Telnet.println(str);
-    }
-  );
-  
-  attachInterrupt(
-      InIndKit.rtn_1.pin,
-      []()
-      {
-        if (debounceBtn(&InIndKit.rtn_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-          Telnet.println(InIndKit.rtn_1.status_btn ? "BotaoRTN1 ON" : "BotaoRTN1 OFF");
-      },
-      CHANGE);
-  attachInterrupt(
-      InIndKit.rtn_2.pin,
-      []()
-      {
-        if (debounceBtn(&InIndKit.rtn_2)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-          Telnet.println(InIndKit.rtn_2.status_btn ? "BotaoRTN2 ON" : "BotaoRTN2 OFF");
-      },
-      CHANGE);
-  attachInterrupt(
-      InIndKit.push_1.pin,
-      []()
-      {
-        if (debounceBtn(&InIndKit.push_1)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-          Telnet.println(InIndKit.push_1.status_btn ? "BotaoPush_1 ON" : "BotaoPush_1 OFF");
-      },
-      CHANGE);
-  attachInterrupt(
-      InIndKit.push_2.pin,
-      []()
-      {
-        if (debounceBtn(&InIndKit.push_2)) // Checa se o botao alterou sem debounce e se sim mudar o seu valor de status
-          Telnet.println(InIndKit.push_2.status_btn ? "BotaoPush_2 ON" : "BotaoPush_2 OFF");
-      },
-      CHANGE);
+  Telnet.onInputReceived([](String str){Telnet.println(str);});
+  rtn_1.onValueChanged([](bool status){Telnet.println(status? "RTN1 ON" :"RTN1 OFF");});
+  rtn_2.onValueChanged([](bool status){Telnet.println(status? "RTN1 ON" :"RTN1 OFF");});
+  push_1.onValueChanged([](bool status){Telnet.println(status? "PUSH_1 ON" :"PUSH_1 OFF");});
+  push_2.onValueChanged([](bool status){Telnet.println(status? "PUSH_2 ON" :"PUSH_2 OFF");});      
 }
 
 void loop()

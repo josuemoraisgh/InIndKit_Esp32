@@ -12,6 +12,7 @@
 #include "services\hart_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
+
 //////////////////////////Lado Esquerdo///////////////////////
 /********** POTENTIOMETERS GPIO define *****/
 #define def_pin_POT_LEFT 36  // GPIO36
@@ -25,10 +26,10 @@
 #define def_pin_DAC1 25 // GPIO25
 #define def_pin_DAC2 26 // GPIO26
 /******************** Outputs **************/
-#define def_pin_OUT1 27  // GPIO27
-#define def_pin_OUT2 14  // GPIO14
-#define def_pin_OUT3 12  // GPIO12
-#define def_pin_OUT4 13  // GPIO13
+#define def_pin_OUT1 27 // GPIO27
+#define def_pin_OUT2 14 // GPIO14
+#define def_pin_OUT3 12 // GPIO12
+#define def_pin_OUT4 13 // GPIO13
 /**************** Hart Interface **********/
 #define def_pin_Hart_RXD 9  // Pino RX da ESP32 conectado ao pino RX do DS8500
 #define def_pin_Hart_TXD 10 // Pino TX da ESP32 conectado ao pino TX do DS8500
@@ -53,21 +54,19 @@
 #define def_pin_R4a20_1 4 // GPIO4
 #define def_pin_R4a20_2 0 // GPIO0
 
-
 #define HOSTNAME "inindkit0"
 
 Telnet_c Telnet(4000);
 Hart_c ds8500Serial(4001);
+Btn_c rtn_1(def_pin_RTN1);
+Btn_c rtn_2(def_pin_RTN2);
+Btn_c push_1(def_pin_PUSH1);
+Btn_c push_2(def_pin_PUSH2);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
 public:
-    btn_t rtn_1 = {def_pin_RTN1, 0, false, false};
-    btn_t rtn_2 = {def_pin_RTN2, 0, false, false};
-    btn_t push_1 = {def_pin_PUSH1, 0, false, false};
-    btn_t push_2 = {def_pin_PUSH2, 0, false, false};
-
     void setup(const char *ssid, const char *password);
     void loop(void);
     void errorMsg(String error, bool restart = true);
@@ -91,16 +90,16 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     pinMode(def_pin_IN1, INPUT);
     pinMode(def_pin_IN2, INPUT);
     pinMode(def_pin_IN3, INPUT);
-    pinMode(def_pin_IN4, INPUT);    
+    pinMode(def_pin_IN4, INPUT);
     pinMode(def_pin_OUT1, OUTPUT);
     pinMode(def_pin_OUT2, OUTPUT);
     pinMode(def_pin_OUT3, OUTPUT);
-    pinMode(def_pin_OUT4, OUTPUT);    
+    pinMode(def_pin_OUT4, OUTPUT);
     /********************* PWM ****************/
     pinMode(def_pin_PWM, OUTPUT);
     /********************* DAC ****************/
     pinMode(def_pin_DAC1, OUTPUT);
-    pinMode(def_pin_DAC2, OUTPUT);    
+    pinMode(def_pin_DAC2, OUTPUT);
     /********************* RELÊ ***************/
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Read 4@20 mA ***********/
@@ -159,8 +158,13 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
                      {
         Telnet.println("\nWelcome " + ip);
         Telnet.println("(Use ^] + q  to disconnect.)"); });
-    
+
     ds8500Serial.setup();
+    
+    attachInterrupt(rtn_1.pin,[](){rtn_1.update();}, CHANGE);
+    attachInterrupt(rtn_2.pin,[](){rtn_2.update();}, CHANGE);
+    attachInterrupt(push_1.pin,[](){push_1.update();}, CHANGE);
+    attachInterrupt(push_2.pin,[](){push_2.update();}, CHANGE);    
 }
 
 void InIndKit_c::loop(void)

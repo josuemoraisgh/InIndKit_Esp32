@@ -20,9 +20,11 @@ public:
     bool setup() { return (setup(server_port)); }
     bool setup(uint16_t port);
     void loop();
+    void hartToTelnet();
+    void telnetToHart();
 
 protected:
-    void handleInput();
+    void handleInput() {}
 };
 
 bool Hart_c::setup(uint16_t port)
@@ -38,23 +40,35 @@ bool Hart_c::setup(uint16_t port)
 
 void Hart_c::loop()
 {
-    size_t tam = ((HardwareSerial *)this)->available();
-    if (tam > 0)
-    {
-        uint8_t data[tam];
-        ((HardwareSerial *)this)->readBytes(data, tam);
-        ((ESPTelnet *)this)->write(data, tam);
-    }
     ((ESPTelnetBase *)this)->loop();
+    telnetToHart();
+    hartToTelnet();
 }
 
-void Hart_c::handleInput()
+void Hart_c::telnetToHart()
 {
-    size_t tam = client.available();
-    if (tam > 0)
+    if (client)
     {
-        uint8_t data[tam];
-        client.readBytes(data, tam);
-        ((HardwareSerial *)this)->write(data, tam);
+        size_t tam = client.available();
+        if (tam > 0)
+        {
+            uint8_t data[tam];
+            client.readBytes(data, tam);
+            ((HardwareSerial *)this)->write(data, tam);
+        }
+    }
+}
+
+void Hart_c::hartToTelnet()
+{
+    if (client)
+    {
+        size_t tam = ((HardwareSerial *)this)->available();
+        if (tam > 0)
+        {
+            uint8_t data[tam];
+            ((HardwareSerial *)this)->readBytes(data, tam);
+            ((ESPTelnet *)this)->write(data, tam);
+        }
     }
 }

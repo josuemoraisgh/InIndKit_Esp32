@@ -165,11 +165,11 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     //attachInterrupt(push_1.pin, interruptFunc, CHANGE);
     //attachInterrupt(push_2.pin, interruptFunc, CHANGE);
 
-    digitalWrite(def_pin_OUT1, LOW);
-    digitalWrite(def_pin_OUT2, LOW);
-    digitalWrite(def_pin_OUT3, LOW);
-    digitalWrite(def_pin_OUT4, LOW);
-    digitalWrite(def_pin_RELE, LOW);
+    digitalWrite(def_pin_OUT1, HIGH);
+    digitalWrite(def_pin_OUT2, HIGH);
+    digitalWrite(def_pin_OUT3, HIGH);
+    digitalWrite(def_pin_OUT4, HIGH);
+    digitalWrite(def_pin_RELE, HIGH);
 
     analogWrite(def_pin_PWM, 0);
     analogWrite(def_pin_DAC1, 0);

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "InIndKit.h"
 
-AsyncDelay_c delayPOT(500); // time mili second
+AsyncDelay_c delayPOT(50); // time mili second
 void monitoraPOT(void)
 {
   if (delayPOT.isExpired())

@@ -58,7 +58,7 @@
 #define HOSTNAME "inindkit0"
 
 Telnet_c WSerial(4000);
-//UDP_c WSerial(47269);
+// UDP_c WSerial(47269);
 Hart_c ds8500Serial(4001);
 
 Btn_c rtn_1(def_pin_RTN1);
@@ -94,7 +94,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     pinMode(def_pin_IN2, INPUT);
     pinMode(def_pin_IN3, INPUT);
     pinMode(def_pin_IN4, INPUT);
-    
+
     pinMode(def_pin_OUT1, OUTPUT);
     pinMode(def_pin_OUT2, OUTPUT);
     pinMode(def_pin_OUT3, OUTPUT);
@@ -159,17 +159,28 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     }
 
     ds8500Serial.setup();
-    
-    attachInterrupt(rtn_1.pin,[](){rtn_1.update();}, CHANGE);
-    attachInterrupt(rtn_2.pin,[](){rtn_2.update();}, CHANGE);
-    attachInterrupt(push_1.pin,[](){push_1.update();}, CHANGE);
-    attachInterrupt(push_2.pin,[](){push_2.update();}, CHANGE);    
+
+    attachInterrupt(rtn_1.pin, [](){ rtn_1.update(); }, CHANGE);
+    attachInterrupt(rtn_2.pin, [](){ rtn_2.update(); }, CHANGE);
+    attachInterrupt(push_1.pin, [](){ push_1.update(); }, CHANGE);
+    attachInterrupt(push_2.pin, [](){ push_2.update(); }, CHANGE);
+
+    digitalWrite(def_pin_OUT1,LOW);
+    digitalWrite(def_pin_OUT2,LOW);
+    digitalWrite(def_pin_OUT3,LOW);
+    digitalWrite(def_pin_OUT4,LOW);
+    digitalWrite(def_pin_RELE, LOW);
+
+    analogWrite(def_pin_PWM, 0);
+    analogWrite(def_pin_DAC1, 0);
+    analogWrite(def_pin_DAC2, 0);
+    analogWrite(def_pin_W4a20_1, 0);       
 }
 
 void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    //WSerial.update();
+    // WSerial.update();
     displayUpdate();
     ds8500Serial.loop();
 }

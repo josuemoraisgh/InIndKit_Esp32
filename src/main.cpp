@@ -18,16 +18,11 @@ void monitoraPOT(void)
   }
 }
 
-void changeLed(uint8_t status){
-  digitalWrite(def_pin_OUT1,!status); 
-  WSerial.println(status? "RTN1 ON" :"RTN1 OFF");  
-}
-
 void setup()
 {
-  InIndKit.setup("InovaIndustria", "industria50"); //("Wokwi-GUEST","");// ssid, password ;
+  InIndKit.setup("InovaIndustria", "industria50", "inindkit0"); //("Wokwi-GUEST","","inindkit0");// ssid, password, hostname ;
   WSerial.onInputReceived([](String str){WSerial.println(str);});
-  rtn_1.onValueChanged(changeLed);
+  rtn_1.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT1,!status);WSerial.println(status? "RTN1 ON" :"RTN1 OFF");});
   rtn_2.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT2,!status);WSerial.println(status? "RTN2 ON" :"RTN2 OFF");});
   push_1.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT3,!status);WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF");});
   push_2.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT4,!status);WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF");});      

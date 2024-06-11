@@ -3,7 +3,7 @@
 
 void setup()
 {
-    InIndKit.setup("Wokwi-GUEST","");
+    InIndKit.setup("Wokwi-GUEST" ,"", "inindkit0");
 }
 
 void loop()

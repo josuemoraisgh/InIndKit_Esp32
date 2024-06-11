@@ -55,8 +55,6 @@
 #define def_pin_R4a20_1 4 // GPIO4
 #define def_pin_R4a20_2 0 // GPIO0
 
-#define HOSTNAME "inindkit0"
-
 Telnet_c WSerial(4000);
 // UDP_c WSerial(47269);
 Hart_c ds8500Serial(4001);
@@ -70,13 +68,13 @@ Btn_c push_2(def_pin_PUSH2);
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
 public:
-    void setup(const char *ssid, const char *password);
+    void setup(const char *ssid, const char *password, const char *hostname);
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
 #endif
 
-inline void InIndKit_c::setup(const char *ssid, const char *password)
+inline void InIndKit_c::setup(const char *ssid, const char *password, const char *hostname)
 {
     Serial.begin(115200);
     Serial.println("Booting");
@@ -130,7 +128,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, HOSTNAME);
+        setDisplayText(2, hostname);
         setDisplayText(3, "UFU Mode");
         displayUpdate();
         delay(2500);
@@ -146,7 +144,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password)
     // }
     // MDNS.addService("http", "tcp", 80);
 
-    otaStart(HOSTNAME); // Depois o OTA
+    otaStart(hostname); // Depois o OTA
 
     if (WSerial.start())
     {

@@ -6,19 +6,19 @@ class Btn_c
 {
 protected:
     unsigned long reading_time = 0;
-    bool status_btn = false;
-    bool last_status_btn = false;
+    uint8_t status_btn = LOW;
+    uint8_t last_status_btn = LOW;
 
 public:
-    void (*onChanged)(bool status) = NULL;
+    void (*onChanged)(uint8_t status) = NULL;
     uint8_t pin;
     Btn_c() {pin = 0;}
     Btn_c(uint8_t pinBtn) {pin = pinBtn;}
-    void onValueChanged(void (*f)(bool status));
+    void onValueChanged(void (*f)(uint8_t status));
     bool debounceBtn();
     void setPin(uint8_t pinBtn);
     void IRAM_ATTR update();
-    bool getStatusBtn();
+    uint8_t getStatusBtn();
 };
 
 void Btn_c::setPin(uint8_t pinBtn)
@@ -33,7 +33,7 @@ void Btn_c::update()
 
 bool Btn_c::debounceBtn()
 {
-    bool leitura = (bool)digitalRead(pin); // A variável leitura recebe a leitura do pino do botão: HIGH (pressionado) ou LOW (Desacionado)
+    uint8_t leitura = digitalRead(pin); // A variável leitura recebe a leitura do pino do botão: HIGH (pressionado) ou LOW (Desacionado)
     if (leitura != last_status_btn)        // Se a leitura atual for diferente da leitura anterior
     {
         reading_time = millis();   // Reseta a variável btnData.reading_time atribuindo o tempo atual para uma nova contagem
@@ -50,11 +50,11 @@ bool Btn_c::debounceBtn()
     return (false);
 }
 
-bool Btn_c::getStatusBtn()
+uint8_t Btn_c::getStatusBtn()
 {
     return status_btn;
 }
-void Btn_c::onValueChanged(void (*f)(bool status))
+void Btn_c::onValueChanged(void (*f)(uint8_t status))
 {
     onChanged = f;
 }

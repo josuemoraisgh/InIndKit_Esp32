@@ -27,10 +27,10 @@
 #define def_pin_DAC1 25 // GPIO25
 #define def_pin_DAC2 26 // GPIO26
 /******************** Outputs **************/
-#define def_pin_OUT1 27 // GPIO27
-#define def_pin_OUT2 14 // GPIO14
-#define def_pin_OUT3 12 // GPIO12
-#define def_pin_OUT4 13 // GPIO13
+#define def_pin_OUT1 12 // GPIO12
+#define def_pin_OUT2 13 // GPIO13
+#define def_pin_OUT3 27 // GPIO27
+#define def_pin_OUT4 14 // GPIO14
 /**************** Hart Interface **********/
 #define def_pin_Hart_RXD 9  // Pino RX da ESP32 conectado ao pino RX do DS8500
 #define def_pin_Hart_TXD 10 // Pino TX da ESP32 conectado ao pino TX do DS8500

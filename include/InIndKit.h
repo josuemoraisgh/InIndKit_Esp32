@@ -57,7 +57,7 @@
 
 Telnet_c WSerial(4000);
 // UDP_c WSerial(47269);
-Hart_c ds8500Serial(4001);
+// Hart_c ds8500Serial(4001);
 
 Btn_c rtn_1(def_pin_RTN1);
 Btn_c rtn_2(def_pin_RTN2);
@@ -68,13 +68,13 @@ Btn_c push_2(def_pin_PUSH2);
 class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
 {
 public:
-    void setup(const char *ssid, const char *password, const char *hostname);
+    void setup(const char *ssid, const char *password, const char *DDNSName);
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
 #endif
 
-inline void InIndKit_c::setup(const char *ssid, const char *password, const char *hostname)
+inline void InIndKit_c::setup(const char *ssid, const char *password, const char *DDNSName)
 {
     Serial.begin(115200);
     Serial.println("Booting");
@@ -128,7 +128,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, hostname);
+        setDisplayText(2, DDNSName);
         setDisplayText(3, "UFU Mode");
         displayUpdate();
         delay(2500);
@@ -138,13 +138,13 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
     {
         errorMsg("Wifi  error.\nWill reboot...");
     }
-    // if (!MDNS.begin(HOSTNAME))
+    // if (!MDNS.begin(DDNSName))
     //{
     //     errorMsg("MDNS Error.\nWill reboot...");
     // }
     // MDNS.addService("http", "tcp", 80);
 
-    otaStart(hostname); // Depois o OTA
+    otaStart(DDNSName); // Depois o OTA
 
     if (WSerial.start())
     {
@@ -156,7 +156,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
         errorMsg("Telnet  error.\nWill reboot...");
     }
 
-    ds8500Serial.setup();
+    //ds8500Serial.setup();
 
     //attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
     //attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
@@ -180,7 +180,7 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
-    ds8500Serial.loop();
+    //ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();
     push_1.update();

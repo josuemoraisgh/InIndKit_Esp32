@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 #include <ESPTelnetBase.h>
-
+/*
 class Hart_c : public HardwareSerial, public ESPTelnetBase
 {
 
@@ -65,4 +65,4 @@ void Hart_c::hartToTelnet()
             ((ESPTelnet *)this)->write(data, tam);
         }
     }
-}
+}*/

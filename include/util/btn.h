@@ -73,7 +73,7 @@ void Btn_c::onValueChanged(void (*f)(uint8_t status))
     onChanged = f;
 }
 
-void Btn_c::onPressedWithTime(void (f)(void))
+void Btn_c::onPressedWithTime(void (*f)(void))
 {
     onPressed = f;
 }

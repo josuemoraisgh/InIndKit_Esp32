@@ -80,7 +80,6 @@ inline void InIndKit_c::setup(const char *DDNSName)
 {
     Serial.begin(115200);
     Serial.println("Booting");
-
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT_LEFT, INPUT);
     pinMode(def_pin_POT_RIGHT, INPUT);
@@ -112,6 +111,10 @@ inline void InIndKit_c::setup(const char *DDNSName)
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
 
+    push_1.setTimePressedButton(3);
+    push_1.onPressedWithTime([]()
+                             { wm.onStart(); });
+
     if (displayStart())
     {
         Serial.println("Display running");
@@ -133,18 +136,15 @@ inline void InIndKit_c::setup(const char *DDNSName)
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
         displayUpdate();
-        delay(2500);
     }
     else
     {
-        setDisplayText(1, "Mode: AP");
-        errorMsg("Wifi  error.\nWill reboot...", false);
+        setDisplayText(1, "AP MODE");
+        errorMsg("Wifi  error.\nWill reboot...");
     }
     setDisplayText(2, DDNSName);
     setDisplayText(3, "UFU Mode");
-    push_1.setTimePressedButton(3);
-    push_1.onPressedWithTime([]()
-                             { wm.onStart(); });
+    delay(2500);    
 
     // if (!MDNS.begin(DDNSName))
     //{

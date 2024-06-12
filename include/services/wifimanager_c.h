@@ -11,10 +11,10 @@ protected:
 
 public:
     WifiManager_c(const uint8_t &timeout = 120) : WiFiManager() { this->timeout = timeout; }
-    void onStart();
+    void onStart(/*const char *DDNSName*/);
 };
 
-void WifiManager_c::onStart()
+void WifiManager_c::onStart(/*const char *DDNSName*/)
 {
     // reset settings - for testing
     // wm.resetSettings();

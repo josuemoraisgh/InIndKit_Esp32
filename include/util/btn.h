@@ -8,17 +8,20 @@ protected:
     unsigned long reading_time = 0;
     uint8_t status_btn = LOW;
     uint8_t last_status_btn = LOW;
-
+    void (*onChanged)(uint8_t status) = NULL;    
+    uint16_t pressed_button_time = 0;
+    void (*onPressed)(void) = NULL;
 public:
-    void (*onChanged)(uint8_t status) = NULL;
     uint8_t pin;
-    Btn_c() {pin = 0;}
-    Btn_c(uint8_t pinBtn) {pin = pinBtn;}
+    Btn_c() { pin = 0; }
+    Btn_c(uint8_t pinBtn) { pin = pinBtn; }
     void onValueChanged(void (*f)(uint8_t status));
+    void onPressedWithTime(void (*f)(void));
     bool debounceBtn();
     void setPin(uint8_t pinBtn);
     void IRAM_ATTR update();
     uint8_t getStatusBtn();
+    void setTimePressedButton(uint8_t time);     
 };
 
 void Btn_c::setPin(uint8_t pinBtn)
@@ -28,13 +31,18 @@ void Btn_c::setPin(uint8_t pinBtn)
 
 void Btn_c::update()
 {
-    if (debounceBtn()) onChanged(status_btn);
+    if (debounceBtn())
+        onChanged(status_btn);
 }
 
 bool Btn_c::debounceBtn()
 {
     uint8_t leitura = digitalRead(pin); // A variável leitura recebe a leitura do pino do botão: HIGH (pressionado) ou LOW (Desacionado)
-    if (leitura != last_status_btn)        // Se a leitura atual for diferente da leitura anterior
+    if (pressed_button_time != 0 && leitura == last_status_btn && pressed_button_time == (millis() - reading_time))
+    {
+        onPressed();
+    }
+    if (leitura != last_status_btn) // Se a leitura atual for diferente da leitura anterior
     {
         reading_time = millis();   // Reseta a variável btnData.reading_time atribuindo o tempo atual para uma nova contagem
         last_status_btn = leitura; // Atualiza a variável ultimoStatusBotao para o que foi lido na variável leitura
@@ -50,11 +58,22 @@ bool Btn_c::debounceBtn()
     return (false);
 }
 
+void Btn_c::setTimePressedButton(uint8_t time) // Tempo em segundos
+{
+    pressed_button_time = ((uint16_t) time)*1000;
+}
+
 uint8_t Btn_c::getStatusBtn()
 {
     return status_btn;
 }
+
 void Btn_c::onValueChanged(void (*f)(uint8_t status))
 {
     onChanged = f;
+}
+
+void Btn_c::onPressedWithTime(void (f)(void))
+{
+    onPressed = f;
 }

@@ -11,6 +11,7 @@
 #include "services\UDP_c.h"
 #include "services\telnet_c.h"
 #include "services\hart_c.h"
+#include "services\wifimanager_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
 
@@ -55,6 +56,7 @@
 #define def_pin_R4a20_1 4 // GPIO4
 #define def_pin_R4a20_2 0 // GPIO0
 
+WifiManager_c wm;
 Telnet_c WSerial(4000);
 // UDP_c WSerial(47269);
 // Hart_c ds8500Serial(4001);
@@ -65,7 +67,7 @@ Btn_c push_1(def_pin_PUSH1);
 Btn_c push_2(def_pin_PUSH2);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public Wifi_c, public OTA_c, public Display_c
+class InIndKit_c : public OTA_c, public Display_c
 {
 public:
     void setup(const char *ssid, const char *password, const char *DDNSName);
@@ -123,7 +125,9 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
     {
         errorMsg("Display error.", false);
     }
-    if (wifiStart(ssid, password)) // Primeiro o Wifi
+    //if (wifiStart(ssid, password)) // Primeiro o Wifi
+    WiFi.mode(WIFI_STA);
+    if(wm.autoConnect("AutoConnectAP","password"))
     {
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
@@ -133,11 +137,13 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
         displayUpdate();
         delay(2500);
     }
-
     else
     {
         errorMsg("Wifi  error.\nWill reboot...");
     }
+    push_1.setTimePressedButton(3);
+    push_1.onPressedWithTime([](){wm.onStart();});
+
     // if (!MDNS.begin(DDNSName))
     //{
     //     errorMsg("MDNS Error.\nWill reboot...");

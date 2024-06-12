@@ -70,13 +70,13 @@ Btn_c push_2(def_pin_PUSH2);
 class InIndKit_c : public OTA_c, public Display_c
 {
 public:
-    void setup(const char *ssid, const char *password, const char *DDNSName);
+    void setup(const char *DDNSName);
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
 #endif
 
-inline void InIndKit_c::setup(const char *ssid, const char *password, const char *DDNSName)
+inline void InIndKit_c::setup(const char *DDNSName)
 {
     Serial.begin(115200);
     Serial.println("Booting");
@@ -139,7 +139,7 @@ inline void InIndKit_c::setup(const char *ssid, const char *password, const char
     }
     else
     {
-        errorMsg("Wifi  error.\nWill reboot...");
+        errorMsg("Wifi  error.\nWill reboot...",false);
     }
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([](){wm.onStart();});

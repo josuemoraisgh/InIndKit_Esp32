@@ -20,7 +20,7 @@ void monitoraPOT(void)
 
 void setup()
 {
-  InIndKit.setup("InovaIndustria", "industria50", "inindkit0"); //("Wokwi-GUEST","","inindkit0");// ssid, password, DDNSName ;
+  InIndKit.setup("inindkit0"); //("Wokwi-GUEST","","inindkit0");// ssid, password, DDNSName ;
   WSerial.onInputReceived([](String str){WSerial.println(str);});
   rtn_1.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT1,!status);WSerial.println(status? "RTN1 ON" :"RTN1 OFF");});
   rtn_2.onValueChanged([](uint8_t status){digitalWrite(def_pin_OUT2,!status);WSerial.println(status? "RTN2 ON" :"RTN2 OFF");});

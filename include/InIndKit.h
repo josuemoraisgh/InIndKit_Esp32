@@ -125,24 +125,26 @@ inline void InIndKit_c::setup(const char *DDNSName)
     {
         errorMsg("Display error.", false);
     }
-    //if (wifiStart(ssid, password)) // Primeiro o Wifi
+    // if (wifiStart(ssid, password)) // Primeiro o Wifi
     WiFi.mode(WIFI_STA);
-    if(wm.autoConnect("AutoConnectAP","password"))
+    if (wm.autoConnect("AutoConnectAP", "password"))
     {
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, DDNSName);
-        setDisplayText(3, "UFU Mode");
         displayUpdate();
         delay(2500);
     }
     else
     {
-        errorMsg("Wifi  error.\nWill reboot...",false);
+        setDisplayText(1, "Mode: AP");
+        errorMsg("Wifi  error.\nWill reboot...", false);
     }
+    setDisplayText(2, DDNSName);
+    setDisplayText(3, "UFU Mode");
     push_1.setTimePressedButton(3);
-    push_1.onPressedWithTime([](){wm.onStart();});
+    push_1.onPressedWithTime([]()
+                             { wm.onStart(); });
 
     // if (!MDNS.begin(DDNSName))
     //{
@@ -162,12 +164,12 @@ inline void InIndKit_c::setup(const char *DDNSName)
         errorMsg("Telnet  error.\nWill reboot...");
     }
 
-    //ds8500Serial.setup();
+    // ds8500Serial.setup();
 
-    //attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
-    //attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
-    //attachInterrupt(push_1.pin, interruptFunc, CHANGE);
-    //attachInterrupt(push_2.pin, interruptFunc, CHANGE);
+    // attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
+    // attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
+    // attachInterrupt(push_1.pin, interruptFunc, CHANGE);
+    // attachInterrupt(push_2.pin, interruptFunc, CHANGE);
 
     digitalWrite(def_pin_OUT1, HIGH);
     digitalWrite(def_pin_OUT2, HIGH);
@@ -186,7 +188,7 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
-    //ds8500Serial.loop();
+    // ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();
     push_1.update();

@@ -11,7 +11,7 @@ class Display_c : public Adafruit_SSD1306
 {
 private:
   bool isFuncMode = false;
-  bool isStart = true;
+  bool isChanged = true;
   bool scrollLeft[3] = {false, false, false};
   char ca_lineTxt[3][20] = {"Inicializando...", "", ""}; //
   uint8_t ui8_lineSize[3] = {16, 0, 0};
@@ -44,9 +44,9 @@ bool Display_c::displayStart(void)
 void Display_c::displayUpdate(void)
 {
   //+--- Scroll IP ---+
-  if (ui8_lineSize[0] > 10 || ui8_lineSize[1] > 10 || ui8_lineSize[2] > 10 || isStart )
+  if (ui8_lineSize[0] > 10 || ui8_lineSize[1] > 10 || ui8_lineSize[2] > 10 || isChanged )
   {
-    isStart = false;
+    isChanged = false;
     clearDisplay();
     setTextWrap(false);
     setTextColor(SSD1306_WHITE); // Draw white text
@@ -94,6 +94,7 @@ void Display_c::setDisplayText(uint8_t line, const char txt[], bool funcMode, ui
     ui8_lineSize[line - 1] = strlen(ca_lineTxt[line - 1]);
     i16_lineMinWidth[line - 1] = -12 * (ui8_lineSize[line - 1] - 9); // 12 = 6 pixels/character * text size 2
     ui8_txtSize[line - 1] = txtSize;
+    isChanged = true;
   }
   displayUpdate();
 }

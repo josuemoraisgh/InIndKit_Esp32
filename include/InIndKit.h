@@ -111,10 +111,6 @@ inline void InIndKit_c::setup(const char *DDNSName)
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
 
-    push_1.setTimePressedButton(3);
-    push_1.onPressedWithTime([]()
-                             { wm.onStart(); });
-
     if (displayStart())
     {
         Serial.println("Display running");
@@ -130,6 +126,7 @@ inline void InIndKit_c::setup(const char *DDNSName)
     }
     // if (wifiStart(ssid, password)) // Primeiro o Wifi
     WiFi.mode(WIFI_STA);
+    wm.setApName(DDNSName);    
     if (wm.autoConnect("AutoConnectAP", "password"))
     {
         Serial.print("\nWifi running - IP:");
@@ -163,6 +160,12 @@ inline void InIndKit_c::setup(const char *DDNSName)
     {
         errorMsg("Telnet  error.\nWill reboot...");
     }
+
+    push_1.setTimePressedButton(3);
+    push_1.onPressedWithTime([](){wm.startAPPortal(); });
+
+    push_2.setTimePressedButton(3);
+    push_2.onPressedWithTime([](){wm.changeWebPortal(); });
 
     // ds8500Serial.setup();
 

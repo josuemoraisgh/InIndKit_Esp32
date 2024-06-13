@@ -54,7 +54,7 @@
 #define def_pin_RTN2 5   // GPIO5
 /***************** Read 4@20 mA ***********/
 #define def_pin_R4a20_1 4 // GPIO4
-#define def_pin_R4a20_2 0 // GPIO0
+#define def_pin_R4a20_2 16 // GPIO16
 
 WifiManager_c wm;
 Telnet_c WSerial(4000);

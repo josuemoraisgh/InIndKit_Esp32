@@ -16,7 +16,7 @@ private:
   char ca_lineTxt[3][20] = {"Inicializando...", "", ""}; //
   uint8_t ui8_lineSize[3] = {16, 0, 0};
   uint8_t ui8_txtSize[3] = {2, 2, 2};
-  int16_t i16_lineWidth[3] = {36, 36, 36};
+  int16_t i16_lineWidth[3] = {12, 12, 12};
   int16_t i16_lineMinWidth[3];
 
 public:
@@ -75,7 +75,7 @@ void Display_c::rotaty(uint8_t index)
       --i16_lineWidth[index];
     if (i16_lineWidth[index] < i16_lineMinWidth[index])
       scrollLeft[index] = true;
-    if (i16_lineWidth[index] > 24)
+    if (i16_lineWidth[index] > 12)
       scrollLeft[index] = false;
   }
   else
@@ -92,7 +92,7 @@ void Display_c::setDisplayText(uint8_t line, const char txt[], bool funcMode, ui
   {
     strcpy(ca_lineTxt[line - 1], txt);
     ui8_lineSize[line - 1] = strlen(ca_lineTxt[line - 1]);
-    i16_lineMinWidth[line - 1] = -12 * (ui8_lineSize[line - 1] - 9); // 12 = 6 pixels/character * text size 2
+    i16_lineMinWidth[line - 1] = -12 * (ui8_lineSize[line - 1] - 9); // (6 pixels) ~= (1 character)
     ui8_txtSize[line - 1] = txtSize;
     isChanged = true;
   }

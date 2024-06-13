@@ -9,12 +9,17 @@ void monitoraPOT(void)
     delayPOT.repeat();
 
     const uint16_t vlPOT_LEFT = analogRead(def_pin_POT_LEFT);
-    InIndKit.setDisplayText(2, String(vlPOT_LEFT).c_str());
+    const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);    
+    InIndKit.setDisplayText(2,("PL:"+String(vlPOT_LEFT)+"  PR:"+String(vlPOT_RIGHT)).c_str());
     WSerial.plot("pot_LEFT", vlPOT_LEFT);
+    WSerial.plot("pot_LEFT", vlPOT_RIGHT);    
 
-    const uint16_t vlPOT_RIGHT = analogRead(def_pin_POT_RIGHT);
-    InIndKit.setDisplayText(3, String(vlPOT_RIGHT).c_str());
-    WSerial.plot("pot_RIGHT", vlPOT_RIGHT);
+    const uint16_t vlR4a20_1 = analogRead(def_pin_R4a20_1);
+    const uint16_t vlR4a20_2 = analogRead(def_pin_R4a20_2);    
+    InIndKit.setDisplayText(3,("R1:"+String(vlR4a20_1)+"  R2:"+String(vlR4a20_2)).c_str());
+    WSerial.plot("pot_LEFT", vlR4a20_1);
+    WSerial.plot("pot_LEFT", vlR4a20_2);    
+
   }
 }
 

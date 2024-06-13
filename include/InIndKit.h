@@ -121,8 +121,8 @@ inline void InIndKit_c::setup(const char *DDNSName)
     
     // if (wifiStart(ssid, password)) // Primeiro o Wifi
     WiFi.mode(WIFI_STA);
-    wm.setApName(DDNSName);    
-    if (wm.autoConnect("AutoConnectAP", "password"))
+    wm.setApName(DDNSName);       
+    if (wm.autoConnect("AutoConnectAP"))
     {
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
@@ -131,7 +131,7 @@ inline void InIndKit_c::setup(const char *DDNSName)
     else
     {
         setFuncMode(true);
-        setDisplayText(1, "AP MODE", true);
+        setDisplayText(1, "Acces Point ON", true);
         errorMsg("Wifi  error.\nAP MODE...",false);
     }
     setDisplayText(2, DDNSName);
@@ -159,8 +159,8 @@ inline void InIndKit_c::setup(const char *DDNSName)
         if(wm.changeWebPortal())
         {
             ((Display_c *) this)->setFuncMode(true);
-            ((Display_c *) this)->setDisplayText(2, "Web Portal", true);
-            ((Display_c *) this)->setDisplayText(3, "is ON", true);        
+            ((Display_c *) this)->setDisplayText(2, "Web Portal ON", true);
+            ((Display_c *) this)->setDisplayText(3, "", true);        
             //digitalWrite(def_pin_OUT1, LOW);            
         } else {
             ((Display_c *) this)->setFuncMode(false);

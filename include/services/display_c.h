@@ -12,13 +12,12 @@ class Display_c : public Adafruit_SSD1306
 private:
   bool isFuncMode = false;
   bool isStart = true;
-
+  bool scrollLeft[3] = {false, false, false};
   char ca_lineTxt[3][20] = {"Inicializando...", "", ""}; //
   uint8_t ui8_lineSize[3] = {16, 0, 0};
   uint8_t ui8_txtSize[3] = {2, 2, 2};
   int16_t i16_lineWidth[3] = {36, 36, 36};
   int16_t i16_lineMinWidth[3];
-  bool scrollLeft[3] = {false, false, false};
 
 public:
   // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
@@ -68,7 +67,7 @@ void Display_c::rotaty(uint8_t index)
   if (ui8_lineSize[index] > 10)
   {
     setTextSize(ui8_txtSize[index]); // Normal 1:1 pixel scale
-    setCursor(i16_lineWidth[index], 0);
+    setCursor(i16_lineWidth[index], index*20);
     print(ca_lineTxt[index]);
     if (scrollLeft[index])
       ++i16_lineWidth[index];

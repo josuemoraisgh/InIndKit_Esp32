@@ -14,7 +14,6 @@ protected:
 public:
     WifiManager_c(const uint8_t &timeout = 120) : WiFiManager() { this->timeout = timeout; }
     void setApName(const char *apName);
-    void startAPPortal();
     bool changeWebPortal();
     bool getPortalRunning(){return portalRunning;}
     void resetSettingsRestart();
@@ -27,23 +26,6 @@ void WifiManager_c::resetSettingsRestart()
     delay(2000);
     ESP.restart();
     delay(2000);
-}
-
-void WifiManager_c::startAPPortal(/*const char *apName*/)
-{
-    // reset settings - for testing
-    // wm.resetSettings();
-
-    // set configportal timeout
-    setConfigPortalTimeout(timeout);
-    setConfigPortalBlocking(false);
-    if (!startConfigPortal(apName))
-    {
-        Serial.println("failed to connect and hit timeout");
-        delay(2000);
-        ESP.restart();
-        delay(2000);
-    }
 }
 
 bool WifiManager_c::changeWebPortal()

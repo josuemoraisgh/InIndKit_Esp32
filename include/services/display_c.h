@@ -10,6 +10,8 @@
 class Display_c : public Adafruit_SSD1306
 {
 private:
+  bool isFuncMode = false;
+
   char ca_line1[20] = "Inicializando...";
   char ca_line2[20] = ""; //
   char ca_line3[20] = ""; //
@@ -24,7 +26,8 @@ public:
   Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
   bool displayStart(void);
   void displayUpdate(void);
-  void setDisplayText(uint8_t line, const char txt[], uint8_t txtSize = 2);
+  void setDisplayText(uint8_t line, const char txt[], uint8_t txtSize = 2, bool funcMode = false);
+  void setFuncMode(bool funcMode);
 };
 
 bool Display_c::displayStart(void)
@@ -65,10 +68,14 @@ void Display_c::displayUpdate(void)
   setTextSize(ui8_txtSize_l1); // Normal 1:1 pixel scale
   setCursor(i16_line1_width, 0);
   print(ca_line1);
-  if(scrollLeft) ++i16_line1_width;
-  else --i16_line1_width;
-  if (i16_line1_width < i16_line1_minWidth) scrollLeft = true;
-  if (i16_line1_width > 24)  scrollLeft = false;
+  if (scrollLeft)
+    ++i16_line1_width;
+  else
+    --i16_line1_width;
+  if (i16_line1_width < i16_line1_minWidth)
+    scrollLeft = true;
+  if (i16_line1_width > 24)
+    scrollLeft = false;
   //+--- Print OLED Line2 ---+
   setTextSize(ui8_txtSize_l2); // Normal 1:1 pixel scale
   setCursor(0, 20);
@@ -83,22 +90,29 @@ void Display_c::displayUpdate(void)
   display();
 }
 
-void Display_c::setDisplayText(uint8_t line, const char txt[], uint8_t txtSize)
+void Display_c::setDisplayText(uint8_t line, const char txt[], uint8_t txtSize, bool funcMode = false)
 {
-  switch (line)
+  if (isFuncMode = funcMode)
   {
-  case 1:
-    strcpy(ca_line1, txt);
-    i16_line1_minWidth = -12 * (strlen(ca_line1) - 9); // 12 = 6 pixels/character * text size 2
-    ui8_txtSize_l1 = txtSize;
-    break;
-  case 2:
-    strcpy(ca_line2, txt);
-    ui8_txtSize_l2 = txtSize;
-    break;
-  default:
-    strcpy(ca_line3, txt);
-    ui8_txtSize_l3 = txtSize;
-    break;
+    switch (line)
+    {
+    case 1:
+      strcpy(ca_line1, txt);
+      i16_line1_minWidth = -12 * (strlen(ca_line1) - 9); // 12 = 6 pixels/character * text size 2
+      ui8_txtSize_l1 = txtSize;
+      break;
+    case 2:
+      strcpy(ca_line2, txt);
+      ui8_txtSize_l2 = txtSize;
+      break;
+    default:
+      strcpy(ca_line3, txt);
+      ui8_txtSize_l3 = txtSize;
+      break;
+    }
   }
+}
+
+void Display_c::setFuncMode(bool funcMode){
+  isFuncMode = funcMode;
 }

@@ -15,8 +15,18 @@ public:
     WifiManager_c(const uint8_t &timeout = 120) : WiFiManager() { this->timeout = timeout; }
     void setApName(const char *apName);
     void startAPPortal();
-    void changeWebPortal();
+    bool changeWebPortal();
+    void resetSettingsRestart();
 };
+
+void WifiManager_c::resetSettingsRestart()
+{
+    resetSettings();
+    Serial.println("Rebooting now...");
+    delay(2000);
+    ESP.restart();
+    delay(2000);
+}
 
 void WifiManager_c::startAPPortal(/*const char *apName*/)
 {
@@ -35,22 +45,26 @@ void WifiManager_c::startAPPortal(/*const char *apName*/)
     }
 }
 
-void WifiManager_c::changeWebPortal()
+bool WifiManager_c::changeWebPortal()
 {
-      if(!portalRunning){
+    if (!portalRunning)
+    {
         Serial.println("Button Pressed, Starting Portal");
         wm.startWebPortal();
         portalRunning = true;
-      }
-      else{
+        return true;
+    }
+    else
+    {
         Serial.println("Button Pressed, Stopping Portal");
         wm.stopWebPortal();
         portalRunning = false;
-      }
+        return false;
+    }
 }
 
 void WifiManager_c::setApName(const char *apName)
 {
     this->apName = apName;
-    ((WiFiManager*) this)->setHostname(apName);
+    ((WiFiManager *)this)->setHostname(apName);
 }

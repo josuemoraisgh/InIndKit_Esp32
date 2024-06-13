@@ -1,5 +1,5 @@
 #include <Arduino.h>
-
+#include <functional>
 #define DEBOUNCETIME 50
 
 class Btn_c
@@ -8,15 +8,15 @@ protected:
     unsigned long reading_time = 0;
     uint8_t status_btn = LOW;
     uint8_t last_status_btn = LOW;
-    void (*onChanged)(uint8_t status) = NULL;    
+    std::function<void(uint8_t status)> onChanged = NULL; // void (*onChanged)(uint8_t status) = NULL;    
     uint16_t pressed_button_time = 0;
-    void (*onPressed)(void) = NULL;
+    std::function<void()> onPressed = NULL; //void (*onPressed)(void) = NULL;
 public:
     uint8_t pin;
     Btn_c() { pin = 0; }
     Btn_c(uint8_t pinBtn) { pin = pinBtn; }
-    void onValueChanged(void (*f)(uint8_t status));
-    void onPressedWithTime(void (*f)(void));
+    void onValueChanged(std::function<void(uint8_t status)> f/*void (*f)(uint8_t status)*/);
+    void onPressedWithTime(std::function<void()> f/*void (*f)(void)*/);
     bool debounceBtn();
     void setPin(uint8_t pinBtn);
     void IRAM_ATTR update();
@@ -68,12 +68,12 @@ uint8_t Btn_c::getStatusBtn()
     return status_btn;
 }
 
-void Btn_c::onValueChanged(void (*f)(uint8_t status))
+void Btn_c::onValueChanged(std::function<void(uint8_t status)> f)
 {
     onChanged = f;
 }
 
-void Btn_c::onPressedWithTime(void (*f)(void))
+void Btn_c::onPressedWithTime(std::function<void()> f)
 {
     onPressed = f;
 }

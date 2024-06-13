@@ -136,8 +136,9 @@ inline void InIndKit_c::setup(const char *DDNSName)
     }
     else
     {
-        setDisplayText(1, "AP MODE");
-        errorMsg("Wifi  error.\nWill reboot...");
+        setFuncMode(true);
+        setDisplayText(1, "AP MODE", true);
+        errorMsg("Wifi  error.\nAP MODE...",false);
     }
     setDisplayText(2, DDNSName);
     setDisplayText(3, "UFU Mode");
@@ -158,14 +159,26 @@ inline void InIndKit_c::setup(const char *DDNSName)
     }
     else
     {
-        errorMsg("Telnet  error.\nWill reboot...");
+        errorMsg("Telnet  error.\nWill reboot...",false);
     }
 
     push_1.setTimePressedButton(3);
-    push_1.onPressedWithTime([](){wm.startAPPortal(); });
+    push_1.onPressedWithTime([this]()
+    {
+        if(wm.changeWebPortal())
+        {
+            this->setFuncMode(true);            
+            setDisplayText(2, "Web Portal", true);
+            setDisplayText(3, "ON", true);
+        } else
+        {
+            this->setFuncMode(false);            
+        }
+        
+    });
 
     push_2.setTimePressedButton(3);
-    push_2.onPressedWithTime([](){wm.changeWebPortal(); });
+    push_2.onPressedWithTime([](){wm.resetSettingsRestart();});
 
     // ds8500Serial.setup();
 

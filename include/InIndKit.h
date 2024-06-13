@@ -160,7 +160,7 @@ inline void InIndKit_c::setup(const char *DDNSName)
         {
             ((Display_c *) this)->setFuncMode(true);
             ((Display_c *) this)->setDisplayText(2, "Web Portal", true);
-            ((Display_c *) this)->setDisplayText(3, "ON", true);        
+            ((Display_c *) this)->setDisplayText(3, "is ON", true);        
             //digitalWrite(def_pin_OUT1, LOW);            
         } else {
             ((Display_c *) this)->setFuncMode(false);

@@ -16,6 +16,7 @@ public:
     void setApName(const char *apName);
     void startAPPortal();
     bool changeWebPortal();
+    bool getPortalRunning(){return portalRunning;}
     void resetSettingsRestart();
 };
 
@@ -35,7 +36,7 @@ void WifiManager_c::startAPPortal(/*const char *apName*/)
 
     // set configportal timeout
     setConfigPortalTimeout(timeout);
-
+    setConfigPortalBlocking(false);
     if (!startConfigPortal(apName))
     {
         Serial.println("failed to connect and hit timeout");
@@ -50,14 +51,15 @@ bool WifiManager_c::changeWebPortal()
     if (!portalRunning)
     {
         Serial.println("Button Pressed, Starting Portal");
-        wm.startWebPortal();
+        setConfigPortalBlocking(false);
+        startWebPortal();
         portalRunning = true;
         return true;
     }
     else
     {
         Serial.println("Button Pressed, Stopping Portal");
-        wm.stopWebPortal();
+        stopWebPortal();
         portalRunning = false;
         return false;
     }

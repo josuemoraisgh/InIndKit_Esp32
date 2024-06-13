@@ -26,7 +26,7 @@ public:
   Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
   bool displayStart(void);
   void displayUpdate(void);
-  void setDisplayText(uint8_t line, const char txt[], uint8_t txtSize = 2, bool funcMode = false);
+  void setDisplayText(uint8_t line, const char txt[], bool funcMode = false, uint8_t txtSize = 2);
   void setFuncMode(bool funcMode);
 };
 
@@ -90,9 +90,9 @@ void Display_c::displayUpdate(void)
   display();
 }
 
-void Display_c::setDisplayText(uint8_t line, const char txt[], uint8_t txtSize, bool funcMode = false)
+void Display_c::setDisplayText(uint8_t line, const char txt[], bool funcMode, uint8_t txtSize)
 {
-  if (isFuncMode = funcMode)
+  if (this->isFuncMode == funcMode)
   {
     switch (line)
     {
@@ -111,8 +111,9 @@ void Display_c::setDisplayText(uint8_t line, const char txt[], uint8_t txtSize, 
       break;
     }
   }
+  displayUpdate();
 }
 
 void Display_c::setFuncMode(bool funcMode){
-  isFuncMode = funcMode;
+  this->isFuncMode = funcMode;
 }

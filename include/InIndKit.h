@@ -113,17 +113,12 @@ inline void InIndKit_c::setup(const char *DDNSName)
 
     if (displayStart())
     {
+        setDisplayText(1, "Inicializando...");        
         Serial.println("Display running");
-        setDisplayText(1, "WiFi");
-        setDisplayText(2, "connecting");
-        setDisplayText(3, "  Wait!!");
-        displayUpdate();
-        delay(2500);
     }
-    else
-    {
-        errorMsg("Display error.", false);
-    }
+    else errorMsg("Display error.", false);
+    delay(50);
+    
     // if (wifiStart(ssid, password)) // Primeiro o Wifi
     WiFi.mode(WIFI_STA);
     wm.setApName(DDNSName);    
@@ -132,7 +127,6 @@ inline void InIndKit_c::setup(const char *DDNSName)
         Serial.print("\nWifi running - IP:");
         Serial.println(WiFi.localIP());
         setDisplayText(1, WiFi.localIP().toString().c_str());
-        displayUpdate();
     }
     else
     {
@@ -141,8 +135,8 @@ inline void InIndKit_c::setup(const char *DDNSName)
         errorMsg("Wifi  error.\nAP MODE...",false);
     }
     setDisplayText(2, DDNSName);
-    setDisplayText(3, "UFU Mode");
-    delay(2500);    
+    setDisplayText(3, "UFU Mode"); 
+    delay(50);    
 
     // if (!MDNS.begin(DDNSName))
     //{
@@ -157,29 +151,22 @@ inline void InIndKit_c::setup(const char *DDNSName)
         Serial.print("Telnet running - port:");
         Serial.println(WSerial.serverPort());
     }
-    else
-    {
-        errorMsg("Telnet  error.\nWill reboot...",false);
-    }
+    else errorMsg("WSerial  error.\n",false);
 
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()
     {
         if(wm.changeWebPortal())
         {
-            this->setFuncMode(true);            
-            setDisplayText(2, "Web Portal", true);
-            setDisplayText(3, "ON", true);
-        } else
-        {
-            this->setFuncMode(false);            
+            ((Display_c *) this)->setFuncMode(true);
+            ((Display_c *) this)->setDisplayText(2, "Web Portal", true);
+            ((Display_c *) this)->setDisplayText(3, "ON", true);        
+            //digitalWrite(def_pin_OUT1, LOW);            
+        } else {
+            ((Display_c *) this)->setFuncMode(false);
+            //digitalWrite(def_pin_OUT1, HIGH); 
         }
-        
     });
-
-    push_2.setTimePressedButton(3);
-    push_2.onPressedWithTime([](){wm.resetSettingsRestart();});
-
     // ds8500Serial.setup();
 
     // attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
@@ -204,6 +191,9 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
+    if(wm.getPortalRunning()){
+        wm.process();
+    }
     // ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();

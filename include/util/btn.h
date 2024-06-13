@@ -38,8 +38,9 @@ void Btn_c::update()
 bool Btn_c::debounceBtn()
 {
     uint8_t leitura = digitalRead(pin); // A variável leitura recebe a leitura do pino do botão: HIGH (pressionado) ou LOW (Desacionado)
-    if (pressed_button_time != 0 && leitura == last_status_btn && pressed_button_time == (millis() - reading_time))
+    if (pressed_button_time > 0 && leitura == HIGH && status_btn == HIGH && (millis() - reading_time) > pressed_button_time)
     {
+        reading_time = millis();
         onPressed();
     }
     if (leitura != last_status_btn) // Se a leitura atual for diferente da leitura anterior

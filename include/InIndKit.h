@@ -30,13 +30,13 @@
 /******************** Outputs **************/
 #define def_pin_OUT1 12 // GPIO12
 #define def_pin_OUT2 13 // GPIO13
-#define def_pin_OUT3 27 // GPIO27
-#define def_pin_OUT4 14 // GPIO14
+#define def_pin_OUT3 2  // GPIO2
+#define def_pin_OUT4 15 // GPIO15
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 9  // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 10 // Pino TX da ESP32 conectado ao pino TX do DS8500
-#define def_pin_Hart_RTS 11 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-#define def_pin_Hart_CTS 6  // Pino CD da ESP32 conectado ao pino CD do DS8500
+#define def_pin_Hart_RXD 16 // Pino RX da ESP32 conectado ao pino RX do DS8500
+#define def_pin_Hart_TXD 17 // Pino TX da ESP32 conectado ao pino TX do DS8500
+#define def_pin_Hart_RTS 7  // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+#define def_pin_Hart_CTS 8  // Pino CD da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
@@ -50,11 +50,11 @@
 /************* BUTTONS GPIO define *********/
 #define def_pin_PUSH1 18 // GPIO18
 #define def_pin_PUSH2 19 // GPIO19
-#define def_pin_RTN1 17  // GPIO17
+#define def_pin_RTN1 4   // GPIO4
 #define def_pin_RTN2 5   // GPIO5
 /***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 4 // GPIO4
-#define def_pin_R4a20_2 16 // GPIO16
+#define def_pin_R4a20_1 27 // GPIO27
+#define def_pin_R4a20_2 14 // GPIO14
 
 WifiManager_c wm;
 Telnet_c WSerial(4000);
@@ -93,7 +93,10 @@ inline void InIndKit_c::setup(const char *DDNSName)
     pinMode(def_pin_IN2, INPUT);
     pinMode(def_pin_IN3, INPUT);
     pinMode(def_pin_IN4, INPUT);
-
+    /***************** Read 4@20 mA ***********/
+    pinMode(def_pin_R4a20_1, INPUT);
+    pinMode(def_pin_R4a20_2, INPUT);
+    /********************* OUT ****************/
     pinMode(def_pin_OUT1, OUTPUT);
     pinMode(def_pin_OUT2, OUTPUT);
     pinMode(def_pin_OUT3, OUTPUT);
@@ -105,13 +108,10 @@ inline void InIndKit_c::setup(const char *DDNSName)
     pinMode(def_pin_DAC2, OUTPUT);
     /********************* RELÊ ***************/
     pinMode(def_pin_RELE, OUTPUT);
-    /***************** Read 4@20 mA ***********/
-    pinMode(def_pin_R4a20_1, INPUT);
-    pinMode(def_pin_R4a20_2, INPUT);
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
 
-    if (displayStart())
+    if (displayStart(def_pin_SDA, def_pin_SCL))
     {
         setDisplayText(1, "Inicializando...");        
         Serial.println("Display running");

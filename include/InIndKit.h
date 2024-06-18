@@ -20,41 +20,41 @@
 #define def_pin_POT_LEFT 36  // GPIO36
 #define def_pin_POT_RIGHT 39 // GPIO39
 /******************** Inputs **************/
-#define def_pin_IN1 33 // GPIO33
-#define def_pin_IN2 32 // GPIO32
-#define def_pin_IN3 35 // GPIO35
-#define def_pin_IN4 34 // GPIO34
+#define def_pin_IN1 27 // GPIO27 - Não funciona como entrada analogica somente digital
+#define def_pin_IN2 34 // GPIO34
+#define def_pin_IN3 14 // GPIO14 - Não funciona como entrada analogica somente digital
+#define def_pin_IN4 35 // GPIO35
 /********************* DAC ****************/
 #define def_pin_DAC1 25 // GPIO25
 #define def_pin_DAC2 26 // GPIO26
+/***************** Read 4@20 mA ***********/
+#define def_pin_R4a20_1 33 // GPIO33
+#define def_pin_R4a20_2 32 // GPIO32
 /******************** Outputs **************/
 #define def_pin_OUT1 12 // GPIO12
 #define def_pin_OUT2 13 // GPIO13
 #define def_pin_OUT3 2  // GPIO2
 #define def_pin_OUT4 15 // GPIO15
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 16 // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 17 // Pino TX da ESP32 conectado ao pino TX do DS8500
-#define def_pin_Hart_RTS 7  // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-#define def_pin_Hart_CTS 8  // Pino CD da ESP32 conectado ao pino CD do DS8500
+#define def_pin_Hart_RXD 3 // Pino RX da ESP32 conectado ao pino RX do DS8500
+#define def_pin_Hart_TXD 1 // Pino TX da ESP32 conectado ao pino TX do DS8500
+#define def_pin_Hart_RTS 22  // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+#define def_pin_Hart_CTS 19  // Pino CD da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
-#define def_pin_SCL 22 // GPIO22
+#define def_pin_SCL 5 // GPIO5
 /********************* PWM ****************/
-#define def_pin_PWM 1 // GPIO1
+#define def_pin_PWM 18 // GPIO18
 /***************** Write 4@20 mA **********/
-#define def_pin_W4a20_1 3 // GPIO3
+#define def_pin_W4a20_1 26 // GPIO26
 /************* BUTTONS GPIO define *********/
-#define def_pin_PUSH1 18 // GPIO18
-#define def_pin_PUSH2 19 // GPIO19
-#define def_pin_RTN1 4   // GPIO4
-#define def_pin_RTN2 5   // GPIO5
-/***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 27 // GPIO27
-#define def_pin_R4a20_2 14 // GPIO14
+#define def_pin_RTN1 0   // GPIO0
+#define def_pin_RTN2 4   // GPIO4
+#define def_pin_PUSH1 16 // GPIO16
+#define def_pin_PUSH2 17 // GPIO17
 
 WifiManager_c wm;
 Telnet_c WSerial(4000);
@@ -105,7 +105,6 @@ inline void InIndKit_c::setup(const char *DDNSName)
     pinMode(def_pin_PWM, OUTPUT);
     /********************* DAC ****************/
     pinMode(def_pin_DAC1, OUTPUT);
-    pinMode(def_pin_DAC2, OUTPUT);
     /********************* RELÊ ***************/
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Write 4@20 mA **********/
@@ -182,7 +181,6 @@ inline void InIndKit_c::setup(const char *DDNSName)
 
     analogWrite(def_pin_PWM, 0);
     analogWrite(def_pin_DAC1, 0);
-    analogWrite(def_pin_DAC2, 0);
     analogWrite(def_pin_W4a20_1, 0);
 }
 

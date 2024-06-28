@@ -12,6 +12,7 @@
 #include "services\UDP_c.h"
 #include "services\telnet_c.h"
 #include "services\hart_c.h"
+#include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
 #include "util/asyncDelay.h"
 #include "util/btn.h"
@@ -61,7 +62,8 @@ char idKit[2] = "0";
 WifiManager_c wm;
 // Telnet_c WSerial(4000);
 // UDP_c WSerial(47269);
-Hart_c ds8500Serial(4000);
+// Hart_c ds8500Serial(4000);
+HartUdp_c ds8500Serial(4000);
 
 Btn_c rtn_1(def_pin_RTN1);
 Btn_c rtn_2(def_pin_RTN2);

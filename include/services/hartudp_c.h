@@ -11,7 +11,7 @@ protected:
     // int8_t ctsPin = -1;
     int8_t rtsPin = -1;
     uint16_t server_port = 4000;
-    AsyncUDPPacket *packet = NULL;
+    IPAddress remoteIP;
 
 public:
     HartUdp_c(uint16_t port) : HardwareSerial(UART_NUM_2), AsyncUDP()
@@ -21,7 +21,7 @@ public:
     bool setup(int8_t rxPin, int8_t txPin, int8_t rtsPin) { return (setup(server_port, rxPin, txPin, rtsPin)); }
     bool setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin);
     void hartToUdp();
-    void udpToHart(AsyncUDPPacket packet);
+    void udpToHart(uint8_t *buffer,size_t size,IPAddress remoteIP);
     void loop(){}
 
 protected:
@@ -38,23 +38,21 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin)
         pinMode(this->rtsPin, OUTPUT);
         // pinMode(this->ctsPin, INPUT);
         digitalWrite(this->rtsPin, HIGH);
-        ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin, true);
+        ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
         //((HardwareSerial *)this)->setPins(3, 1, -1, 22);
         //((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_RTS, UART_FIFO_LEN - 8);
         //((HardwareSerial *)this)->setMode(UART_MODE_UART);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
-                                     { udpToHart(packet); });
+                                     { udpToHart(packet.data(),packet.length(),packet.remoteIP()); });
         ((HardwareSerial *)this)->onReceive([this](){ hartToUdp(); });
         return true;
     }
     return false;
 }
 
-void HartUdp_c::udpToHart(AsyncUDPPacket packet)
+void HartUdp_c::udpToHart(uint8_t *buffer,size_t size,IPAddress remoteIP)
 {
-    this->packet = &packet;
-    const uint8_t *buffer = packet.data();
-    const size_t size = packet.length();
+    this->remoteIP = remoteIP;
     if (size == 8 &&
           buffer[0] == 255 &&
           buffer[1] == 255 &&
@@ -66,7 +64,8 @@ void HartUdp_c::udpToHart(AsyncUDPPacket packet)
           buffer[7] == 0)
     {
         const uint8_t okBuffer[8] = {255,255,0,0,255,255,0,0};
-        this->packet->write(okBuffer, 8);
+        ((AsyncUDP *)this)->writeTo(okBuffer, 8,remoteIP,server_port); 
+        //this->packet->write(okBuffer, 8);
     }
     else
     {
@@ -78,15 +77,16 @@ void HartUdp_c::udpToHart(AsyncUDPPacket packet)
 
 void HartUdp_c::hartToUdp()
 {
-    //if (packet != NULL)
+    //if (this->packet != NULL)
     //{
         const size_t tam = ((HardwareSerial *)this)->available();
         if (tam > 0)
         {
             uint8_t data[tam];
             ((HardwareSerial *)this)->readBytes(data, tam);
-            ((HardwareSerial *)this)->write(data, tam);            
-            if (packet != NULL) this->packet->write(data, tam);
+            ((HardwareSerial *)this)->write(data, tam);  
+            ((AsyncUDP *)this)->writeTo(data, tam,remoteIP,server_port);        
+            //if (this->packet != NULL) this->packet->write(data, tam);
         }
     //}
 }

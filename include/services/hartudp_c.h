@@ -11,7 +11,7 @@ protected:
     // int8_t ctsPin = -1;
     int8_t rtsPin = -1;
     uint16_t server_port = 4000;
-    IPAddress remoteIP;
+    IPAddress *remoteIP = NULL;
 
 public:
     HartUdp_c(uint16_t port) : HardwareSerial(UART_NUM_2), AsyncUDP()
@@ -52,7 +52,6 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin)
 
 void HartUdp_c::udpToHart(uint8_t *buffer,size_t size,IPAddress remoteIP)
 {
-    this->remoteIP = remoteIP;
     if (size == 8 &&
           buffer[0] == 255 &&
           buffer[1] == 255 &&
@@ -63,15 +62,16 @@ void HartUdp_c::udpToHart(uint8_t *buffer,size_t size,IPAddress remoteIP)
           buffer[6] == 0 &&
           buffer[7] == 0)
     {
-        const uint8_t okBuffer[8] = {255,255,0,0,255,255,0,0};
-        ((AsyncUDP *)this)->writeTo(okBuffer, 8,remoteIP,server_port); 
+        const uint8_t okBuffer[8] = {255,255,0,0,255,255,0,0};//Solicita conexão
+        this->remoteIP = new IPAddress(remoteIP);        
+        ((AsyncUDP *)this)->writeTo(okBuffer, 8,remoteIP,this->server_port); 
         //this->packet->write(okBuffer, 8);
     }
     else
     {
-        digitalWrite(this->rtsPin, LOW);
+        //digitalWrite(this->rtsPin, LOW);
         ((HardwareSerial *)this)->write(buffer, size);
-        digitalWrite(this->rtsPin, HIGH);
+        //digitalWrite(this->rtsPin, HIGH);
     }
 }
 
@@ -84,8 +84,8 @@ void HartUdp_c::hartToUdp()
         {
             uint8_t data[tam];
             ((HardwareSerial *)this)->readBytes(data, tam);
-            ((HardwareSerial *)this)->write(data, tam);  
-            ((AsyncUDP *)this)->writeTo(data, tam,remoteIP,server_port);        
+            if (this->remoteIP != NULL) ((AsyncUDP *)this)->writeTo(data, tam,*this->remoteIP,this->server_port);        
+            //((HardwareSerial *)this)->write(data, tam);              
             //if (this->packet != NULL) this->packet->write(data, tam);
         }
     //}

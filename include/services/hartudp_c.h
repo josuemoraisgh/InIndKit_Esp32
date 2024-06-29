@@ -20,9 +20,9 @@ public:
     }
     bool setup(int8_t rxPin, int8_t txPin, int8_t rtsPin) { return (setup(server_port, rxPin, txPin, rtsPin)); }
     bool setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin);
-    //void hartToUdp();
+    void hartToUdp();
     void udpToHart(AsyncUDPPacket packet);
-    void loop();
+    void loop(){}
 
 protected:
     void handleInput() {}
@@ -44,7 +44,7 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin)
         //((HardwareSerial *)this)->setMode(UART_MODE_UART);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
                                      { udpToHart(packet); });
-        //((HardwareSerial *)this)->onReceive([this](){ hartToUdp(); });
+        ((HardwareSerial *)this)->onReceive([this](){ hartToUdp(); });
         return true;
     }
     return false;
@@ -76,7 +76,7 @@ void HartUdp_c::udpToHart(AsyncUDPPacket packet)
     }
 }
 
-void HartUdp_c::loop()
+void HartUdp_c::hartToUdp()
 {
     //if (packet != NULL)
     //{
@@ -85,6 +85,7 @@ void HartUdp_c::loop()
         {
             uint8_t data[tam];
             ((HardwareSerial *)this)->readBytes(data, tam);
+            ((HardwareSerial *)this)->write(data, tam);            
             if (packet != NULL) this->packet->write(data, tam);
         }
     //}

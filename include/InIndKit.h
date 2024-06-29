@@ -38,9 +38,9 @@
 #define def_pin_OUT3 2  // GPIO2
 #define def_pin_OUT4 15 // GPIO15
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 3 // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 1 // Pino TX da ESP32 conectado ao pino TX do DS8500
-#define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+#define def_pin_Hart_RXD 22 // Pino RX da ESP32 conectado ao pino RX do DS8500
+#define def_pin_Hart_TXD 19 // Pino TX da ESP32 conectado ao pino TX do DS8500
+#define def_pin_Hart_RTS 3 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
 //#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/

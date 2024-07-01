@@ -4,12 +4,17 @@
 #include "driver/uart.h"
 #include "AsyncUDP.h"
 
+/*https://github.com/espressif/arduino-esp32/issues/8755
+Set "USB CDC On Boot" to "Disable" and then Serial will use HardwareSerial API instead of HWCDC API.
+board_build.extra_flags =
+    -DARDUINO_USB_MODE=1
+    -DARDUINO_USB_CDC_ON_BOOT=0
+*/
+
 class HartUdp_c : public HardwareSerial, protected AsyncUDP
 {
 
 protected:
-    // int8_t ctsPin = -1;
-    int8_t rtsPin = -1;
     uint16_t server_port = 4000;
     IPAddress *remoteIP = NULL;
 
@@ -18,8 +23,8 @@ public:
     {
         server_port = port;
     }
-    bool setup(int8_t rxPin, int8_t txPin, int8_t rtsPin) { return (setup(server_port, rxPin, txPin, rtsPin)); }
-    bool setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin);
+    bool setup(int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin) { return (setup(server_port, rxPin, txPin, ctsPin, rtsPin)); }
+    bool setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin);
     void hartToUdp();
     void udpToHart(uint8_t *buffer,size_t size,IPAddress remoteIP);
     void loop(){}
@@ -28,19 +33,16 @@ protected:
     void handleInput() {}
 };
 
-bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t rtsPin)
+bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
 {
     if (((AsyncUDP *)this)->listen(port))
     {
-        // this->ctsPin = ctsPin;
-        this->rtsPin = rtsPin;
         server_port = port;
-        pinMode(this->rtsPin, OUTPUT);
-        // pinMode(this->ctsPin, INPUT);
-        digitalWrite(this->rtsPin, HIGH);
+        pinMode(rtsPin, OUTPUT);
+        pinMode(ctsPin, INPUT);
         ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
-        //((HardwareSerial *)this)->setPins(3, 1, -1, 22);
-        //((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_RTS, UART_FIFO_LEN - 8);
+        ((HardwareSerial *)this)->setPins(rxPin, txPin, ctsPin, rtsPin);
+        ((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_CTS_RTS, UART_FIFO_LEN - 8);
         //((HardwareSerial *)this)->setMode(UART_MODE_UART);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
                                      { udpToHart(packet.data(),packet.length(),packet.remoteIP()); });

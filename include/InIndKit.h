@@ -41,7 +41,7 @@
 #define def_pin_Hart_RXD 3 // Pino RX da ESP32 conectado ao pino RX do DS8500
 #define def_pin_Hart_TXD 1 // Pino TX da ESP32 conectado ao pino TX do DS8500
 #define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-//#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
+#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
@@ -182,7 +182,7 @@ inline void InIndKit_c::setup()
             ((Display_c *) this)->setFuncMode(false);
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
-    ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_RTS);
+    ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
 
     // attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
     // attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);

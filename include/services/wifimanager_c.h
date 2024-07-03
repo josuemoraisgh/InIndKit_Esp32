@@ -22,7 +22,7 @@ public:
 void WifiManager_c::resetSettingsRestart()
 {
     resetSettings();
-    Serial.println("Rebooting now...");
+    WSerial.println("Rebooting now...");
     delay(2000);
     ESP.restart();
     delay(2000);
@@ -32,7 +32,7 @@ bool WifiManager_c::changeWebPortal()
 {
     if (!portalRunning)
     {
-        Serial.println("Button Pressed, Starting Portal");
+        WSerial.println("Button Pressed, Starting Portal");
         setConfigPortalBlocking(false);
         startWebPortal();
         portalRunning = true;
@@ -40,7 +40,7 @@ bool WifiManager_c::changeWebPortal()
     }
     else
     {
-        Serial.println("Button Pressed, Stopping Portal");
+        WSerial.println("Button Pressed, Stopping Portal");
         stopWebPortal();
         portalRunning = false;
         return false;

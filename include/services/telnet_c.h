@@ -7,7 +7,7 @@ class Telnet_c : public ESPTelnet
 public:
   bool start(uint16_t server_port);
   bool start() { return (start(this->server_port)); }
-  Telnet_c(uint16_t server_port) : ESPTelnet() { this->server_port = server_port; }
+  Telnet_c(uint16_t server_port) :  ESPTelnet() { this->server_port = server_port; }
   template <typename T>
   void plot(const char *varName, T x, T y, const char *unit = NULL);
   template <typename T>
@@ -119,8 +119,8 @@ void Telnet_c::println(const T &data, int base)
 {
   if (((ESPTelnet *) this)->isConnected())
     ((ESPTelnet *) this)->println(data, base);  
-  else
-    Serial.println(data, base);  
+else
+    Serial.println(data, base); 
 }
 
 void Telnet_c::println()

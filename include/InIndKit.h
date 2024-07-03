@@ -1,16 +1,19 @@
 #ifndef __ININDKIT_H
 #define __ININDKIT_H
 
-#include <Arduino.h>
+#include <HardwareSerial.h>
 #include <ESPmDNS.h>
 #include <EEPROM.h>
 #include <WiFi.h>
+
+#include "services\telnet_c.h"
+Telnet_c WSerial(4000);
+// UDP_c WSerial(47269);
 
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\UDP_c.h"
-#include "services\telnet_c.h"
 #include "services\hart_c.h"
 #include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
@@ -38,8 +41,8 @@
 #define def_pin_OUT3 2  // GPIO2
 #define def_pin_OUT4 15 // GPIO15
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 3 // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 1 // Pino TX da ESP32 conectado ao pino TX do DS8500
+#define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
+#define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
 #define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
 #define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
@@ -53,15 +56,13 @@
 /***************** Write 4@20 mA **********/
 #define def_pin_W4a20_1 26 // GPIO26
 /************* BUTTONS GPIO define *********/
-#define def_pin_RTN1 0  // GPIO0
-#define def_pin_RTN2 4  // GPIO4
+#define def_pin_RTN1 0   // GPIO0
+#define def_pin_RTN2 4   // GPIO4
 #define def_pin_PUSH1 16 // GPIO16
 #define def_pin_PUSH2 17 // GPIO17
 
 char idKit[2] = "0";
 WifiManager_c wm;
-// Telnet_c WSerial(4000);
-// UDP_c WSerial(47269);
 // Hart_c ds8500Serial(4000);
 HartUdp_c ds8500Serial(4000);
 
@@ -85,14 +86,14 @@ public:
 
 inline void InIndKit_c::setup()
 {
-    Serial.begin(115200);
-    Serial.println("Booting");
+    WSerial.begin();
+    WSerial.println("Booting");
     /********** READ EEPROM *****/
     EEPROM.begin(1);
     //+--- EEPROM.write(address, value)
-    //EEPROM.write(0,(uint8_t) '0');
-    //EEPROM.commit(); // Initializes with kit id
-    idKit[0] = (char) EEPROM.read(0);  //id do kit utilizado
+    // EEPROM.write(0,(uint8_t) '0');
+    // EEPROM.commit(); // Initializes with kit id
+    idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
     strcat(DDNSName, idKit);
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT_LEFT, ANALOG);
@@ -127,7 +128,7 @@ inline void InIndKit_c::setup()
     if (displayStart(def_pin_SDA, def_pin_SCL))
     {
         setDisplayText(1, "Inicializando...");
-        Serial.println("Display running");
+        WSerial.println("Display running");
     }
     else
         errorMsg("Display error.", false);
@@ -142,8 +143,8 @@ inline void InIndKit_c::setup()
     setDisplayText(3, "PSWD: ", true);
     if (wm.autoConnect("AutoConnectAP"))
     {
-        Serial.print("\nWifi running - IP:");
-        Serial.println(WiFi.localIP());
+        WSerial.print("\nWifi running - IP:");
+        WSerial.println(WiFi.localIP());
         setFuncMode(false);
         setDisplayText(1, WiFi.localIP().toString().c_str());
         setDisplayText(2, DDNSName);
@@ -218,10 +219,10 @@ void InIndKit_c::loop(void)
 
 void InIndKit_c::errorMsg(String error, bool restart)
 {
-    Serial.println(error);
+    WSerial.println(error);
     if (restart)
     {
-        Serial.println("Rebooting now...");
+        WSerial.println("Rebooting now...");
         delay(2000);
         ESP.restart();
         delay(2000);

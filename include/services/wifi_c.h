@@ -24,7 +24,7 @@ inline bool Wifi_c::wifiStart(const char *ssid, const char *password, uint16_t m
     do
     {
         delay(pause);
-        Serial.print(".");
+        WSerial.print(".");
         i++;
     } while (!wifiIsConnected() && i < max_tries);
     WiFi.setAutoReconnect(true);

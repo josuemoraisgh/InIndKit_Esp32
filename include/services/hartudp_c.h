@@ -3,8 +3,10 @@
 #include <hal/uart_types.h>
 #include "driver/uart.h"
 #include "AsyncUDP.h"
+// https://github.com/espressif/esp-idf/blob/master/examples/peripherals/uart/uart_events/main/uart_events_example_main.c
+// https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/peripherals/uart.html
 // https://controllerstech.com/how-to-use-uart-in-esp32-esp-idf/
-/*https://github.com/espressif/arduino-esp32/issues/8755
+/* https://github.com/espressif/arduino-esp32/issues/8755
 Set "USB CDC On Boot" to "Disable" and then Serial will use HardwareSerial API instead of HWCDC API.
 board_build.extra_flags =
     -D ARDUINO_USB_CDC_ON_BOOT=1
@@ -14,7 +16,8 @@ build_flags =
     -D ARDUINO_USB_CDC_ON_BOOT=1
     -D ARDUINO_USB_MODE=1
 */
-static const int RX_BUF_SIZE = 4096;
+const uart_port_t uart_num = UART_NUM_2;
+static const int RX_BUF_SIZE = 1024;
 class HartUdp_c : public HardwareSerial, protected AsyncUDP
 {
 
@@ -25,7 +28,7 @@ protected:
     int8_t rtsPin = -1;
 
 public:
-    HartUdp_c(uint16_t port) : HardwareSerial(UART_NUM_1), AsyncUDP()
+    HartUdp_c(uint16_t port) : HardwareSerial(uart_num), AsyncUDP()
     {
         server_port = port;
     }
@@ -46,13 +49,24 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, 
         server_port = port;
         this->ctsPin = ctsPin;
         this->rtsPin = rtsPin;
-        pinMode(rtsPin, OUTPUT);
-        pinMode(ctsPin, INPUT_PULLUP);
-        digitalWrite(rtsPin, LOW);
-        ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
+        uart_config_t uart_config = {
+            .baud_rate = 1200,
+            .data_bits = UART_DATA_8_BITS,
+            .parity = UART_PARITY_ODD,
+            .stop_bits = UART_STOP_BITS_1,
+            .flow_ctrl = UART_HW_FLOWCTRL_CTS_RTS,
+            .rx_flow_ctrl_thresh = UART_FIFO_LEN - 8,
+            .source_clk = UART_SCLK_APB,
+        };
+        // Configure UART parameters
+        ESP_ERROR_CHECK(uart_driver_install(uart_num, RX_BUF_SIZE * 2, 0, 0, NULL, 0));
+        ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
+        ESP_ERROR_CHECK(uart_set_mode(uart_num, UART_MODE_UART));
+        ESP_ERROR_CHECK(uart_set_pin(uart_num, txPin, rxPin, rtsPin, ctsPin));
+        //((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
         //((HardwareSerial *)this)->setPins(rxPin, txPin, ctsPin, rtsPin);
-        ((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_DISABLE, UART_FIFO_LEN - 8);
-        ((HardwareSerial *)this)->setMode(UART_MODE_UART);
+        //((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_CTS_RTS, UART_FIFO_LEN - 8);
+        //((HardwareSerial *)this)->setMode(UART_MODE_UART);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
                                      { udpToHart(packet.data(), packet.length(), packet.remoteIP()); });
         ((HardwareSerial *)this)->onReceive([this]()
@@ -81,22 +95,23 @@ void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
     }
     else
     {
-        digitalWrite(this->rtsPin, HIGH);              // Indicate we have data to transmit
-        while (digitalRead(this->ctsPin) != HIGH);     // Block waiting for other side.
+        // digitalWrite(this->rtsPin, HIGH);              // Indicate we have data to transmit
+        // while (digitalRead(this->ctsPin) != HIGH);     // Block waiting for other side.
         ((HardwareSerial *)this)->write(buffer, size); // Send the data.
-        ((HardwareSerial *)this)->flush();             // Wait for transmit to finish.
-        digitalWrite(this->rtsPin, LOW);
+        //((HardwareSerial *)this)->flush();             // Wait for transmit to finish.
+        // digitalWrite(this->rtsPin, LOW);
     }
 }
 
 void HartUdp_c::hartToUdp()
-{      
+{
     const size_t tam = ((HardwareSerial *)this)->available();
     if (tam > 0)
     {
-        digitalWrite(this->rtsPin, LOW);           
+        // digitalWrite(this->rtsPin, LOW);
         uint8_t data[tam];
         ((HardwareSerial *)this)->readBytes(data, tam);
-        if (this->remoteIP != NULL) ((AsyncUDP *)this)->writeTo(data, tam, *this->remoteIP, this->server_port);
+        if (this->remoteIP != NULL)
+            ((AsyncUDP *)this)->writeTo(data, tam, *this->remoteIP, this->server_port);
     }
 }

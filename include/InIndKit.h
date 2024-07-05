@@ -14,7 +14,6 @@ Telnet_c WSerial(4000);
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\UDP_c.h"
-#include "services\hart_c.h"
 #include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
 #include "util/asyncDelay.h"
@@ -63,7 +62,6 @@ Telnet_c WSerial(4000);
 
 char idKit[2] = "0";
 WifiManager_c wm;
-// Hart_c ds8500Serial(4000);
 HartUdp_c ds8500Serial(4000);
 
 Btn_c rtn_1(def_pin_RTN1);

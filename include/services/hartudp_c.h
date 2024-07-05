@@ -1,9 +1,10 @@
 #include <Arduino.h>
-#include <HardwareSerial.h>
+// #include <HardwareSerial.h>
+#include <SoftwareSerial.h>
 #include <hal/uart_types.h>
 #include "driver/uart.h"
 #include "AsyncUDP.h"
-//https://controllerstech.com/how-to-use-uart-in-esp32-esp-idf/
+// https://controllerstech.com/how-to-use-uart-in-esp32-esp-idf/
 /*https://github.com/espressif/arduino-esp32/issues/8755
 Set "USB CDC On Boot" to "Disable" and then Serial will use HardwareSerial API instead of HWCDC API.
 board_build.extra_flags =
@@ -14,8 +15,9 @@ build_flags =
     -D ARDUINO_USB_CDC_ON_BOOT=1
     -D ARDUINO_USB_MODE=1
 */
-static const int RX_BUF_SIZE = 4096;
-class HartUdp_c : public HardwareSerial, protected AsyncUDP
+
+#define MAX_FRAMEBITS (1 + 8 + 1 + 1)
+class HartUdp_c : public EspSoftwareSerial::UART, protected AsyncUDP
 {
 
 protected:
@@ -25,7 +27,7 @@ protected:
     int8_t rtsPin = -1;
 
 public:
-    HartUdp_c(uint16_t port) : HardwareSerial(UART_NUM_1), AsyncUDP()
+    HartUdp_c(uint16_t port) : EspSoftwareSerial::UART(), AsyncUDP()
     {
         server_port = port;
     }
@@ -48,15 +50,11 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, 
         this->rtsPin = rtsPin;
         pinMode(rtsPin, OUTPUT);
         pinMode(ctsPin, INPUT_PULLUP);
-        digitalWrite(rtsPin,HIGH);
-        ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
-        //((HardwareSerial *)this)->setPins(rxPin, txPin, ctsPin, rtsPin);
-        ((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_DISABLE, UART_FIFO_LEN - 8);
-        ((HardwareSerial *)this)->setMode(UART_MODE_UART);
-        ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
-                                     { udpToHart(packet.data(), packet.length(), packet.remoteIP()); });
-        ((HardwareSerial *)this)->onReceive([this]()
-                                            { hartToUdp(); });
+        digitalWrite(rtsPin, LOW);
+        ((EspSoftwareSerial::UART *)this)->begin(1200, EspSoftwareSerial::SWSERIAL_8O1, rxPin, txPin, false, 95, 11);
+        ((EspSoftwareSerial::UART *)this)->enableIntTx(false);
+        ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet) { udpToHart(packet.data(), packet.length(), packet.remoteIP()); });
+        ((EspSoftwareSerial::UART *)this)->onReceive([this](){ hartToUdp(); });
         return true;
     }
     return false;
@@ -66,6 +64,7 @@ void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
 {
     if (size == 8 &&
         buffer[0] == 255 &&
+
         buffer[1] == 255 &&
         buffer[2] == 0 &&
         buffer[3] == 0 &&
@@ -77,22 +76,22 @@ void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
         const uint8_t okBuffer[8] = {255, 255, 0, 0, 255, 255, 0, 0}; // Solicita conexão
         this->remoteIP = new IPAddress(remoteIP);
         ((AsyncUDP *)this)->writeTo(okBuffer, 8, remoteIP, this->server_port);
-        // this->packet->write(okBuffer, 8);
     }
     else
     {
-        digitalWrite(this->rtsPin, LOW);
-        delay(5);
-        ((HardwareSerial *)this)->write(buffer, size);
-        delay(5);        
-        digitalWrite(this->rtsPin, HIGH);
+        digitalWrite(this->rtsPin, HIGH);              // Indicate we have data to transmit
+        while (digitalRead(this->ctsPin) != HIGH);     // Block waiting for other side.
+        ((HardwareSerial *)this)->write(buffer, size); // Send the data.
+        ((HardwareSerial *)this)->flush();             // Wait for transmit to finish.
+        digitalWrite(this->rtsPin, LOW);               // Send low RTS
     }
 }
 
 void HartUdp_c::hartToUdp()
 {
-    // if (this->packet != NULL)
-    //{
+    digitalWrite(this->rtsPin, HIGH);
+    delay(1);
+    digitalWrite(this->rtsPin, LOW);
     const size_t tam = ((HardwareSerial *)this)->available();
     if (tam > 0)
     {
@@ -103,5 +102,4 @@ void HartUdp_c::hartToUdp()
         //((HardwareSerial *)this)->write(data, tam);
         // if (this->packet != NULL) this->packet->write(data, tam);
     }
-    //}
 }

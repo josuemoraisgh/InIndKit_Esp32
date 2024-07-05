@@ -1,6 +1,5 @@
 #include <Arduino.h>
-// #include <HardwareSerial.h>
-#include <SoftwareSerial.h>
+#include <HardwareSerial.h>
 #include <hal/uart_types.h>
 #include "driver/uart.h"
 #include "AsyncUDP.h"
@@ -15,9 +14,8 @@ build_flags =
     -D ARDUINO_USB_CDC_ON_BOOT=1
     -D ARDUINO_USB_MODE=1
 */
-
-#define MAX_FRAMEBITS (1 + 8 + 1 + 1)
-class HartUdp_c : public EspSoftwareSerial::UART, protected AsyncUDP
+static const int RX_BUF_SIZE = 4096;
+class HartUdp_c : public HardwareSerial, protected AsyncUDP
 {
 
 protected:
@@ -27,7 +25,7 @@ protected:
     int8_t rtsPin = -1;
 
 public:
-    HartUdp_c(uint16_t port) : EspSoftwareSerial::UART(), AsyncUDP()
+    HartUdp_c(uint16_t port) : HardwareSerial(UART_NUM_1), AsyncUDP()
     {
         server_port = port;
     }
@@ -51,10 +49,14 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, 
         pinMode(rtsPin, OUTPUT);
         pinMode(ctsPin, INPUT_PULLUP);
         digitalWrite(rtsPin, LOW);
-        ((EspSoftwareSerial::UART *)this)->begin(1200, EspSoftwareSerial::SWSERIAL_8O1, rxPin, txPin, false, 95, 11);
-        ((EspSoftwareSerial::UART *)this)->enableIntTx(false);
-        ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet) { udpToHart(packet.data(), packet.length(), packet.remoteIP()); });
-        ((EspSoftwareSerial::UART *)this)->onReceive([this](){ hartToUdp(); });
+        ((HardwareSerial *)this)->begin(1200, SERIAL_8O1, rxPin, txPin);
+        //((HardwareSerial *)this)->setPins(rxPin, txPin, ctsPin, rtsPin);
+        ((HardwareSerial *)this)->setHwFlowCtrlMode(UART_HW_FLOWCTRL_DISABLE, UART_FIFO_LEN - 8);
+        ((HardwareSerial *)this)->setMode(UART_MODE_UART);
+        ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
+                                     { udpToHart(packet.data(), packet.length(), packet.remoteIP()); });
+        ((HardwareSerial *)this)->onReceive([this]()
+                                            { hartToUdp(); });
         return true;
     }
     return false;
@@ -83,23 +85,18 @@ void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
         while (digitalRead(this->ctsPin) != HIGH);     // Block waiting for other side.
         ((HardwareSerial *)this)->write(buffer, size); // Send the data.
         ((HardwareSerial *)this)->flush();             // Wait for transmit to finish.
-        digitalWrite(this->rtsPin, LOW);               // Send low RTS
+        digitalWrite(this->rtsPin, LOW);
     }
 }
 
 void HartUdp_c::hartToUdp()
-{
-    digitalWrite(this->rtsPin, HIGH);
-    delay(1);
-    digitalWrite(this->rtsPin, LOW);
+{      
     const size_t tam = ((HardwareSerial *)this)->available();
     if (tam > 0)
     {
+        digitalWrite(this->rtsPin, LOW);           
         uint8_t data[tam];
         ((HardwareSerial *)this)->readBytes(data, tam);
-        if (this->remoteIP != NULL)
-            ((AsyncUDP *)this)->writeTo(data, tam, *this->remoteIP, this->server_port);
-        //((HardwareSerial *)this)->write(data, tam);
-        // if (this->packet != NULL) this->packet->write(data, tam);
+        if (this->remoteIP != NULL) ((AsyncUDP *)this)->writeTo(data, tam, *this->remoteIP, this->server_port);
     }
 }

@@ -21,29 +21,27 @@ Telnet_c WSerial(4000);
 
 //////////////////////////Lado Esquerdo///////////////////////
 /********** POTENTIOMETERS GPIO define *****/
-#define def_pin_POT_LEFT 36  // GPIO36
-#define def_pin_POT_RIGHT 39 // GPIO39
-/******************** Inputs **************/
-#define def_pin_IN1 27 // GPIO27 - Não funciona como entrada analogica somente digital
-#define def_pin_IN2 34 // GPIO34
-#define def_pin_IN3 14 // GPIO14 - Não funciona como entrada analogica somente digital
-#define def_pin_IN4 35 // GPIO35
-/********************* DAC ****************/
-#define def_pin_DAC1 25 // GPIO25
-#define def_pin_DAC2 26 // GPIO26
+#define def_pin_POT1 36 // GPIO36
+#define def_pin_POT2 39 // GPIO39
+/********************* ADC ****************/
+#define def_pin_ADC1 34 // GPIO34
 /***************** Read 4@20 mA ***********/
 #define def_pin_R4a20_1 33 // GPIO33
 #define def_pin_R4a20_2 32 // GPIO32
-/******************** Outputs **************/
-#define def_pin_OUT1 12 // GPIO12
-#define def_pin_OUT2 13 // GPIO13
-#define def_pin_OUT3 2  // GPIO2
-#define def_pin_OUT4 15 // GPIO15
+/******************** Digitais **************/
+#define def_pin_D1 27 // GPIO27 - Não funciona como entrada analogica somente digital
+#define def_pin_D2 14 // GPIO14 - Não funciona como entrada analogica somente digital
+#define def_pin_D3 12 // GPIO12 - Não funciona como entrada analogica somente digital
+#define def_pin_D4 13 // GPIO13 - Não funciona como entrada analogica somente digital
+/********************* DAC ****************/
+#define def_pin_DAC1 25 // GPIO25
+/***************** Write 4@20 mA **********/
+#define def_pin_W4a20_1 26 // GPIO26
 /**************** Hart Interface **********/
-#define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
-#define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
-#define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
+//#define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
+//#define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
+//#define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+//#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
@@ -52,17 +50,14 @@ Telnet_c WSerial(4000);
 #define def_pin_SCL 5  // GPIO5
 /********************* PWM ****************/
 #define def_pin_PWM 18 // GPIO18
-/***************** Write 4@20 mA **********/
-#define def_pin_W4a20_1 26 // GPIO26
 /************* BUTTONS GPIO define *********/
-#define def_pin_RTN1 0   // GPIO0
-#define def_pin_RTN2 4   // GPIO4
+#define def_pin_RTN1 2   // GPIO0
+#define def_pin_RTN2 15  // GPIO4
 #define def_pin_PUSH1 16 // GPIO16
 #define def_pin_PUSH2 17 // GPIO17
 
-char idKit[2] = "0";
 WifiManager_c wm;
-HartUdp_c ds8500Serial(4000);
+//HartUdp_c ds8500Serial(4000);
 
 Btn_c rtn_1(def_pin_RTN1);
 Btn_c rtn_2(def_pin_RTN2);
@@ -89,35 +84,34 @@ inline void InIndKit_c::setup()
     /********** READ EEPROM *****/
     EEPROM.begin(1);
     //+--- EEPROM.write(address, value)
-    // EEPROM.write(0,(uint8_t) '0');
-    // EEPROM.commit(); // Initializes with kit id
+    char idKit[2] = "0";    
+    //EEPROM.write(0,(uint8_t) idKit[0]);
+    //EEPROM.commit(); 
+    // Initializes with kit id
     idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
     strcat(DDNSName, idKit);
     /********** POTENTIOMETERS GPIO define *****/
-    pinMode(def_pin_POT_LEFT, ANALOG);
-    pinMode(def_pin_POT_RIGHT, ANALOG);
+    pinMode(def_pin_POT1, ANALOG);
+    pinMode(def_pin_POT2, ANALOG);
     /************* BUTTONS GPIO define *********/
-    pinMode(def_pin_RTN1, INPUT);
-    pinMode(def_pin_RTN2, INPUT);
-    pinMode(def_pin_PUSH1, INPUT);
-    pinMode(def_pin_PUSH2, INPUT);
+    pinMode(def_pin_RTN1, INPUT_PULLDOWN);
+    pinMode(def_pin_RTN2, INPUT_PULLDOWN);
+    pinMode(def_pin_PUSH1, INPUT_PULLDOWN);
+    pinMode(def_pin_PUSH2, INPUT_PULLDOWN);
     /*************** IOs GPIO define **********/
-    pinMode(def_pin_IN1, ANALOG);
-    pinMode(def_pin_IN2, ANALOG);
-    pinMode(def_pin_IN3, ANALOG);
-    pinMode(def_pin_IN4, ANALOG);
+    pinMode(def_pin_D1, OUTPUT);
+    pinMode(def_pin_D2, OUTPUT);
+    pinMode(def_pin_D3, OUTPUT);
+    pinMode(def_pin_D4, OUTPUT);
     /***************** Read 4@20 mA ***********/
     pinMode(def_pin_R4a20_1, ANALOG);
     pinMode(def_pin_R4a20_2, ANALOG);
-    /********************* OUT ****************/
-    pinMode(def_pin_OUT1, OUTPUT);
-    pinMode(def_pin_OUT2, OUTPUT);
-    pinMode(def_pin_OUT3, OUTPUT);
-    pinMode(def_pin_OUT4, OUTPUT);
     /********************* PWM ****************/
     pinMode(def_pin_PWM, OUTPUT);
     /********************* DAC ****************/
-    pinMode(def_pin_DAC1, OUTPUT);
+    pinMode(def_pin_DAC1, ANALOG);
+    /********************* ADC ****************/
+    pinMode(def_pin_ADC1, ANALOG);
     /********************* RELÊ ***************/
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Write 4@20 mA **********/
@@ -132,7 +126,6 @@ inline void InIndKit_c::setup()
         errorMsg("Display error.", false);
     delay(50);
 
-    // if (wifiStart(ssid, password)) // Primeiro o Wifi
     WiFi.mode(WIFI_STA);
     wm.setApName(DDNSName);
     setFuncMode(true);
@@ -160,14 +153,6 @@ inline void InIndKit_c::setup()
 
     otaStart(DDNSName); // Depois o OTA
 
-    /*if (WSerial.start())
-    {
-        Serial.print("Telnet running - port:");
-        Serial.println(WSerial.serverPort());
-    }
-    else
-        errorMsg("WSerial  error.\n", false);
-*/
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()
                              {
@@ -179,19 +164,21 @@ inline void InIndKit_c::setup()
             //digitalWrite(def_pin_OUT1, LOW);            
         } else {
             ((Display_c *) this)->setFuncMode(false);
+            ((Display_c *) this)->setDisplayText(2, DDNSName);            
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
-    ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
+    //ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
 
     // attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
     // attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
     // attachInterrupt(push_1.pin, interruptFunc, CHANGE);
     // attachInterrupt(push_2.pin, interruptFunc, CHANGE);
 
-    digitalWrite(def_pin_OUT1, HIGH);
-    digitalWrite(def_pin_OUT2, HIGH);
-    digitalWrite(def_pin_OUT3, HIGH);
-    digitalWrite(def_pin_OUT4, HIGH);
+    digitalWrite(def_pin_D1, HIGH);
+    digitalWrite(def_pin_D2, HIGH);
+    digitalWrite(def_pin_D3, HIGH);
+    digitalWrite(def_pin_D4, HIGH);
+    
     digitalWrite(def_pin_RELE, HIGH);
 
     analogWrite(def_pin_PWM, 0);
@@ -202,13 +189,13 @@ inline void InIndKit_c::setup()
 void InIndKit_c::loop(void)
 {
     ArduinoOTA.handle();
-    // WSerial.update();
+    WSerial.update();
     displayUpdate();
     if (wm.getPortalRunning())
     {
         wm.process();
     }
-    ds8500Serial.loop();
+    //ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();
     push_1.update();

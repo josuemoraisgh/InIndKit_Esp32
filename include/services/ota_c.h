@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 
+#include "services\WSerial_c.h"
 //Verificar o Windows Defender Firewall, pois ele bloqueia o OTA
 
 class OTA_c
@@ -41,6 +42,6 @@ inline void OTA_c::otaStart(const char *hostname) {
     } else if (error == OTA_END_ERROR) {
       WSerial.println("End Failed");
     }
-  });
-  ArduinoOTA.begin();
+  })
+  .begin();
 }

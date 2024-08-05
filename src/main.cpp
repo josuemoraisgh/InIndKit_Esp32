@@ -43,16 +43,32 @@ void setup()
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
 
-  WSerial.onInputReceived([](String str) {if(str == "^q") WSerial.disconnectClient(); else WSerial.println(str); });
+  WSerial.onInputReceived([](String str) {
+    if(str == "^q") WSerial.disconnectClient(); 
+    else WSerial.println(str); 
+    }
+  );
   
-  rtn_1.onValueChanged([](uint8_t status)
-                       {digitalWrite(def_pin_D1,!status);WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); });
-  rtn_2.onValueChanged([](uint8_t status)
-                       {digitalWrite(def_pin_D2,!status);WSerial.println(status? "RTN2 ON" :"RTN2 OFF"); });
-  push_1.onValueChanged([](uint8_t status)
-                        {digitalWrite(def_pin_D3,!status);WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF"); });
-  push_2.onValueChanged([](uint8_t status)
-                        {digitalWrite(def_pin_D4,!status);WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF"); });
+  rtn_1.onValueChanged([](uint8_t status) {
+      digitalWrite(def_pin_D1,!status);
+      WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
+    }
+  );
+  rtn_2.onValueChanged([](uint8_t status) {
+    digitalWrite(def_pin_D2,!status);
+    WSerial.println(status? "RTN2 ON" :"RTN2 OFF"); 
+    }
+  );
+  push_1.onValueChanged([](uint8_t status) {
+    digitalWrite(def_pin_D3,!status);
+    WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF"); 
+    }
+  );
+  push_2.onValueChanged([](uint8_t status) {
+    digitalWrite(def_pin_D4,!status);
+    WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF"); 
+    }
+  );
 }
 
 void loop()

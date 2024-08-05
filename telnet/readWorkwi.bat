@@ -1,1 +1,0 @@
-com2tcp-rfc2217.bat \\.\CNCA0 localhost 4000

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
+#include "services\WSerial_c.h"
 class Wifi_c
 {
 

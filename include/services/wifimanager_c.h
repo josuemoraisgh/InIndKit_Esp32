@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <WiFiManager.h>
 
+#include "services\WSerial_c.h"
 class WifiManager_c : public WiFiManager
 {
 protected:

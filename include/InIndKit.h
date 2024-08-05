@@ -6,10 +6,7 @@
 #include <EEPROM.h>
 #include <WiFi.h>
 
-#include "services\telnet_c.h"
-Telnet_c WSerial(4000);
-// UDP_c WSerial(47269);
-
+#include "services\WSerial_c.h"
 #include "services\display_c.h"
 #include "services\ota_c.h"
 #include "services\wifi_c.h"
@@ -64,11 +61,6 @@ Btn_c rtn_2(def_pin_RTN2);
 Btn_c push_1(def_pin_PUSH1);
 Btn_c push_2(def_pin_PUSH2);
 
-void static IRAM_ATTR rtn_1_ISR(){rtn_1.update();}
-void static IRAM_ATTR rtn_2_ISR(){rtn_2.update();}
-void static IRAM_ATTR push_1_ISR(){push_1.update();}
-void static IRAM_ATTR push_2_ISR(){push_2.update();}
-
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public OTA_c, public Display_c
 {
@@ -80,18 +72,17 @@ public:
     void loop(void);
     void errorMsg(String error, bool restart = true);
 };
-#endif
 
 inline void InIndKit_c::setup()
 {
-    WSerial.begin();
+    WSerial.start(4000);
     WSerial.println("Booting");
     /********** READ EEPROM *****/
     EEPROM.begin(1);
     //+--- EEPROM.write(address, value)
     char idKit[2] = "0";
-    // EEPROM.write(0,(uint8_t) idKit[0]);
-    // EEPROM.commit();
+    //EEPROM.write(0,(uint8_t) idKit[0]);
+    //EEPROM.commit();
     //  Initializes with kit id
     idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
     strcat(DDNSName, idKit);
@@ -147,14 +138,7 @@ inline void InIndKit_c::setup()
         setDisplayText(3, "UFU Mode");
         delay(50);
     }
-    else
-        errorMsg("Wifi  error.\nAP MODE...", false);
-
-    // if (!MDNS.begin(DDNSName))
-    //{
-    //     errorMsg("MDNS Error.\nWill reboot...");
-    // }
-    // MDNS.addService("http", "tcp", 80);
+    else errorMsg("Wifi  error.\nAP MODE...", false);
 
     otaStart(DDNSName); // Depois o OTA
 
@@ -173,11 +157,6 @@ inline void InIndKit_c::setup()
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
     // ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
-
-    attachInterrupt(rtn_1.pin, rtn_1_ISR, CHANGE);
-    attachInterrupt(rtn_2.pin, rtn_2_ISR, CHANGE);
-    attachInterrupt(push_1.pin, push_1_ISR, CHANGE);
-    attachInterrupt(push_2.pin, push_2_ISR, CHANGE);
 
     digitalWrite(def_pin_D1, HIGH);
     digitalWrite(def_pin_D2, HIGH);
@@ -201,6 +180,10 @@ void InIndKit_c::loop(void)
         wm.process();
     }
     // ds8500Serial.loop();
+    rtn_1.update();
+    rtn_2.update();
+    push_1.update();
+    push_2.update();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)
@@ -215,3 +198,4 @@ void InIndKit_c::errorMsg(String error, bool restart)
     }
 }
 InIndKit_c InIndKit;
+#endif

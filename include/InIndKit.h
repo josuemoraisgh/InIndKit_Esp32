@@ -38,10 +38,10 @@ Telnet_c WSerial(4000);
 /***************** Write 4@20 mA **********/
 #define def_pin_W4a20_1 26 // GPIO26
 /**************** Hart Interface **********/
-//#define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
-//#define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
-//#define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-//#define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
+// #define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
+// #define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
+// #define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
+// #define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
 //////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
@@ -57,12 +57,17 @@ Telnet_c WSerial(4000);
 #define def_pin_PUSH2 17 // GPIO17
 
 WifiManager_c wm;
-//HartUdp_c ds8500Serial(4000);
+// HartUdp_c ds8500Serial(4000);
 
 Btn_c rtn_1(def_pin_RTN1);
 Btn_c rtn_2(def_pin_RTN2);
 Btn_c push_1(def_pin_PUSH1);
 Btn_c push_2(def_pin_PUSH2);
+
+void static IRAM_ATTR rtn_1_ISR(){rtn_1.update();}
+void static IRAM_ATTR rtn_2_ISR(){rtn_2.update();}
+void static IRAM_ATTR push_1_ISR(){push_1.update();}
+void static IRAM_ATTR push_2_ISR(){push_2.update();}
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public OTA_c, public Display_c
@@ -84,10 +89,10 @@ inline void InIndKit_c::setup()
     /********** READ EEPROM *****/
     EEPROM.begin(1);
     //+--- EEPROM.write(address, value)
-    char idKit[2] = "0";    
-    //EEPROM.write(0,(uint8_t) idKit[0]);
-    //EEPROM.commit(); 
-    // Initializes with kit id
+    char idKit[2] = "0";
+    // EEPROM.write(0,(uint8_t) idKit[0]);
+    // EEPROM.commit();
+    //  Initializes with kit id
     idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
     strcat(DDNSName, idKit);
     /********** POTENTIOMETERS GPIO define *****/
@@ -167,18 +172,18 @@ inline void InIndKit_c::setup()
             ((Display_c *) this)->setDisplayText(2, DDNSName);            
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
-    //ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
+    // ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
 
-    // attachInterrupt(rtn_1.pin, interruptFunc, CHANGE);
-    // attachInterrupt(rtn_2.pin, interruptFunc, CHANGE);
-    // attachInterrupt(push_1.pin, interruptFunc, CHANGE);
-    // attachInterrupt(push_2.pin, interruptFunc, CHANGE);
+    attachInterrupt(rtn_1.pin, rtn_1_ISR, CHANGE);
+    attachInterrupt(rtn_2.pin, rtn_2_ISR, CHANGE);
+    attachInterrupt(push_1.pin, push_1_ISR, CHANGE);
+    attachInterrupt(push_2.pin, push_2_ISR, CHANGE);
 
     digitalWrite(def_pin_D1, HIGH);
     digitalWrite(def_pin_D2, HIGH);
     digitalWrite(def_pin_D3, HIGH);
     digitalWrite(def_pin_D4, HIGH);
-    
+
     digitalWrite(def_pin_RELE, HIGH);
 
     analogWrite(def_pin_PWM, 0);
@@ -195,11 +200,7 @@ void InIndKit_c::loop(void)
     {
         wm.process();
     }
-    //ds8500Serial.loop();
-    rtn_1.update();
-    rtn_2.update();
-    push_1.update();
-    push_2.update();
+    // ds8500Serial.loop();
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)

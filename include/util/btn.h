@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <functional>
 #define DEBOUNCETIME 50
-
 class Btn_c
 {
 protected:
@@ -11,6 +10,7 @@ protected:
     std::function<void(uint8_t status)> onChanged = NULL; // void (*onChanged)(uint8_t status) = NULL;    
     uint16_t pressed_button_time = 0;
     std::function<void()> onPressed = NULL; //void (*onPressed)(void) = NULL;
+
 public:
     uint8_t pin;
     Btn_c() { pin = 0; }
@@ -19,7 +19,7 @@ public:
     void onPressedWithTime(std::function<void()> f/*void (*f)(void)*/);
     bool debounceBtn();
     void setPin(uint8_t pinBtn);
-    void IRAM_ATTR update();
+    void update();
     uint8_t getStatusBtn();
     void setTimePressedButton(uint8_t time);     
 };

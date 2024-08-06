@@ -122,6 +122,7 @@ inline void InIndKit_c::setup()
     delay(50);
 
     WiFi.mode(WIFI_STA);
+    otaStart(DDNSName);   
     wm.setApName(DDNSName);
     setFuncMode(true);
     setDisplayText(1, "Mode: Acces Point", true);
@@ -139,10 +140,13 @@ inline void InIndKit_c::setup()
     }
     else errorMsg("Wifi  error.\nAP MODE...", false);
 
+<<<<<<< HEAD
     otaStart(DDNSName); // Depois o OTA
     
     WSerial.telnetStart(4000);
 
+=======
+>>>>>>> ae4a9c3464007438a6f7dfad1949ae56b66911f5
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()
                              {

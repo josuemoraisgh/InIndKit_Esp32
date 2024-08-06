@@ -76,15 +76,6 @@ public:
 inline void InIndKit_c::setup()
 {
     WSerial.println("Booting");
-    /********** READ EEPROM *****/
-    EEPROM.begin(1);
-    //+--- EEPROM.write(address, value)
-    char idKit[2] = "0";
-    //EEPROM.write(0,(uint8_t) idKit[0]);
-    //EEPROM.commit();
-    //  Initializes with kit id
-    idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
-    strcat(DDNSName, idKit);
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT1, ANALOG);
     pinMode(def_pin_POT2, ANALOG);
@@ -111,18 +102,28 @@ inline void InIndKit_c::setup()
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
-
+    /*********** Inicializando Display ********/
     if (displayStart(def_pin_SDA, def_pin_SCL))
     {
         setDisplayText(1, "Inicializando...");
         WSerial.println("Display running");
     }
-    else
-        errorMsg("Display error.", false);
+    else errorMsg("Display error.", false);
     delay(50);
-
+    /*************** READ EEPROM *************/
+    EEPROM.begin(1);
+    char idKit[2] = "0";    
+    /*************** Write EEPROM ************/
+    //EEPROM.write(0,(uint8_t) idKit[0]);
+    //EEPROM.commit();
+    /********** Initializes with kit id ******/
+    idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
+    strcat(DDNSName, idKit);
+    /************** Starting WIFI ************/
     WiFi.mode(WIFI_STA);
-    otaStart(DDNSName);   
+    /************** Starting OTA *************/    
+    otaStart(DDNSName);  
+    /********* Starting WIFI Manager *********/       
     wm.setApName(DDNSName);
     setFuncMode(true);
     setDisplayText(1, "Mode: Acces Point", true);
@@ -139,14 +140,9 @@ inline void InIndKit_c::setup()
         delay(50);
     }
     else errorMsg("Wifi  error.\nAP MODE...", false);
-
-<<<<<<< HEAD
-    otaStart(DDNSName); // Depois o OTA
-    
+    /*** Starting Telnet Mode in WSerial ****/
     WSerial.telnetStart(4000);
-
-=======
->>>>>>> ae4a9c3464007438a6f7dfad1949ae56b66911f5
+    /************ Web Portal ****************/
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()
                              {
@@ -161,15 +157,14 @@ inline void InIndKit_c::setup()
             ((Display_c *) this)->setDisplayText(2, DDNSName);            
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
+    /************ HART MODEM ****************/        
     // ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
-
+    /************ OTHER CONFIG **************/
     digitalWrite(def_pin_D1, HIGH);
     digitalWrite(def_pin_D2, HIGH);
     digitalWrite(def_pin_D3, HIGH);
     digitalWrite(def_pin_D4, HIGH);
-
     digitalWrite(def_pin_RELE, HIGH);
-
     analogWrite(def_pin_PWM, 0);
     analogWrite(def_pin_DAC1, 0);
     analogWrite(def_pin_W4a20_1, 0);

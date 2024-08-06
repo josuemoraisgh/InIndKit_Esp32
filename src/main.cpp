@@ -44,7 +44,7 @@ void setup()
   pinMode(def_pin_D4, OUTPUT);
 
   WSerial.onInputReceived([](String str) {
-    if(str == "^q") WSerial.disconnectClient(); 
+    if(str == "^q") WSerial.telnetStop(); 
     else WSerial.println(str); 
     }
   );

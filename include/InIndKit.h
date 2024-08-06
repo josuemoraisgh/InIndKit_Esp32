@@ -75,7 +75,6 @@ public:
 
 inline void InIndKit_c::setup()
 {
-    WSerial.start(4000);
     WSerial.println("Booting");
     /********** READ EEPROM *****/
     EEPROM.begin(1);
@@ -141,6 +140,8 @@ inline void InIndKit_c::setup()
     else errorMsg("Wifi  error.\nAP MODE...", false);
 
     otaStart(DDNSName); // Depois o OTA
+    
+    WSerial.telnetStart(4000);
 
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()

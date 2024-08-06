@@ -1,7 +1,5 @@
 #include <Arduino.h>
 #include <WiFi.h>
-
-#include "services\WSerial_c.h"
 class Wifi_c
 {
 
@@ -25,7 +23,7 @@ inline bool Wifi_c::wifiStart(const char *ssid, const char *password, uint16_t m
     do
     {
         delay(pause);
-        WSerial.print(".");
+        Serial.print(".");
         i++;
     } while (!wifiIsConnected() && i < max_tries);
     WiFi.setAutoReconnect(true);

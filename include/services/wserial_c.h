@@ -3,15 +3,17 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
-class WSerial_c : public ESPTelnet
+class WSerial_c
 {
 protected:
  uint16_t server_port = 0;
+ ESPTelnet Telnet;
+ void (*on_input)(String data) = NULL; 
 
 public:
-  bool start(uint16_t server_port);
-  bool start() { return server_port != 0 ? (start(server_port)): false; }
-  WSerial_c() :  ESPTelnet() {}
+  bool telnetStart(uint16_t server_port);
+  bool telnetStart() { return server_port != 0 ? (telnetStart(server_port)): false; }
+  WSerial_c() {}
   template <typename T>
   void plot(const char *varName, T x, T y, const char *unit = NULL);
   template <typename T>
@@ -25,46 +27,53 @@ public:
   void println(const T &data);
   template <typename T>
   void println(const T &data, int base);
+  size_t printf(const char* format, ...); 
   void update(void);
   uint16_t serverPort() { return (server_port); }
-  bool isConnected();
+  bool isTelnetOn();
+  void telnetStop();  
+  void onInputReceived(void (*f)(String data));  
 };
 
-bool WSerial_c::isConnected()
+bool WSerial_c::isTelnetOn()
 {
-  return ((ESPTelnet *) this)->isConnected();
+  return Telnet.isConnected();
 }
 
-bool WSerial_c::start(uint16_t port)
+void WSerial_c::telnetStop() {
+  Telnet.stop();
+}
+
+bool WSerial_c::telnetStart(uint16_t port)
 {
-  if(isConnected()) ((ESPTelnet *) this)->stop();
+  if(isTelnetOn()) Telnet.stop();
   server_port = port;
-  onDisconnect([](String ip) {
+  Telnet.onDisconnect([](String ip) {
         Serial.print("- Telnet: ");
         Serial.print(ip);
         Serial.println(" disconnected"); 
     }
   );
-  onConnectionAttempt([](String ip) {
+  Telnet.onConnectionAttempt([](String ip) {
         Serial.print("- Telnet: ");
         Serial.print(ip);
         Serial.println(" tried to connected"); 
     }
   );
-  onReconnect([](String ip) {
+  Telnet.onReconnect([](String ip) {
         Serial.print("- Telnet: ");
         Serial.print(ip);
         Serial.println(" reconnected"); 
     }
   );
-  return (((ESPTelnet *) this)->begin(server_port));
+  return Telnet.begin(server_port);
 }
 
 void WSerial_c::update(void)
 {
-  if (isConnected()) ((ESPTelnet *) this)->loop();
+  if (isTelnetOn()) Telnet.loop();
   else {
-    if (!start() && Serial.available() && on_input != NULL)
+    if (!telnetStart() && Serial.available() && on_input != NULL)
     {
       on_input(Serial.readStringUntil('\n'));
     }
@@ -93,11 +102,21 @@ void WSerial_c::plot(const char *varName, T x, T y, const char *unit)
   println("|g"); // Modo Grafico
 }
 
+
+size_t WSerial_c::printf(const char* format, ...){
+  va_list arg;
+  va_start(arg, format);
+  if (isTelnetOn())
+    return Telnet.printf(format,arg);  
+  else
+    return Serial.printf(format,arg);   
+}
+
 template <typename T>
 void WSerial_c::print(const T &data)
 {
-  if (isConnected())
-    ((ESPTelnet *) this)->print(data);  
+  if (isTelnetOn())
+    Telnet.print(data);  
   else
     Serial.print(data);  
 }
@@ -105,8 +124,8 @@ void WSerial_c::print(const T &data)
 template <typename T>
 void WSerial_c::print(const T &data, int base)
 {
-  if (isConnected())
-    ((ESPTelnet *) this)->print(data, base);  
+  if (isTelnetOn())
+    Telnet.print(data, base);  
   else
     Serial.print(data, base);  
 }
@@ -114,8 +133,8 @@ void WSerial_c::print(const T &data, int base)
 template <typename T>
 void WSerial_c::println(const T &data)
 {
-  if (isConnected())
-    ((ESPTelnet *) this)->println(data);  
+  if (isTelnetOn())
+    Telnet.println(data);  
   else
     Serial.println(data);  
 }
@@ -123,18 +142,24 @@ void WSerial_c::println(const T &data)
 template <typename T>
 void WSerial_c::println(const T &data, int base)
 {
-  if (isConnected())
-    ((ESPTelnet *) this)->println(data, base);  
+  if (isTelnetOn())
+    Telnet.println(data, base);  
 else
     Serial.println(data, base); 
 }
 
 void WSerial_c::println()
 {
-  if (isConnected())
-    ((ESPTelnet *) this)->println();  
+  if (isTelnetOn())
+    Telnet.println();  
   else
     Serial.println();
+}
+
+void WSerial_c::onInputReceived(void (*f)(String data))
+{
+    on_input = f;
+    Telnet.onInputReceived(f);    
 }
 
 WSerial_c WSerial;

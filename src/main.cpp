@@ -25,8 +25,8 @@ void monitora4A20(void)
   {
     delay4A20.repeat();
 
-    const uint16_t vlR4a20_1 = analogRead(def_pin_R4a20_1);
-    const uint16_t vlR4a20_2 = analogRead(def_pin_R4a20_2);
+    const double vlR4a20_1 = 20.0*analogRead(def_pin_R4a20_1)/4096;
+    const double vlR4a20_2 = 20.0*analogRead(def_pin_R4a20_2)/4096;
 
     InIndKit.setDisplayText(3, ("T1:" + String(vlR4a20_1) + "  T2:" + String(vlR4a20_2)).c_str());
     

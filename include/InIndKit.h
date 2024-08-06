@@ -161,11 +161,11 @@ inline void InIndKit_c::setup()
     /************ HART MODEM ****************/        
     // ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
     /************ OTHER CONFIG **************/
-    digitalWrite(def_pin_D1, HIGH);
-    digitalWrite(def_pin_D2, HIGH);
-    digitalWrite(def_pin_D3, HIGH);
-    digitalWrite(def_pin_D4, HIGH);
-    digitalWrite(def_pin_RELE, HIGH);
+    digitalWrite(def_pin_D1, LOW);
+    digitalWrite(def_pin_D2, LOW);
+    digitalWrite(def_pin_D3, LOW);
+    digitalWrite(def_pin_D4, LOW);
+    digitalWrite(def_pin_RELE, LOW);
     analogWrite(def_pin_PWM, 0);
     analogWrite(def_pin_DAC1, 0);
     analogWrite(def_pin_W4a20_1, 0);

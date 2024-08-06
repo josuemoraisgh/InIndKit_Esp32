@@ -44,7 +44,7 @@
 #define def_pin_RELE 23 // GPIO23
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
-#define def_pin_SCL 5  // GPIO5
+#define def_pin_SCL 22 // GPIO22
 /********************* PWM ****************/
 #define def_pin_PWM 18 // GPIO18
 /************* BUTTONS GPIO define *********/
@@ -76,6 +76,47 @@ public:
 inline void InIndKit_c::setup()
 {
     WSerial.println("Booting");
+    /*********** Inicializando Display ********/
+    if (displayStart(def_pin_SDA, def_pin_SCL))
+    {
+        setDisplayText(1, "Inicializando...");
+        WSerial.println("Display running");
+    }
+    else errorMsg("Display error.", false);
+    delay(50);
+    /*************** READ EEPROM *************/
+    EEPROM.begin(1);
+    char idKit[2] = "0";    
+    /*************** Write EEPROM ************/
+    //EEPROM.write(0,(uint8_t) idKit[0]);
+    //EEPROM.commit();
+    /********** Initializes with kit id ******/
+    idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
+    strcat(DDNSName, idKit);
+    /************** Starting WIFI ************/
+    WiFi.mode(WIFI_STA);
+    /********* Starting WIFI Manager *********/       
+    wm.setApName(DDNSName);
+    setFuncMode(true);
+    setDisplayText(1, "Mode: Acces Point", true);
+    setDisplayText(2, "SSID: AutoConnectAP", true);
+    setDisplayText(3, "PSWD: ", true);
+    if (wm.autoConnect("AutoConnectAP"))
+    {
+        WSerial.print("\nWifi running - IP:");
+        WSerial.println(WiFi.localIP());
+        setFuncMode(false);
+        setDisplayText(1, WiFi.localIP().toString().c_str());
+        setDisplayText(2, DDNSName);
+        setDisplayText(3, "UFU Mode");
+        delay(50);
+    }
+    else errorMsg("Wifi  error.\nAP MODE...", false);
+    
+    /************** Starting OTA *************/    
+    otaStart(DDNSName);  // OTA tem que ser depois do wifi e wifiManager 
+    /*** Starting Telnet Mode in WSerial ****/
+    WSerial.telnetStart(4000);    
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT1, ANALOG);
     pinMode(def_pin_POT2, ANALOG);
@@ -102,46 +143,6 @@ inline void InIndKit_c::setup()
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
-    /*********** Inicializando Display ********/
-    if (displayStart(def_pin_SDA, def_pin_SCL))
-    {
-        setDisplayText(1, "Inicializando...");
-        WSerial.println("Display running");
-    }
-    else errorMsg("Display error.", false);
-    delay(50);
-    /*************** READ EEPROM *************/
-    EEPROM.begin(1);
-    char idKit[2] = "0";    
-    /*************** Write EEPROM ************/
-    //EEPROM.write(0,(uint8_t) idKit[0]);
-    //EEPROM.commit();
-    /********** Initializes with kit id ******/
-    idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
-    strcat(DDNSName, idKit);
-    /************** Starting WIFI ************/
-    WiFi.mode(WIFI_STA);
-    /************** Starting OTA *************/    
-    otaStart(DDNSName);  
-    /********* Starting WIFI Manager *********/       
-    wm.setApName(DDNSName);
-    setFuncMode(true);
-    setDisplayText(1, "Mode: Acces Point", true);
-    setDisplayText(2, "SSID: AutoConnectAP", true);
-    setDisplayText(3, "PSWD: ", true);
-    if (wm.autoConnect("AutoConnectAP"))
-    {
-        WSerial.print("\nWifi running - IP:");
-        WSerial.println(WiFi.localIP());
-        setFuncMode(false);
-        setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, DDNSName);
-        setDisplayText(3, "UFU Mode");
-        delay(50);
-    }
-    else errorMsg("Wifi  error.\nAP MODE...", false);
-    /*** Starting Telnet Mode in WSerial ****/
-    WSerial.telnetStart(4000);
     /************ Web Portal ****************/
     push_1.setTimePressedButton(3);
     push_1.onPressedWithTime([this]()
@@ -175,10 +176,10 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
-    if (wm.getPortalRunning())
+    /*if (wm.getPortalRunning())
     {
         wm.process();
-    }
+    }*/
     // ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();

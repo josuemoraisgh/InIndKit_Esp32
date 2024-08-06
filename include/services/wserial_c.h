@@ -3,17 +3,17 @@
 #include <Arduino.h>
 #include "ESPTelnet.h"
 
+ESPTelnet Telnet;
 class WSerial_c
 {
 protected:
  uint16_t server_port = 0;
- ESPTelnet Telnet;
  void (*on_input)(String data) = NULL; 
 
 public:
   bool telnetStart(uint16_t server_port);
   bool telnetStart() { return server_port != 0 ? (telnetStart(server_port)): false; }
-  WSerial_c() {}
+  WSerial_c() { Serial.begin(115200);}
   template <typename T>
   void plot(const char *varName, T x, T y, const char *unit = NULL);
   template <typename T>
@@ -35,7 +35,7 @@ public:
   void onInputReceived(void (*f)(String data));  
 };
 
-bool WSerial_c::isTelnetOn()
+bool inline WSerial_c::isTelnetOn()
 {
   return Telnet.isConnected();
 }
@@ -71,9 +71,9 @@ bool WSerial_c::telnetStart(uint16_t port)
 
 void WSerial_c::update(void)
 {
-  if (isTelnetOn()) Telnet.loop();
-  else {
-    if (!telnetStart() && Serial.available() && on_input != NULL)
+  Telnet.loop();  //Tem que ser fora do if
+  if (!isTelnetOn()) {
+    if (Serial.available() && on_input != NULL)
     {
       on_input(Serial.readStringUntil('\n'));
     }

@@ -176,10 +176,10 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
-    /*if (wm.getPortalRunning())
+    if (wm.getPortalRunning())
     {
         wm.process();
-    }*/
+    }
     // ds8500Serial.loop();
     rtn_1.update();
     rtn_2.update();

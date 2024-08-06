@@ -26,10 +26,10 @@
 #define def_pin_R4a20_1 33 // GPIO33
 #define def_pin_R4a20_2 32 // GPIO32
 /******************** Digitais **************/
-#define def_pin_D1 27 // GPIO27 - Não funciona como entrada analogica somente digital
-#define def_pin_D2 14 // GPIO14 - Não funciona como entrada analogica somente digital
-#define def_pin_D3 12 // GPIO12 - Não funciona como entrada analogica somente digital
-#define def_pin_D4 13 // GPIO13 - Não funciona como entrada analogica somente digital
+#define def_pin_D1 13 // GPIO13 - Não funciona como entrada analogica somente digital
+#define def_pin_D2 5  // GPIO5  - Não funciona como entrada analogica somente digital
+#define def_pin_D3 14 // GPIO14 - Não funciona como entrada analogica somente digital
+#define def_pin_D4 27 // GPIO27 - Não funciona como entrada analogica somente digital
 /********************* DAC ****************/
 #define def_pin_DAC1 25 // GPIO25
 /***************** Write 4@20 mA **********/
@@ -48,8 +48,8 @@
 /********************* PWM ****************/
 #define def_pin_PWM 18 // GPIO18
 /************* BUTTONS GPIO define *********/
-#define def_pin_RTN1 2   // GPIO0
-#define def_pin_RTN2 15  // GPIO4
+#define def_pin_RTN1 15  // GPIO15
+#define def_pin_RTN2 35  // GPIO35
 #define def_pin_PUSH1 16 // GPIO16
 #define def_pin_PUSH2 17 // GPIO17
 

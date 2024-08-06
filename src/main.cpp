@@ -50,22 +50,22 @@ void setup()
   );
   
   rtn_1.onValueChanged([](uint8_t status) {
-      digitalWrite(def_pin_D1,!status);
+      digitalWrite(def_pin_D1,status);
       WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
     }
   );
   rtn_2.onValueChanged([](uint8_t status) {
-    digitalWrite(def_pin_D2,!status);
+    digitalWrite(def_pin_D2,status);
     WSerial.println(status? "RTN2 ON" :"RTN2 OFF"); 
     }
   );
   push_1.onValueChanged([](uint8_t status) {
-    digitalWrite(def_pin_D3,!status);
+    digitalWrite(def_pin_D3,status);
     WSerial.println(status? "PUSH_1 ON" :"PUSH_1 OFF"); 
     }
   );
   push_2.onValueChanged([](uint8_t status) {
-    digitalWrite(def_pin_D4,!status);
+    digitalWrite(def_pin_D4,status);
     WSerial.println(status? "PUSH_2 ON" :"PUSH_2 OFF"); 
     }
   );

@@ -14,7 +14,7 @@
 #include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
 #include "util/asyncDelay.h"
-#include "util/btn.h"
+#include "util/din.h"
 
 //////////////////////////Lado Esquerdo///////////////////////
 /********** POTENTIOMETERS GPIO define *****/
@@ -56,10 +56,10 @@
 WifiManager_c wm;
 // HartUdp_c ds8500Serial(4000);
 
-Btn_c rtn_1(def_pin_RTN1);
-Btn_c rtn_2(def_pin_RTN2);
-Btn_c push_1(def_pin_PUSH1);
-Btn_c push_2(def_pin_PUSH2);
+DIn_c rtn_1(def_pin_RTN1);
+DIn_c rtn_2(def_pin_RTN2);
+DIn_c push_1(def_pin_PUSH1);
+DIn_c push_2(def_pin_PUSH2);
 
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
 class InIndKit_c : public OTA_c, public Display_c
@@ -144,7 +144,7 @@ inline void InIndKit_c::setup()
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
     /************ Web Portal ****************/
-    push_1.setTimePressedButton(3);
+    push_1.setTimePressedDIn(3);
     push_1.onPressedWithTime([this]()
                              {
         if(wm.changeWebPortal())
@@ -176,15 +176,12 @@ void InIndKit_c::loop(void)
     ArduinoOTA.handle();
     WSerial.update();
     displayUpdate();
-    if (wm.getPortalRunning())
-    {
-        wm.process();
-    }
-    // ds8500Serial.loop();
+    if (wm.getPortalRunning()) wm.process();
     rtn_1.update();
     rtn_2.update();
     push_1.update();
     push_2.update();
+    // ds8500Serial.loop();    
 }
 
 void InIndKit_c::errorMsg(String error, bool restart)

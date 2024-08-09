@@ -174,6 +174,7 @@ inline void IIKit_c::setup()
 void IIKit_c::loop(void)
 {
     OTA::handle();
+    WSerial.loop();
     disp.update();
     if (wm.getPortalRunning())
         wm.process();

@@ -12,12 +12,14 @@ private:
   uint16_t server_port = 0;
   AsyncTelnet *_telnet;
   bool isClientConnected;
+  std::function<void(std::string)> on_input;
 
 public:
   uint16_t serverPort() { return (server_port); }
   bool isTelnetOn();
   void stop();
   void start(uint16_t port, unsigned long baudrate = BAUD_RATE);
+  void loop();
 
   template <typename T>
   void print(const T &data);
@@ -72,6 +74,14 @@ void WSerial_c::start(uint16_t port, unsigned long baudrate)
   println();
 }
 
+void WSerial_c::loop() {
+  if(!isClientConnected) {
+    if(Serial.available()) {
+      on_input(std::string((Serial.readStringUntil('\n')).c_str()));
+    }
+  }
+}
+
 template <typename T>
 void WSerial_c::plot(const char *varName, T y, const char *unit)
 {
@@ -121,6 +131,7 @@ void WSerial_c::println()
 void WSerial_c::onInputReceived(std::function<void(std::string)> callback)
 {
   _telnet->onIncomingData(callback);
+  on_input = callback;
 }
 
 #endif

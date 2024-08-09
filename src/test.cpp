@@ -1,12 +1,12 @@
 #include <Arduino.h>
-#include "InIndKit.h"
+#include "IIKit.h"
 
 void setup()
 {
-    InIndKit.setup("Wokwi-GUEST" , "", "inindkit0");
+    IIKit.setup();
 }
 
 void loop()
 {
-    InIndKit.loop();
+    IIKit.loop();
 }

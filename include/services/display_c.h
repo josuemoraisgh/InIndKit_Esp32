@@ -22,27 +22,27 @@ private:
 public:
   // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
   Display_c(void) : Adafruit_SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {}
-  bool displayStart(const uint8_t &SDA = 0, const uint8_t &SCL = 0);
-  void displayUpdate(void);
-  void setDisplayText(uint8_t line, const char txt[], bool funcMode = false, uint8_t txtSize = 2);
+  bool start(const uint8_t &SDA = 0, const uint8_t &SCL = 0);
+  void update(void);
+  void setText(uint8_t line, const char txt[], bool funcMode = false, uint8_t txtSize = 2);
   void setFuncMode(bool funcMode);
   void rotaty(uint8_t index);
 };
 
-bool Display_c::displayStart(const uint8_t &SDA, const uint8_t &SCL)
+bool Display_c::start(const uint8_t &SDA, const uint8_t &SCL)
 {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
   if(SDA != 0 && SCL != 0) Wire.setPins(SDA, SCL); // Set the I2C pins before begin
   if (!begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
     return false;
-  setDisplayText(1, ca_lineTxt[0]);
-  setDisplayText(2, ca_lineTxt[1]);
-  setDisplayText(3, ca_lineTxt[2]);
+  setText(1, ca_lineTxt[0]);
+  setText(2, ca_lineTxt[1]);
+  setText(3, ca_lineTxt[2]);
 
   return true;
 }
 
-void Display_c::displayUpdate(void)
+void Display_c::update(void)
 {
   //+--- Scroll IP ---+
   if (ui8_lineSize[0] > 10 || ui8_lineSize[1] > 10 || ui8_lineSize[2] > 10 || isChanged)
@@ -87,7 +87,7 @@ void Display_c::rotaty(uint8_t index)
   }
 }
 
-void Display_c::setDisplayText(uint8_t line, const char txt[], bool funcMode, uint8_t txtSize)
+void Display_c::setText(uint8_t line, const char txt[], bool funcMode, uint8_t txtSize)
 {
   if (this->isFuncMode == funcMode)
   {
@@ -97,7 +97,7 @@ void Display_c::setDisplayText(uint8_t line, const char txt[], bool funcMode, ui
     ui8_txtSize[line - 1] = txtSize;
     isChanged = true;
   }
-  displayUpdate();
+  update();
 }
 
 void Display_c::setFuncMode(bool funcMode)

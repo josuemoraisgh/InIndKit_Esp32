@@ -4,13 +4,13 @@
 class UDP_c : public AsyncUDP
 {
 protected:
-    uint16_t server_port = 47269;
+    WSerial_c* WSerial;
+    uint16_t server_port;
     void (*on_input)(String data) = NULL;
 
 public:
-    bool start(uint16_t port);
-    bool start() { return (start(server_port)); }
-    UDP_c(uint16_t port) : AsyncUDP() { this->server_port = server_port; }
+    bool start(WSerial_c* ws, uint16_t port= 47269);
+    UDP_c(uint16_t port) : AsyncUDP() {this->server_port = server_port; }
     template <typename T>
     void plot(const char *varName, T x, T y, const char *unit = NULL);
     template <typename T>
@@ -28,13 +28,14 @@ public:
     void onInputReceived(void (*f)(String data));
 };
 
-bool UDP_c::start(uint16_t port)
+bool UDP_c::start(WSerial_c* ws,uint16_t port)
 {
+    WSerial=ws; 
     server_port = port;
     if (((AsyncUDP *)this)->connect(IPAddress(200, 19, 148, 219), port))
     {
-        WSerial.print("UDP Listening on port: ");
-        WSerial.println(server_port);
+        WSerial->print("UDP Listening on port: ");
+        WSerial->println(server_port);
         ((AsyncUDP *)this)->onPacket([this](AsyncUDPPacket packet)
                                      {this->on_input(packet.readStringUntil('\n'));});
         return true;
@@ -68,7 +69,7 @@ template <typename T>
 void UDP_c::print(const T &data)
 {
     if (((AsyncUDP *)this)->connected())
-        WSerial.print(data);
+        WSerial->print(data);
     else
         ((AsyncUDP *)this)->print(data);
 }
@@ -77,7 +78,7 @@ template <typename T>
 void UDP_c::print(const T &data, int base)
 {
     if (((AsyncUDP *)this)->connected())
-        WSerial.print(data, base);
+        WSerial->print(data, base);
     else
         ((AsyncUDP *)this)->print(data, base);
 }
@@ -86,7 +87,7 @@ template <typename T>
 void UDP_c::println(const T &data)
 {
     if (((AsyncUDP *)this)->connected())
-        WSerial.println(data);
+        WSerial->println(data);
     else
         ((AsyncUDP *)this)->println(data);
 }
@@ -95,7 +96,7 @@ template <typename T>
 void UDP_c::println(const T &data, int base)
 {
     if (((AsyncUDP *)this)->connected())
-        WSerial.println(data, base);
+        WSerial->println(data, base);
     else
         ((AsyncUDP *)this)->println(data, base);
 }
@@ -103,7 +104,7 @@ void UDP_c::println(const T &data, int base)
 void UDP_c::println()
 {
     if (((AsyncUDP *)this)->connected())
-        WSerial.println();
+        WSerial->println();
     else
         ((AsyncUDP *)this)->println();
 }

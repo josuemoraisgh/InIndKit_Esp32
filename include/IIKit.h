@@ -5,18 +5,18 @@
 #include <ESPmDNS.h>
 #include <EEPROM.h>
 #include <WiFi.h>
+#include <OTA.h>
 
 #include "services\WSerial_c.h"
 #include "services\display_c.h"
-#include "services\ota_c.h"
 #include "services\wifi_c.h"
 #include "services\UDP_c.h"
 #include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
+
 #include "util/asyncDelay.h"
 #include "util/din.h"
 
-//////////////////////////Lado Esquerdo///////////////////////
 /********** POTENTIOMETERS GPIO define *****/
 #define def_pin_POT1 36 // GPIO36
 #define def_pin_POT2 39 // GPIO39
@@ -34,12 +34,6 @@
 #define def_pin_DAC1 25 // GPIO25
 /***************** Write 4@20 mA **********/
 #define def_pin_W4a20_1 26 // GPIO26
-/**************** Hart Interface **********/
-// #define def_pin_Hart_RXD 3  // Pino RX da ESP32 conectado ao pino RX do DS8500
-// #define def_pin_Hart_TXD 1  // Pino TX da ESP32 conectado ao pino TX do DS8500
-// #define def_pin_Hart_RTS 22 // Pino RTS da ESP32 conectado ao pino RTS do DS8500
-// #define def_pin_Hart_CTS 19 // Pino CTS da ESP32 conectado ao pino CD do DS8500
-//////////////////////////Lado Direito///////////////////////
 /********************* RELÊ ***************/
 #define def_pin_RELE 23 // GPIO23
 /***************** OLED Display ************/
@@ -53,70 +47,73 @@
 #define def_pin_PUSH1 16 // GPIO16
 #define def_pin_PUSH2 17 // GPIO17
 
-WifiManager_c wm;
-// HartUdp_c ds8500Serial(4000);
-
-DIn_c rtn_1(def_pin_RTN1);
-DIn_c rtn_2(def_pin_RTN2);
-DIn_c push_1(def_pin_PUSH1);
-DIn_c push_2(def_pin_PUSH2);
-
 // Use ESP, InIndKit, WiFi, ArduinoOTA, InIndKit.Display e InIndKit.Telnet
-class InIndKit_c : public OTA_c, public Display_c
+class IIKit_c
 {
 private:
     char DDNSName[15] = "inindkit";
+    WifiManager_c wm;
+    void errorMsg(String error, bool restart = true);    
 
 public:
+    DIn_c rtn_1;
+    DIn_c rtn_2;
+    DIn_c push_1;
+    DIn_c push_2;
+    Display_c disp;
+    WSerial_c WSerial;    
+    // HartUdp_c ds8500Serial(4000);    
     void setup();
-    void loop(void);
-    void errorMsg(String error, bool restart = true);
+    void loop(void);    
 };
 
-inline void InIndKit_c::setup()
+inline void IIKit_c::setup()
 {
-    WSerial.println("Booting");
+    this->WSerial.println("Booting");
     /*********** Inicializando Display ********/
-    if (displayStart(def_pin_SDA, def_pin_SCL))
+    if (disp.start(def_pin_SDA, def_pin_SCL))
     {
-        setDisplayText(1, "Inicializando...");
-        WSerial.println("Display running");
+        disp.setText(1, "Inicializando...");
+        this->WSerial.println("Display running");
     }
-    else errorMsg("Display error.", false);
+    else
+        errorMsg("Display error.", false);
     delay(50);
     /*************** READ EEPROM *************/
     EEPROM.begin(1);
-    char idKit[2] = "0";    
+    char idKit[2] = "0";
     /*************** Write EEPROM ************/
-    //EEPROM.write(0,(uint8_t) idKit[0]);
-    //EEPROM.commit();
+    // EEPROM.write(0,(uint8_t) idKit[0]);
+    // EEPROM.commit();
     /********** Initializes with kit id ******/
     idKit[0] = (char)EEPROM.read(0); // id do kit utilizado
     strcat(DDNSName, idKit);
     /************** Starting WIFI ************/
     WiFi.mode(WIFI_STA);
-    /********* Starting WIFI Manager *********/       
+    /********* Starting WIFI Manager *********/
+    wm.start(&WSerial);
     wm.setApName(DDNSName);
-    setFuncMode(true);
-    setDisplayText(1, "Mode: Acces Point", true);
-    setDisplayText(2, "SSID: AutoConnectAP", true);
-    setDisplayText(3, "PSWD: ", true);
+    disp.setFuncMode(true);
+    disp.setText(1, "Mode: Acces Point", true);
+    disp.setText(2, "SSID: AutoConnectAP", true);
+    disp.setText(3, "PSWD: ", true);
     if (wm.autoConnect("AutoConnectAP"))
     {
         WSerial.print("\nWifi running - IP:");
         WSerial.println(WiFi.localIP());
-        setFuncMode(false);
-        setDisplayText(1, WiFi.localIP().toString().c_str());
-        setDisplayText(2, DDNSName);
-        setDisplayText(3, "UFU Mode");
+        disp.setFuncMode(false);
+        disp.setText(1, WiFi.localIP().toString().c_str());
+        disp.setText(2, DDNSName);
+        disp.setText(3, "UFU Mode");
         delay(50);
     }
-    else errorMsg("Wifi  error.\nAP MODE...", false);
-    
-    /************** Starting OTA *************/    
-    otaStart(DDNSName);  // OTA tem que ser depois do wifi e wifiManager 
+    else
+        errorMsg("Wifi  error.\nAP MODE...", false);
+
+    /************** Starting OTA *************/
+    OTA::setup(DDNSName);// OTA tem que ser depois do wifi e wifiManager
     /*** Starting Telnet Mode in WSerial ****/
-    WSerial.telnetStart(4000);    
+    WSerial.start(4000);
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT1, ANALOG);
     pinMode(def_pin_POT2, ANALOG);
@@ -143,6 +140,11 @@ inline void InIndKit_c::setup()
     pinMode(def_pin_RELE, OUTPUT);
     /***************** Write 4@20 mA **********/
     pinMode(def_pin_W4a20_1, OUTPUT);
+    /************* Set Btn Pin ****************/
+    rtn_1.setPin(def_pin_RTN1);
+    rtn_2.setPin(def_pin_RTN2);
+    push_1.setPin(def_pin_PUSH1);
+    push_2.setPin(def_pin_PUSH2); 
     /************ Web Portal ****************/
     push_1.setTimePressedDIn(3);
     push_1.onPressedWithTime([this]()
@@ -150,15 +152,15 @@ inline void InIndKit_c::setup()
         if(wm.changeWebPortal())
         {
             ((Display_c *) this)->setFuncMode(true);
-            ((Display_c *) this)->setDisplayText(2, "Web Portal ON", true);
-            ((Display_c *) this)->setDisplayText(3, "", true);        
+            ((Display_c *) this)->setText(2, "Web Portal ON", true);
+            ((Display_c *) this)->setText(3, "", true);        
             //digitalWrite(def_pin_OUT1, LOW);            
         } else {
             ((Display_c *) this)->setFuncMode(false);
-            ((Display_c *) this)->setDisplayText(2, DDNSName);            
+            ((Display_c *) this)->setText(2, DDNSName);            
             //digitalWrite(def_pin_OUT1, HIGH); 
         } });
-    /************ HART MODEM ****************/        
+    /************ HART MODEM ****************/
     // ds8500Serial.setup(def_pin_Hart_RXD, def_pin_Hart_TXD, def_pin_Hart_CTS, def_pin_Hart_RTS);
     /************ OTHER CONFIG **************/
     digitalWrite(def_pin_D1, LOW);
@@ -171,20 +173,20 @@ inline void InIndKit_c::setup()
     analogWrite(def_pin_W4a20_1, 0);
 }
 
-void InIndKit_c::loop(void)
+void IIKit_c::loop(void)
 {
-    ArduinoOTA.handle();
-    WSerial.update();
-    displayUpdate();
-    if (wm.getPortalRunning()) wm.process();
+    OTA::handle();
+    disp.update();
+    if (wm.getPortalRunning())
+        wm.process();
     rtn_1.update();
     rtn_2.update();
     push_1.update();
     push_2.update();
-    // ds8500Serial.loop();    
+    // ds8500Serial.loop();
 }
 
-void InIndKit_c::errorMsg(String error, bool restart)
+void IIKit_c::errorMsg(String error, bool restart)
 {
     WSerial.println(error);
     if (restart)
@@ -195,5 +197,5 @@ void InIndKit_c::errorMsg(String error, bool restart)
         delay(2000);
     }
 }
-InIndKit_c InIndKit;
+IIKit_c IIKit;
 #endif

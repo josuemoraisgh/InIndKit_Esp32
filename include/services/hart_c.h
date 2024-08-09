@@ -18,7 +18,7 @@ build_flags =
 */
 const uart_port_t uart_num = UART_NUM_2;
 static const int RX_BUF_SIZE = 1024;
-class HartUdp_c : public HardwareSerial, protected AsyncUDP
+class Hart_c : public HardwareSerial, protected AsyncUDP
 {
 
 protected:
@@ -28,7 +28,7 @@ protected:
     int8_t rtsPin = -1;
 
 public:
-    HartUdp_c(uint16_t port) : HardwareSerial(uart_num), AsyncUDP()
+    Hart_c(uint16_t port) : HardwareSerial(uart_num), AsyncUDP()
     {
         server_port = port;
     }
@@ -42,7 +42,7 @@ protected:
     void handleInput() {}
 };
 
-bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+bool Hart_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
 {
     if (((AsyncUDP *)this)->listen(port))
     {
@@ -76,7 +76,7 @@ bool HartUdp_c::setup(uint16_t port, int8_t rxPin, int8_t txPin, int8_t ctsPin, 
     return false;
 }
 
-void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
+void Hart_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
 {
     if (size == 8 &&
         buffer[0] == 255 &&
@@ -103,7 +103,7 @@ void HartUdp_c::udpToHart(uint8_t *buffer, size_t size, IPAddress remoteIP)
     }
 }
 
-void HartUdp_c::hartToUdp()
+void Hart_c::hartToUdp()
 {
     const size_t tam = ((HardwareSerial *)this)->available();
     if (tam > 0)

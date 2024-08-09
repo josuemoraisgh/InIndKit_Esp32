@@ -9,9 +9,7 @@
 
 #include "services\WSerial_c.h"
 #include "services\display_c.h"
-#include "services\wifi_c.h"
 #include "services\UDP_c.h"
-#include "services\hartudp_c.h"
 #include "services\wifimanager_c.h"
 
 #include "util/asyncDelay.h"

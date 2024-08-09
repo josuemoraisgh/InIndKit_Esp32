@@ -47,7 +47,7 @@ void setup()
   pinMode(def_pin_D2, OUTPUT);
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
-  
+
   ledParameter_t led1 = {def_pin_D2, 500};
   
   xTaskCreate(

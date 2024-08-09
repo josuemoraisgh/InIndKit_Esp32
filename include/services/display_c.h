@@ -7,9 +7,9 @@
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET -1       // Reset pin # (or -1 if sharing Arduino reset pin)
 
-class Display_c : public Adafruit_SSD1306
+class Display_c : protected Adafruit_SSD1306
 {
-private:
+protected:
   bool isFuncMode = false;
   bool isChanged = true;
   bool scrollLeft[3] = {false, false, false};
@@ -18,6 +18,7 @@ private:
   uint8_t ui8_txtSize[3] = {2, 2, 2};
   int16_t i16_lineWidth[3] = {12, 12, 12};
   int16_t i16_lineMinWidth[3];
+  void rotaty(uint8_t index);  
 
 public:
   // On an ESP32: SDA (GPIO 21), SCL (GPIO 22) the pins for I2C are defined by the Wire-library.
@@ -26,7 +27,7 @@ public:
   void update(void);
   void setText(uint8_t line, const char txt[], bool funcMode = false, uint8_t txtSize = 2);
   void setFuncMode(bool funcMode);
-  void rotaty(uint8_t index);
+
 };
 
 bool Display_c::start(const uint8_t &SDA, const uint8_t &SCL)

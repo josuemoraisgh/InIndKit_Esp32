@@ -69,6 +69,7 @@ void WSerial_c::start(uint16_t port, unsigned long baudrate)
   _telnet->onIncomingData([=](const std::string &data)
                           { print(data.c_str()); });
   _telnet->begin(false, false);
+  println();
 }
 
 template <typename T>
@@ -90,20 +91,6 @@ void WSerial_c::plot(const char *varName, T x, T y, const char *unit)
   str.concat("|g");
   println(str);
 }
-/*
-  print(">"); // Inicio de envio de dados para um gráfico.
-  print(varName);
-  print(":");
-  print(x);
-  print(":");
-  print(y);
-  if (unit != NULL)
-  {
-    print("§"); // Unidade na sequência
-    print(unit);
-  }
-  println("|g"); // Modo Grafico
-}*/
 
 template <typename T>
 void WSerial_c::print(const T &data)
@@ -117,8 +104,9 @@ void WSerial_c::print(const T &data)
 template <typename T>
 void WSerial_c::println(const T &data)
 {
-  print(data);
-  print(NEWLINE);
+  String str(data);
+  str.concat(NEWLINE);
+  print(str);
 }
 void WSerial_c::println()
 {

@@ -21,12 +21,12 @@ inline AsyncDelay_c::AsyncDelay_c(const unsigned long &delay)
 inline void AsyncDelay_c::restart(const unsigned long &delay)
 {
     _delay = delay;
-    _expires = millis() + _delay;
+    _expires = xTaskGetTickCount() + _delay;
 }
 
 inline bool AsyncDelay_c::isExpired(void)
 {
-    return (long(millis() - _expires) >= 0);
+    return (TickType_t(xTaskGetTickCount() - _expires) >= 0);
 }
 
 inline void AsyncDelay_c::repeat(void)

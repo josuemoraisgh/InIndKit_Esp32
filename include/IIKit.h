@@ -9,7 +9,6 @@
 
 #include "services\WSerial_c.h"
 #include "services\display_c.h"
-#include "services\UDP_c.h"
 #include "services\wifimanager_c.h"
 
 #include "util/asyncDelay.h"
@@ -18,16 +17,16 @@
 /********** POTENTIOMETERS GPIO define *****/
 #define def_pin_POT1 36 // GPIO36
 #define def_pin_POT2 39 // GPIO39
-/********************* ADC ****************/
-#define def_pin_ADC1 34 // GPIO34
 /***************** Read 4@20 mA ***********/
-#define def_pin_R4a20_1 33 // GPIO33
-#define def_pin_R4a20_2 32 // GPIO32
+#define def_pin_R4a20_1 35 // GPIO35
+#define def_pin_R4a20_2 34 // GPIO34
+/********************* ADC ****************/
+#define def_pin_ADC1 32 // GPIO32
 /******************** Digitais **************/
 #define def_pin_D1 13 // GPIO13 - Não funciona como entrada analogica somente digital
-#define def_pin_D2 5  // GPIO5  - Não funciona como entrada analogica somente digital
-#define def_pin_D3 14 // GPIO14 - Não funciona como entrada analogica somente digital
-#define def_pin_D4 27 // GPIO27 - Não funciona como entrada analogica somente digital
+#define def_pin_D2 14 // GPIO14  - Não funciona como entrada analogica somente digital
+#define def_pin_D3 27 // GPIO37 - Não funciona como entrada analogica somente digital
+#define def_pin_D4 33 // GPIO33 - Não funciona como entrada analogica somente digital
 /********************* DAC ****************/
 #define def_pin_DAC1 25 // GPIO25
 /***************** Write 4@20 mA **********/
@@ -36,12 +35,12 @@
 #define def_pin_RELE 23 // GPIO23
 /***************** OLED Display ************/
 #define def_pin_SDA 21 // GPIO21
-#define def_pin_SCL 22 // GPIO22
+#define def_pin_SCL 5  // GPIO5
 /********************* PWM ****************/
-#define def_pin_PWM 18 // GPIO18
+#define def_pin_PWM 12 // GPIO12
 /************* BUTTONS GPIO define *********/
 #define def_pin_RTN1 15  // GPIO15
-#define def_pin_RTN2 35  // GPIO35
+#define def_pin_RTN2 2   // GPIO18
 #define def_pin_PUSH1 16 // GPIO16
 #define def_pin_PUSH2 17 // GPIO17
 
@@ -69,7 +68,7 @@ inline void IIKit_c::setup()
 {
     this->WSerial.println("Booting");
     /*********** Inicializando Display ********/
-    if (disp.start(def_pin_SDA, def_pin_SCL))
+    if (startDisplay(&disp, def_pin_SDA, def_pin_SCL))
     {
         disp.setText(1, "Inicializando...");
         this->WSerial.println("Display running");
@@ -111,7 +110,7 @@ inline void IIKit_c::setup()
     /************** Starting OTA *************/
     OTA::setup(DDNSName);// OTA tem que ser depois do wifi e wifiManager
     /*** Starting Telnet Mode in WSerial ****/
-    WSerial.start(4000);
+    startWSerial(&WSerial,4000);
     /********** POTENTIOMETERS GPIO define *****/
     pinMode(def_pin_POT1, ANALOG);
     pinMode(def_pin_POT2, ANALOG);
@@ -144,7 +143,7 @@ inline void IIKit_c::setup()
     push_1.setPin(def_pin_PUSH1);
     push_2.setPin(def_pin_PUSH2); 
     /************ Web Portal ****************/
-    push_1.setTimePressedDIn(3);
+    push_1.setTimeOnPressed(3);
     push_1.onPressedWithTime([this]()
                              {
         if(wm.changeWebPortal())
@@ -174,15 +173,13 @@ inline void IIKit_c::setup()
 void IIKit_c::loop(void)
 {
     OTA::handle();
-    WSerial.loop();
-    disp.update();
-    if (wm.getPortalRunning())
-        wm.process();
-    rtn_1.update();
-    rtn_2.update();
-    push_1.update();
-    push_2.update();
-    // ds8500Serial.loop();
+    updateWSerial(&WSerial);
+    updateDisplay(&disp);
+    if (wm.getPortalRunning()) wm.process();
+    updateDIn(&rtn_1);
+    updateDIn(&rtn_2);
+    updateDIn(&push_1);
+    updateDIn(&push_2);            
 }
 
 void IIKit_c::errorMsg(String error, bool restart)

@@ -12,9 +12,10 @@ protected:
     bool portalRunning = false;
     const char *apName = "OnDemandAP";
 
+
 public:
     WifiManager_c(const uint8_t &timeout = 120) : WiFiManager() {this->timeout = timeout;}
-    void start(WSerial_c* ws) {WSerial = ws;}
+    void start(WSerial_c* ws) {WSerial = ws;}        
     void setApName(const char *apName);
     bool changeWebPortal();
     bool getPortalRunning(){return portalRunning;}

@@ -48,7 +48,7 @@ void setup()
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
 
-  ledParameter_t led1 = {def_pin_D2, 500};
+  /*ledParameter_t led1 = {def_pin_D4, 500};
   
   xTaskCreate(
       toggleLED,   // Function name
@@ -57,7 +57,7 @@ void setup()
       &led1,       // Task parameters
       1,           // Task priority
       NULL         // Task handle
-  );
+  );*/
 
   IIKit.WSerial.onInputReceived([](const std::string &str) {
       if(str == "^q") IIKit.WSerial.stop(); 
@@ -70,6 +70,21 @@ void setup()
       IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
     }
   );
+  IIKit.rtn_2.onValueChanged([](uint8_t status) {
+      digitalWrite(def_pin_D2,status);
+      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
+    }
+  );
+  IIKit.push_1.onValueChanged([](uint8_t status) {
+      digitalWrite(def_pin_D3,status);
+      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
+    }
+  );
+  IIKit.push_2.onValueChanged([](uint8_t status) {
+      digitalWrite(def_pin_D4,status);
+      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
+    }
+  );      
 }
 
 void loop()

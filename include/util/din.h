@@ -9,31 +9,26 @@ class DIn_c
 //    static DIn_c* sDIn[8];
 
 protected:
-
+    uint8_t pin;
     volatile unsigned long reading_time = 0;
     volatile uint8_t status_DIn = LOW;
     volatile uint8_t last_status_DIn = LOW;
     volatile uint16_t pressed_DIn_time = 0;    
     std::function<void(uint8_t status)> onChanged = NULL; // void (*onChanged)(uint8_t status) = NULL;    
     std::function<void()> onPressed = NULL; //void (*onPressed)(void) = NULL;
+    bool debounce();
+    void update();     
 
 public:
-    uint8_t pin;
     DIn_c() { DIn_c(0);}
     DIn_c(uint8_t pinDIn);
     void onValueChanged(std::function<void(uint8_t status)> f/*void (*f)(uint8_t status)*/);
     void onPressedWithTime(std::function<void()> f/*void (*f)(void)*/);
-    bool debounceDIn();
     void setPin(uint8_t pinDIn);
-    void update();
-    //static void IRAM_ATTR updateISR() {
-    //    for(int i=0;i<8;i++) {
-    //        if (sDIn[i]->debounceDIn())
-    //            sDIn[i]->onChanged(sDIn[i]->status_DIn);
-    //    }
-    //}
-    uint8_t getStatusDIn();
-    void setTimePressedDIn(uint8_t time);     
+    uint8_t getPin(void);    
+    uint8_t getStatus();
+    void setTimeOnPressed(uint8_t time); 
+    friend inline void updateDIn(DIn_c *din);          
 };
 
 //uint8_t DIn_c::index = 0;
@@ -45,8 +40,13 @@ DIn_c::DIn_c(uint8_t pinDIn) {
     //attachInterrupt(pinDIn, DIn_c::updateISR, CHANGE);  
 }
 
+inline void updateDIn(DIn_c *din) {din->update();}
 void DIn_c::update() {
-    if (debounceDIn()) onChanged(status_DIn);
+    if (debounce()) onChanged(status_DIn);
+}
+
+uint8_t DIn_c::getPin(void) {
+    return pin;
 }
 
 void DIn_c::setPin(uint8_t pinDIn)
@@ -55,7 +55,7 @@ void DIn_c::setPin(uint8_t pinDIn)
     pinMode(pin,INPUT_PULLDOWN);    
 }
 
-bool DIn_c::debounceDIn()
+bool DIn_c::debounce()
 {
     uint8_t leitura = digitalRead(pin); // A variável leitura recebe a leitura do pino do botão: HIGH (pressionado) ou LOW (Desacionado)
     if (pressed_DIn_time > 0 && leitura == HIGH && status_DIn == HIGH && (xTaskGetTickCount() - reading_time) > pressed_DIn_time)
@@ -79,12 +79,12 @@ bool DIn_c::debounceDIn()
     return (false);
 }
 
-void DIn_c::setTimePressedDIn(uint8_t time) // Tempo em segundos
+void DIn_c::setTimeOnPressed(uint8_t time) // Tempo em segundos
 {
     pressed_DIn_time = ((uint16_t) time)*1000;
 }
 
-uint8_t DIn_c::getStatusDIn()
+uint8_t DIn_c::getStatus()
 {
     return status_DIn;
 }

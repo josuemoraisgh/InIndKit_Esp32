@@ -57,7 +57,7 @@ static uint8_t WaveFormTable[MaxWaveTypes][Num_Samples] = {
      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
    }
 };
-
+//waveParameter_t waveParameter = {def_pin_DAC1, 1, 1}; 
 void imprimeOnda(void *parameter) // Faz a mudança de estado de um led
 {
   const waveParameter_t *wp = (waveParameter_t *) parameter;

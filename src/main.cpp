@@ -25,7 +25,6 @@ void monitoraPOT(void)
   }
 }
 
-//waveParameter_t waveParameter = {def_pin_DAC1, 1, 1}; 
 BlinkLED bLED(def_pin_D1,500);
 void setup()
 {
@@ -35,20 +34,6 @@ void setup()
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
 
-<<<<<<< HEAD
-=======
-  /*ledParameter_t led1 = {def_pin_D4, 500};
-  
-  xTaskCreate(
-      toggleLED,   // Function name
-      "Task LED1", // Task name
-      1000,        // Stack size
-      &led1,       // Task parameters
-      1,           // Task priority
-      NULL         // Task handle
-  );*/
-
->>>>>>> f0d61bd57a6bdafd7988394e33bbe70ee74072f7
   IIKit.WSerial.onInputReceived([](const std::string &str) {
       if(str == "^q") IIKit.WSerial.stop(); 
       else IIKit.WSerial.print(str.c_str()); 
@@ -59,26 +44,7 @@ void setup()
       if(status) bLED.setPin(def_pin_D2);
       else bLED.setPin(def_pin_D1);
     }
-<<<<<<< HEAD
-  );  
-=======
-  );
-  IIKit.rtn_2.onValueChanged([](uint8_t status) {
-      digitalWrite(def_pin_D2,status);
-      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
-    }
-  );
-  IIKit.push_1.onValueChanged([](uint8_t status) {
-      digitalWrite(def_pin_D3,status);
-      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
-    }
-  );
-  IIKit.push_2.onValueChanged([](uint8_t status) {
-      digitalWrite(def_pin_D4,status);
-      IIKit.WSerial.println(status? "RTN1 ON" :"RTN1 OFF"); 
-    }
   );      
->>>>>>> f0d61bd57a6bdafd7988394e33bbe70ee74072f7
 }
 
 void loop()

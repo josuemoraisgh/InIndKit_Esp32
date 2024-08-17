@@ -8,7 +8,7 @@
 typedef struct
 {
   uint8_t pin;
-  uint8_t frequencia;
+  uint16_t frequencia;
   uint8_t wave_type;  
 } waveParameter_t;
 
@@ -54,41 +54,41 @@ static uint8_t WaveFormTable[MaxWaveTypes][Num_Samples] = {
     }
 };
 
-class Wave
+class AsyncWave
 {
 protected:
   waveParameter_t *waveParameter;
   static void updateWave(void *);
 
 public:
-  Wave(uint8_t pin, uint8_t freq, uint8_t wave_type);
+  AsyncWave(uint8_t pin, uint16_t freq, uint8_t wave_type);
   void setPin(uint8_t pin) {this->waveParameter->pin = pin;}
-  void setPeriodo(uint8_t freq) {this->waveParameter->frequencia = freq;}
+  void setPeriodo(uint16_t freq) {this->waveParameter->frequencia = freq;}
   void setWaveType(uint8_t wave_type) {this->waveParameter->wave_type = wave_type;}  
 };
 
-void Wave::updateWave(void *parameter) // Faz a mudança de estado de um led
+void AsyncWave::updateWave(void *parameter) // Faz a mudança de estado de um led
 {
   uint8_t waveIndex = 0; // Índice para percorrer a tabela de formas de onda  
   waveParameter_t *wp = (waveParameter_t *) parameter;
   for (;;)
   {
     dacWrite(wp->pin, WaveFormTable[wp->wave_type][waveIndex]);
-    waveIndex++;
-    if (waveIndex >= Num_Samples) waveIndex = 0;
-    const double aux = (1/(wp->frequencia*Num_Samples));
-    if(aux >= 0.001) vTaskDelay( aux / (portTICK_PERIOD_MS));
-    else  vTaskDelay( (aux*1000) / portTICK_PERIOD_MS);
+    if (++waveIndex >= Num_Samples) waveIndex = 0;
+    vTaskDelay(1);
+    //const double aux = (1/(wp->frequencia*Num_Samples));
+    //if(aux >= 0.001) vTaskDelay(aux/portTICK_PERIOD_MS);
+    //else  vTaskDelay(aux/(portTICK_PERIOD_MS*1000));
   }
 }
 
-Wave::Wave(uint8_t pin, uint8_t freq, uint8_t wave_type)
+AsyncWave::AsyncWave(uint8_t pin, uint16_t freq, uint8_t wave_type)
 {
   this->waveParameter = new waveParameter_t({pin,freq,wave_type});
   xTaskCreate(
       updateWave,    // Function name
-      "Task LED1",  // Task name
-      1000,         // Stack size
+      "Task Wave",  // Task name
+      100,         // Stack size
       this->waveParameter, // Task parameters
       1,            // Task priority
       NULL          // Task handle

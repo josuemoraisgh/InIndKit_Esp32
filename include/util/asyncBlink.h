@@ -8,19 +8,19 @@ typedef struct
 } ledParameter_t;
 
 
-class BlinkLED
+class AsyncBlink
 {
 protected:
   ledParameter_t *ledParameter;
   static void toggleLED(void *);
 
 public:
-  BlinkLED(uint8_t pin, TickType_t delay);
+  AsyncBlink(uint8_t pin, TickType_t delay);
   void setPin(uint8_t pin) {this->ledParameter->pin = pin;}
   void setDelay(TickType_t delay) {this->ledParameter->delay = delay;}
 };
 
-void BlinkLED::toggleLED(void *parameter) // Faz a mudança de estado de um led
+void AsyncBlink::toggleLED(void *parameter) // Faz a mudança de estado de um led
 {
   ledParameter_t *lp = (ledParameter_t *) parameter;
   uint8_t pinOld = lp->pin;
@@ -35,13 +35,13 @@ void BlinkLED::toggleLED(void *parameter) // Faz a mudança de estado de um led
   }
 }
 
-BlinkLED::BlinkLED(uint8_t pin, TickType_t delay)
+AsyncBlink::AsyncBlink(uint8_t pin, TickType_t delay)
 {
   this->ledParameter = new ledParameter_t({pin,delay});
   xTaskCreate(
       toggleLED,    // Function name
-      "Task LED1",  // Task name
-      1000,         // Stack size
+      "Task Blink",  // Task name
+      100,         // Stack size
       this->ledParameter, // Task parameters
       1,            // Task priority
       NULL          // Task handle

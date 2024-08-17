@@ -1,31 +1,13 @@
 #include <Arduino.h>
 #include "IiKit.h"
-#include "util/wave.h"
-#include "util/blink.h"
+#include "util/asyncWave.h"
+#include "util/asyncBlink.h"
+#include "util/monit420.h"
+#include "util/monitPot.h"
 
-AsyncDelay_c delayPOT(50); // time mili second
-void monitoraPOT(void)
-{
-  if (delayPOT.isExpired())
-  {
-    delayPOT.repeat();
+AsyncBlink bLED(def_pin_D1,500);
+//AsyncWave wv(def_pin_DAC1,60,0);
 
-    const uint16_t vlPOT1 = analogRead(def_pin_POT1);
-    const uint16_t vlPOT2 = analogRead(def_pin_POT2);
-    const uint16_t vlR4a20_1 = (20.0 / 4095.0) * analogRead(def_pin_R4a20_1);
-    const uint16_t vlR4a20_2 = (20.0 / 4095.0) * analogRead(def_pin_R4a20_2);
-
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
-    IIKit.disp.setText(3, ("T1:" + String(vlR4a20_1) + "  T2:" + String(vlR4a20_2)).c_str());    
-
-    IIKit.WSerial.plot("vlPOT1", vlPOT1);
-    IIKit.WSerial.plot("vlPOT2", vlPOT2);
-    IIKit.WSerial.plot("vlR4a20_1", vlR4a20_1);
-    IIKit.WSerial.plot("vlR4a20_2", vlR4a20_2);    
-  }
-}
-
-BlinkLED bLED(def_pin_D1,500);
 void setup()
 {
   IIKit.setup();
@@ -47,8 +29,22 @@ void setup()
   );      
 }
 
+uint8_t waveIndex = 0; // Índice para percorrer a tabela de formas de onda  
+AsyncDelay_c delayWave(1); // time mili second
+void plotWave(void)
+{
+  if (delayWave.isExpired())
+  {
+    delayWave.repeat();
+    dacWrite(def_pin_DAC1, 127+127*sin(2*PI*50*waveIndex));
+    if (++waveIndex >= 20) waveIndex = 0;   
+  }
+}
+
 void loop()
 {
   IIKit.loop();
   monitoraPOT();
+  monitora420();
+  plotWave(); 
 }

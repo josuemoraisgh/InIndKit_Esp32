@@ -23,10 +23,15 @@ public:
 void BlinkLED::toggleLED(void *parameter) // Faz a mudança de estado de um led
 {
   ledParameter_t *lp = (ledParameter_t *) parameter;
+  uint8_t pinOld = lp->pin;
   for (;;)
   {
     digitalWrite(lp->pin, !digitalRead(lp->pin));
     vTaskDelay(lp->delay / portTICK_PERIOD_MS);
+    if(pinOld != lp->pin) {
+      digitalWrite(pinOld, LOW);
+      pinOld = lp->pin;
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "IiKit.h"
-#include "wave.h"
-#include "blink.h"
+#include "util/wave.h"
+#include "util/blink.h"
 
 AsyncDelay_c delayPOT(50); // time mili second
 void monitoraPOT(void)

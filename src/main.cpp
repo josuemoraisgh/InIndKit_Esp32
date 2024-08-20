@@ -1,8 +1,5 @@
 #include <Arduino.h>
 #include "IiKit.h"
-#include "util/asyncWave.h"
-#include "util/asyncBlink.h"
-#include "util/monitPot.h"
 
 void plotWave(void *)
 {
@@ -22,14 +19,9 @@ void plotWave(void *)
 void setup()
 {
   IIKit.setup();
-  
-  pinMode(def_pin_D1, OUTPUT);
-  pinMode(def_pin_D2, OUTPUT);
-  pinMode(def_pin_D3, OUTPUT);
-  pinMode(def_pin_D4, OUTPUT);
 
   xTaskCreate(
-      plotWave, // Function name
+      plotWave,     // Function name
       "Task Wave",  // Task name
       5000,         // Stack size
       NULL,         // Task parameters
@@ -41,5 +33,5 @@ void setup()
 void loop()
 {
   IIKit.loop();
-  IIKit.WSerial.plot("ADC", analogRead(def_pin_ADC1));
+  //IIKit.WSerial.plot("ADC", analogRead(def_pin_ADC1));
 }

@@ -19,11 +19,6 @@ void plotWave(void *)
     if (delayPlotWave.isExpired())
     {
       delayPlotWave.repeat();
-      // 1º Exemplo:
-      //  dacWrite(def_pin_DAC1,vlPOT1);
-      // 2º Exemplo:
-      //  dacWrite(def_pin_DAC1, 127 + uint8_t(127 * sin(2.0 * PI * CILCE_FREQ * timeWave)));
-      // 3º Exemplo:
       const double aux = (vlPOT2 * TIME_DELAY / 1000000.0);
       dacWrite(def_pin_DAC1, 127 + uint8_t(vlPOT1 * sin(2.0 * PI * aux * timeWave)));
       if (++timeWave >= uint16_t(1/aux)) timeWave = 0;

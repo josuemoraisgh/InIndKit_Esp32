@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "IiKit.h"
 
-AsyncDelay_c delay420(500); // time mili second
+AsyncDelay_c delay420(500, ISMILI); // time mili second
 void monitora420(void)
 {
   if (delay420.isExpired())

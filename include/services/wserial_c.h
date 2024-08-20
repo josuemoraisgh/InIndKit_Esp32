@@ -30,7 +30,7 @@ public:
   void println();
 
   template <typename T>
-  void plot(const char *varName, TickType_t x, T y, const char *unit = NULL);
+  void plot(const char *varName, uint64_t x, T y, const char *unit = NULL);
   template <typename T>
   void plot(const char *varName, T y, const char *unit = NULL);
 
@@ -83,10 +83,10 @@ void WSerial_c::update() {
 template <typename T>
 void WSerial_c::plot(const char *varName, T y, const char *unit)
 {
-  plot(varName,(TickType_t) xTaskGetTickCount(), y, unit);
+  plot(varName,(uint64_t) esp_timer_get_time(), y, unit);
 }
 template <typename T>
-void WSerial_c::plot(const char *varName, TickType_t x, T y, const char *unit)
+void WSerial_c::plot(const char *varName, uint64_t x, T y, const char *unit)
 {
   String str(">");
   str.concat(varName);

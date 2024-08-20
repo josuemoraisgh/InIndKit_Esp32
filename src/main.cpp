@@ -2,49 +2,50 @@
 #include "IiKit.h"
 #include "util/asyncWave.h"
 #include "util/asyncBlink.h"
-#include "util/monit420.h"
 #include "util/monitPot.h"
 
-AsyncBlink bLED(def_pin_D1,500);
-//AsyncWave wv(def_pin_DAC1,60,0);
+void readPlotWave(void *)
+{
+  uint16_t waveIndex = 0;                 // Índice para percorrer a tabela de formas de onda
+  AsyncDelay_c delayPlotWave(500, false); // time in micro second
+  AsyncDelay_c delayReadWave(600, false); // time in micro second
+  for (;;)
+  {
+    if (delayPlotWave.isExpired())
+    {
+      delayPlotWave.repeat();
+      dacWrite(def_pin_DAC1, 127 + 127 * sin(2 * PI * waveIndex / 2000));
+      if (++waveIndex >= 2000)
+        waveIndex = 0;
+    }
+    if (delayReadWave.isExpired())
+    {
+      delayReadWave.repeat();
+      IIKit.WSerial.plot("ADC", analogRead(def_pin_ADC1));
+    }
+  }
+}
 
 void setup()
 {
   IIKit.setup();
+  
   pinMode(def_pin_D1, OUTPUT);
   pinMode(def_pin_D2, OUTPUT);
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
-
-  IIKit.WSerial.onInputReceived([](const std::string &str) {
-      if(str == "^q") IIKit.WSerial.stop(); 
-      else IIKit.WSerial.print(str.c_str()); 
-    }
+  xTaskCreate(
+      readPlotWave, // Function name
+      "Task Wave",  // Task name
+      1000,         // Stack size
+      NULL,         // Task parameters
+      1,            // Task priority
+      NULL          // Task handle
   );
-
-  IIKit.rtn_1.onValueChanged([](uint8_t status) {
-      if(status) bLED.setPin(def_pin_D2);
-      else bLED.setPin(def_pin_D1);
-    }
-  );      
-}
-
-uint8_t waveIndex = 0; // Índice para percorrer a tabela de formas de onda  
-AsyncDelay_c delayWave(1); // time mili second
-void plotWave(void)
-{
-  if (delayWave.isExpired())
-  {
-    delayWave.repeat();
-    dacWrite(def_pin_DAC1, 127+127*sin(2*PI*50*waveIndex));
-    if (++waveIndex >= 20) waveIndex = 0;   
-  }
 }
 
 void loop()
 {
   IIKit.loop();
   monitoraPOT();
-  monitora420();
-  plotWave(); 
 }

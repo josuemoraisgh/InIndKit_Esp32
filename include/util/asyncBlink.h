@@ -41,7 +41,7 @@ AsyncBlink::AsyncBlink(uint8_t pin, TickType_t delay)
   xTaskCreate(
       toggleLED,    // Function name
       "Task Blink",  // Task name
-      100,         // Stack size
+      1000,         // Stack size
       this->ledParameter, // Task parameters
       1,            // Task priority
       NULL          // Task handle

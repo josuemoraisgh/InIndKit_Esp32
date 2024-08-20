@@ -88,7 +88,7 @@ AsyncWave::AsyncWave(uint8_t pin, uint16_t freq, uint8_t wave_type)
   xTaskCreate(
       updateWave,    // Function name
       "Task Wave",  // Task name
-      100,         // Stack size
+      1000,         // Stack size
       this->waveParameter, // Task parameters
       1,            // Task priority
       NULL          // Task handle
